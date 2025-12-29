@@ -1,0 +1,21 @@
+import pandas as pd
+
+# Load raw data
+df = pd.read_csv('../data/raw/AAPL_sample.csv', parse_dates=['date'])
+
+# Sort by date (important for time series)
+df = df.sort_values('date')
+
+# Feature engineering
+df['ma_5'] = df['close'].rolling(window=5).mean()
+df['ma_10'] = df['close'].rolling(window=10).mean()
+df['daily_return'] = df['close'].pct_change()
+
+# Drop rows with NaN values created by rolling calculations
+df = df.dropna()
+
+# Save processed data
+df.to_csv('../data/processed/AAPL_features.csv', index=False)
+
+print("AAPL_features.csv created successfully")
+df.head()
