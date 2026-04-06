@@ -1,6 +1,4 @@
-# **COMPLETE README.md - ONE SHOT COPY PASTE**
 
-```markdown
 # Stock Market Forecasting & Risk Analytics
 
 **Production-Ready Trading System** | ARIMA + XGBoost + LSTM Ensemble | Real-time Web Dashboard | Automated Risk Management
