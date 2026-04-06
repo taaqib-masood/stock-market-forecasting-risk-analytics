@@ -1,6 +1,4 @@
-# **COMPLETE README.md - ONE SHOT COPY PASTE**
 
-```markdown
 # Stock Market Forecasting & Risk Analytics
 
 **Production-Ready Trading System** | ARIMA + XGBoost + LSTM Ensemble | Real-time Web Dashboard | Automated Risk Management
@@ -35,7 +33,7 @@ A **complete, production-ready trading system** that combines classical time-ser
 
 ## 🏗️ System Architecture
 
-```
+
 ┌─────────────────────────────────────────────────────────────────┐
 │                         DATA LAYER                               │
 │         Alpaca API → Real-time prices | NSE API → Actions        │
@@ -75,7 +73,7 @@ A **complete, production-ready trading system** that combines classical time-ser
 │  • Telegram alerts → Manual execution                            │
 │  • Auto close at 3:45 PM                                         │
 └─────────────────────────────────────────────────────────────────┘
-```
+
 
 ---
 
@@ -83,11 +81,10 @@ A **complete, production-ready trading system** that combines classical time-ser
 
 ### 1. Clone & Install
 
-```bash
 git clone https://github.com/taaqib-masood/stock-market-forecasting-risk-analytics.git
 cd stock-market-forecasting-risk-analytics
 pip install -r requirements.txt
-```
+
 
 ### 2. Configure Environment
 
