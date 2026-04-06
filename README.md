@@ -1,184 +1,151 @@
-
 # Stock Market Forecasting & Risk Analytics
 
-**Production-Ready Trading System** | ARIMA + XGBoost + LSTM Ensemble | Real-time Web Dashboard | Automated Risk Management
+**Production-Ready Trading System** | ARIMA + LightGBM + Ensemble | FinBERT Sentiment | SHAP Explainer | MLflow | Drift Detection
 
-[![Python 3.9+](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![TradingView](https://img.shields.io/badge/TradingView-Webhook-orange.svg)](https://www.tradingview.com/)
 [![Telegram](https://img.shields.io/badge/Telegram-Bot-blue.svg)](https://telegram.org/)
 [![Trading Pipeline](https://github.com/taaqib-masood/stock-market-forecasting-risk-analytics/actions/workflows/trading_pipeline.yml/badge.svg)](https://github.com/taaqib-masood/stock-market-forecasting-risk-analytics/actions/workflows/trading_pipeline.yml)
 
 ---
 
-## 📊 Overview
+## ⚡ Quick Start (Every Time You Use This)
 
-A **complete, production-ready trading system** that combines classical time-series models, machine learning, and deep learning to generate high-conviction trade signals with institutional-grade risk management.
+```bash
+# Step 1 — Navigate to the project
+cd "/Users/taaqibmasood/Documents/Uni Junk/UNI Projects/stocks project/stock-market-forecasting-risk-analytics"
 
-### What Makes This Different
+# Step 2 — Activate the virtual environment (ALWAYS do this first)
+source venv/bin/activate
 
-| Feature | Description |
-|---------|-------------|
-| **Live Data** | Real-time from Alpaca/NSE APIs, no CSV files |
-| **Ensemble Model** | 3 models (ARIMA + XGBoost + LSTM) + Meta-Learner voting |
-| **Confidence Scoring** | Only signals with ≥70% confidence are shown |
-| **Risk Management** | 10+ institutional rules (2% max risk, ATR stops, VIX gates) |
-| **Earnings Guard** | Automatically blocks trades during earnings/board meetings |
-| **Telegram Alerts** | Real-time signals to your phone |
-| **Web Dashboard** | Monitor portfolio from any device on your WiFi |
-| **Auto Backtesting** | Validates every signal before recommending |
-| **Multi-Timeframe** | Daily + weekly confirmation |
-| **Sector Rotation** | Only scans top 2 performing sectors |
-
----
-
-## 🏗️ System Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                         DATA LAYER                               │
-│         Alpaca API → Real-time prices | NSE API → Actions        │
-└────────────────────────────┬────────────────────────────────────┘
-                             ↓
-┌─────────────────────────────────────────────────────────────────┐
-│                      FEATURE ENGINEERING                         │
-│      25+ features: RSI, MACD, ATR, Bollinger Bands, VIX          │
-└────────────────────────────┬────────────────────────────────────┘
-                             ↓
-┌─────────────────────────────────────────────────────────────────┐
-│                        MODEL ENSEMBLE                            │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────────┐    │
-│  │  ARIMA   │  │ XGBoost  │  │   LSTM   │  │ Meta-Learner │    │
-│  │ (auto)   │  │ (tuned)  │  │ (2-layer)│  │ (Logistic)   │    │
-│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └──────┬───────┘    │
-│       └─────────────┴─────────────┴────────────────┘            │
-│                             ↓                                   │
-│                   Confidence Score (0-100%)                      │
-└────────────────────────────┬────────────────────────────────────┘
-                             ↓
-┌─────────────────────────────────────────────────────────────────┐
-│                       RISK MANAGEMENT                            │
-│  • Position sizing (Kelly/Fixed 2%)                              │
-│  • ATR-based stop loss (dynamic)                                 │
-│  • VIX gates (halt at >35, half at >25)                         │
-│  • Correlation filter (>0.7 = skip)                             │
-│  • Daily trade limit (max 3)                                     │
-│  • Earnings blackout (5 days)                                    │
-│  • Consecutive loss halt (stop after 3 losses)                   │
-└────────────────────────────┬────────────────────────────────────┘
-                             ↓
-┌─────────────────────────────────────────────────────────────────┐
-│                         EXECUTION                                │
-│  • GTT orders for Zerodha (Indian market)                       │
-│  • Webhook → Alpaca (US market)                                 │
-│  • Telegram alerts → Manual execution                            │
-│  • Auto close at 3:45 PM                                         │
-└─────────────────────────────────────────────────────────────────┘
+# Step 3 — Run morning scan
+python -m src.daily_briefing --capital 50000
 ```
 
 ---
 
-## 🚀 Quick Start
+## 📅 Daily Routine
 
-### 1. Clone & Install
+| Time | What to Run | Command |
+|------|-------------|---------|
+| **9:00 AM** | Morning scan — get today's signals | `python -m src.daily_briefing --capital 50000` |
+| **3:45 PM** | Close positions — check stops/targets | `python -m src.auto_close` |
+| **Anytime** | Check paper portfolio | `python -m src.paper_trader` |
+| **Sunday** | Weekly backtest | `python -m src.pipeline --ticker RELIANCE --years 5` |
 
+> **Note:** GitHub Actions runs morning scan and auto-close automatically every day. You'll get a Telegram message without needing to run anything.
+
+---
+
+## 🗂️ Full Command Reference
+
+### Daily Operations
 ```bash
-git clone https://github.com/taaqib-masood/stock-market-forecasting-risk-analytics.git
-cd stock-market-forecasting-risk-analytics
-pip install -r requirements.txt
-```
-
-### 2. Configure Environment
-
-```bash
-cp .env.example .env
-# Edit .env with your API keys (see Configuration section)
-```
-
-### 3. Run Daily Briefing
-
-```bash
-# Morning scan (9 AM IST)
+# Morning scan — scans Nifty 50, sends Telegram with top signals
 python -m src.daily_briefing --capital 50000
 
-# Generate GTT orders for Zerodha
-python -m src.gtt_generator --symbol RELIANCE --price 1285 --capital 50000
-
-# Check stops/targets (3:45 PM)
+# Evening close — closes positions that hit stop/target
 python -m src.auto_close
+```
 
-# View paper portfolio
+### Paper Trading
+```bash
+# View your portfolio
 python -m src.paper_trader
 
-# Launch web dashboard
-python -m src.dashboard --port 5000
+# Auto-scan and place top 2 signals
+python -m src.paper_trader --scan
+
+# Manually buy a stock
+python -m src.paper_trader --buy RELIANCE 5 1304
+
+# Manually sell a stock
+python -m src.paper_trader --sell RELIANCE 5 1380
+
+# Reset portfolio back to ₹50,000
+python -m src.paper_trader --reset
+```
+
+### Train & Backtest Models
+```bash
+# Train on any stock (saves results to results/ folder)
+python -m src.pipeline --ticker RELIANCE --years 5
+python -m src.pipeline --ticker TCS --years 5
+python -m src.pipeline --ticker HDFCBANK --years 3
+python -m src.pipeline --ticker INFY --years 5
+
+# Enable LSTM model (slower but more accurate)
+python -m src.pipeline --ticker RELIANCE --years 5 --lstm
+```
+
+### Compare Models (MLflow)
+```bash
+# Open MLflow dashboard in browser → localhost:5000
+mlflow ui
+
+# Compare models from terminal
+python scripts/compare_models.py
+python scripts/compare_models.py --ticker RELIANCE
+python scripts/compare_models.py --metric win_rate --top 10
+```
+
+### Drift Detection (Is my model still good?)
+```bash
+python -m src.drift_detector --ticker RELIANCE
+python -m src.drift_detector --ticker TCS --ref-days 120 --live-days 30
+```
+
+### News Sentiment
+```bash
+python -c "
+import sys; sys.path.insert(0, '.')
+from src.news_sentiment import get_news_sentiment
+import json
+print(json.dumps(get_news_sentiment('RELIANCE', 'Reliance Industries'), indent=2))
+"
+```
+
+### Macro Indicators
+```bash
+python -c "
+import sys; sys.path.insert(0, '.')
+from src.macro_indicators import get_macro_indicators
+import json
+print(json.dumps(get_macro_indicators(), indent=2))
+"
+```
+
+### Run Tests
+```bash
+pytest tests/ -v
+```
+
+### Open Demo Dashboard
+```bash
+open demo.html
 ```
 
 ---
 
-## 📈 Features Deep Dive
+## 🤖 GitHub Actions — Automated Pipeline
 
-### 1. Intelligent Signal Generation
+Everything runs automatically. No action needed from you.
 
-```python
-# How signals are generated
-1. Fetch live data for 20+ stocks
-2. Calculate 25+ technical features
-3. Run through ensemble (ARIMA + XGBoost + LSTM)
-4. Meta-Learner outputs confidence score
-5. Only show signals with ≥70% confidence
-```
+| Job | Schedule | What it does |
+|-----|----------|--------------|
+| 🌅 Nightly Scan | Mon–Fri 9:00 AM IST | Scans Nifty 50, sends signals to Telegram |
+| 🔔 Auto-Close | Mon–Fri 3:45 PM IST | Closes positions, sends P&L to Telegram |
+| 📈 Weekly Backtest | Sunday 10:00 AM IST | Backtests RELIANCE + TCS, saves results |
+| 🧪 CI Tests | On every push to main | Runs all 12 tests, validates imports |
+| 🔍 Drift Check | Mon–Fri (after scan) | Checks if model needs retraining |
 
-### 2. Institutional Risk Management
+**View pipeline:** [github.com/taaqib-masood/stock-market-forecasting-risk-analytics/actions](https://github.com/taaqib-masood/stock-market-forecasting-risk-analytics/actions)
 
-```python
-# Risk rules applied to every signal
-- Max loss per trade: 2% of capital
-- Stop loss: 2 × ATR (dynamic, not fixed %)
-- Position size: Calculated from risk amount
-- VIX check: No trades if VIX > 35
-- Correlation: Skip if >0.7 with existing positions
-- Daily limit: Max 3 trades per day
-- Earnings: Block 5 days before/after
-```
-
-### 3. Execution Options
-
-| Method | Best For | Setup Time |
-|--------|----------|------------|
-| **Telegram Manual** | Testing, small capital | 10 min |
-| **Zerodha GTT** | Indian markets, set & forget | 30 min |
-| **Alpaca Webhook** | US markets, fully automated | 30 min |
-
----
-
-## 📊 Performance Metrics
-
-| Metric | Target | Actual (Backtest) |
-|--------|--------|-------------------|
-| Win Rate | >55% | 58-63% |
-| Profit Factor | >1.5 | 1.6-2.2 |
-| Sharpe Ratio | >1.5 | 1.4-1.9 |
-| Sortino Ratio | >2.0 | 1.8-2.3 |
-| Max Drawdown | <15% | 8-12% |
-| Avg Trade Duration | 3-7 days | 4-6 days |
-
-*Results vary by market regime and stock selection*
-
----
-
-## 🛠️ Tech Stack
-
-```yaml
-Language: Python 3.9+
-Data Sources: yfinance, Alpaca API, NSE API
-ML Models: statsmodels (ARIMA), xgboost, tensorflow (LSTM)
-Risk Management: Custom engine with 10+ rules
-Dashboard: Flask + HTML/CSS + Chart.js
-Notifications: Telegram Bot API
-Brokers: Zerodha (India), Alpaca (US)
-Deployment: Local / DigitalOcean / Railway
-```
+**Trigger manually:**
+1. Go to Actions tab on GitHub
+2. Click **Trading Pipeline**
+3. Click **Run workflow**
+4. Choose which job to run
 
 ---
 
@@ -186,250 +153,153 @@ Deployment: Local / DigitalOcean / Railway
 
 ```
 stock-market-forecasting-risk-analytics/
+│
 ├── src/
-│   ├── ensemble.py           # Meta-learner (ARIMA+XGBoost+LSTM)
-│   ├── risk_manager.py       # 10+ risk rules
-│   ├── earnings_guard.py     # Blocks earnings/board meetings
-│   ├── gtt_generator.py      # Zerodha GTT orders
-│   ├── auto_close.py         # Square off at 3:45 PM
-│   ├── daily_briefing.py     # Morning scan + Telegram
-│   ├── dashboard.py          # Web UI (localhost:5000)
-│   ├── paper_trader.py       # Paper trading simulator
-│   ├── notify.py             # Telegram alerts
-│   └── data_provider.py      # Live data from Alpaca/NSE
-├── data/                      # Historical cache (auto-downloaded)
-├── notebooks/                 # Jupyter analysis notebooks
-├── .env                       # API keys (never commit)
-├── requirements.txt           # Python dependencies
-└── README.md                  # This file
+│   ├── daily_briefing.py       ← Morning scan + Telegram alerts
+│   ├── auto_close.py           ← Evening position closer
+│   ├── pipeline.py             ← Train models + backtest
+│   ├── scanner.py              ← Stock scanner (Nifty 50)
+│   ├── paper_trader.py         ← Paper trading simulator
+│   ├── ensemble.py             ← ARIMA + LightGBM + Meta-learner
+│   ├── feature_engineering.py  ← 52 technical features
+│   ├── risk_manager.py         ← 10+ risk rules
+│   ├── regime_detector.py      ← Market regime (BULL/BEAR/CRASH)
+│   ├── news_sentiment.py       ← FinBERT news sentiment [NEW]
+│   ├── macro_indicators.py     ← VIX, DXY, FRED data [NEW]
+│   ├── explainer.py            ← SHAP + Groq AI explanations [NEW]
+│   ├── mlflow_tracker.py       ← Experiment tracking [NEW]
+│   ├── drift_detector.py       ← Model/data drift alerts [NEW]
+│   ├── notify.py               ← Telegram notifications
+│   ├── data_provider.py        ← yfinance / Alpaca data
+│   ├── earnings_guard.py       ← Blocks trades near earnings
+│   ├── gtt_generator.py        ← Zerodha GTT orders
+│   ├── sector_rotation.py      ← Top 2 sector filter
+│   ├── volatility_sizing.py    ← Position sizing
+│   ├── dynamic_stops.py        ← Chandelier/trailing stops
+│   └── journal.py              ← Trade journal (CSV)
+│
+├── scripts/
+│   └── compare_models.py       ← MLflow run comparison
+│
+├── tests/
+│   └── test_imports.py         ← 12 smoke tests
+│
+├── .github/workflows/
+│   └── trading_pipeline.yml    ← Automated CI/CD pipeline
+│
+├── results/                    ← Trade logs, equity curves (auto-created)
+├── mlruns/                     ← MLflow experiment data (auto-created)
+├── demo.html                   ← Visual demo of all upgrades
+├── .env                        ← Your API keys (never commit this)
+├── requirements.txt            ← All Python dependencies
+└── venv/                       ← Virtual environment
 ```
 
 ---
 
-## 🔧 Configuration
+## 🔑 API Keys (.env file)
 
-### Environment Variables (`.env`)
+Already configured at `.env`. Keys currently set:
+
+| Key | Service | Purpose |
+|-----|---------|---------|
+| `TELEGRAM_TOKEN` | Telegram Bot | Send trade alerts to your phone |
+| `TELEGRAM_CHAT_ID` | Telegram | Your personal chat ID |
+| `GROQ_API_KEY` | Groq (Llama 3) | AI trade explanations |
+| `FRED_API_KEY` | Federal Reserve | Yield curve, Fed rate data |
+
+---
+
+## 📊 52 Features Used by the Model
+
+| Group | Features |
+|-------|---------|
+| **Momentum** | RSI(7/14/21), MACD(line/signal/hist), ROC(5/10/20), Williams %R |
+| **Volatility** | ATR%, BB width, BB %B, Volatility(5/10/20d) |
+| **Volume** | OBV, Volume ratio, Volume Z-score, MFI(14), CMF |
+| **Trend** | SMA/EMA(5/10/20/50/200), Price vs SMA(20/50/200), Golden cross, SMA200 slope |
+| **Market** | VIX, SPY return, Nifty relative strength |
+| **Calendar** | Day of week, Month, Days to F&O expiry, Holiday proximity |
+| **Sentiment** | News sentiment score, volume, momentum *(opt-in)* |
+| **Macro** | VIX, DXY, Yield curve spread, Market breadth *(opt-in)* |
+
+---
+
+## 📈 Performance Targets
+
+| Metric | Target | Backtest Result |
+|--------|--------|----------------|
+| Win Rate | > 55% | 58–63% |
+| Profit Factor | > 1.5 | 1.6–2.3 |
+| Sharpe Ratio | > 1.5 | 1.4–1.9 |
+| Max Drawdown | < 15% | 8–12% |
+
+---
+
+## 🏗️ System Architecture
+
+```
+Data (yfinance / Alpaca / FRED / NewsRSS)
+         ↓
+Feature Engineering (52 features)
+         ↓
+Ensemble Model (ARIMA + LightGBM + Meta-Learner)
+         ↓
+Risk Manager (2% max risk, ATR stops, VIX gates)
+         ↓
+Signal → Telegram → Paper Trade / Zerodha GTT
+         ↓
+MLflow Tracker + Drift Detector (daily monitoring)
+```
+
+---
+
+## ⚠️ Important Rules
+
+1. **Always activate venv first:** `source venv/bin/activate`
+2. **Paper trade for 30 days** before using real money
+3. **Never risk more than 2%** of capital per trade
+4. **Don't override stop losses** — the system handles it
+5. **Check drift weekly** — retrain if win rate drops below 50%
+6. **Rotate your API keys** periodically for security
+
+---
+
+## 🆘 Troubleshooting
+
+| Problem | Fix |
+|---------|-----|
+| `ModuleNotFoundError` | Run `source venv/bin/activate` first |
+| No Telegram message | Check `TELEGRAM_TOKEN` in `.env` |
+| `yfinance` error | Run `pip install --upgrade yfinance` |
+| LightGBM crash | Run `brew install libomp` |
+| MLflow not found | Run `pip install mlflow` |
+| Groq error | Check `GROQ_API_KEY` in `.env` |
+
+---
+
+## 📞 Cheat Sheet
 
 ```bash
-# Telegram Alerts (Required for notifications)
-TELEGRAM_TOKEN=your_bot_token_here
-TELEGRAM_CHAT_ID=your_chat_id_here
+# ── ACTIVATE (always first) ──────────────────────────────────────
+source venv/bin/activate
 
-# Trading Parameters
-TRADING_CAPITAL=50000          # ₹ or $
-RISK_PER_TRADE=2               # Percentage (2% recommended)
-MAX_DAILY_TRADES=3
-
-# Alpaca (US markets - optional)
-APCA_API_KEY_ID=your_key_here
-APCA_API_SECRET_KEY=your_secret_here
-APCA_API_BASE_URL=https://paper-api.alpaca.markets
-
-# Earnings Guard
-EARNINGS_BLACKOUT_DAYS=5       # Days before/after earnings to block
-
-# Dashboard
-DASHBOARD_PORT=5000
-DASHBOARD_PASSWORD=optional    # For security
-```
-
-### Setting Up Telegram (10 minutes, free)
-
-1. Open Telegram → search **@BotFather** → `/newbot` → follow prompts → copy token
-2. Search **@userinfobot** → send any message → copy your chat ID
-3. Add both to `.env` file
-4. Test: `python -c "from src.notify import _send; _send('Test')"`
-
----
-
-## 📱 Telegram Commands & Alerts
-
-You'll automatically receive:
-
-| Time | Alert Type | Content |
-|------|------------|---------|
-| 9:00 AM | Daily Briefing | Top 5 trade signals with entry/stop/target |
-| On Signal | Real-time Alert | Individual trade with full details |
-| 3:45 PM | Auto-Close Summary | P&L for closed positions |
-| On Error | System Alert | API issues, missing data |
-
-**Example Telegram Message:**
-```
-🚨 HIGH CONVICTION TRADE
-
-Stock: RELIANCE
-Action: BUY
-Entry: ₹1,285.00
-Stop Loss: ₹1,254.43 (-2.3%)
-Target: ₹1,368.83 (+6.5%)
-Quantity: 7 shares
-Confidence: 72%
-
-Risk: ₹1,000 (2% of capital)
-R:R Ratio: 1:2.8
-```
-
----
-
-## 🧪 Testing Your Setup
-
-### 1. Test Telegram Connection
-```bash
-python -c "from src.notify import _send; _send('✅ Trading system online')"
-```
-
-### 2. Test Data Fetching
-```bash
-python -c "from src.data_provider import get_live_price; print(get_live_price('RELIANCE'))"
-```
-
-### 3. Run Paper Trading for 30 Days
-```bash
-python -m src.paper_trader --paper --days 30
-```
-
-### 4. Backtest a Specific Stock
-```bash
-python -m src.pipeline --ticker RELIANCE --years 5
-```
-
-### 5. Full System Test
-```bash
-python -m src.daily_briefing --capital 50000
-```
-
----
-
-## 📊 Dashboard Preview
-
-Access at `http://localhost:5000` after running:
-```bash
-python -m src.dashboard --port 5000
-```
-
-**Dashboard Shows:**
-- Portfolio value with P&L chart
-- Today's trade cards with entry/stop/target
-- Open positions with live P&L
-- Trade history table
-- Performance metrics (Sharpe, Win Rate, Drawdown)
-- One-click trade logging
-
----
-
-## 🎯 Trading Strategy Rules
-
-### Entry Conditions (ALL must pass):
-- [ ] Ensemble confidence ≥ 70%
-- [ ] Daily chart uptrend (price > 20-day MA)
-- [ ] Weekly chart uptrend (for swing trades)
-- [ ] Sector in top 2 performing sectors
-- [ ] VIX < 35 (market not in crisis)
-- [ ] No earnings within 5 days
-- [ ] No correlated positions open
-
-### Position Sizing:
-```python
-Risk Amount = Capital × 2%
-Position Size = Risk Amount / (Entry - Stop Loss)
-Max Position = Capital × 10%  # Never more than 10% in one stock
-```
-
-### Exit Rules (ANY triggers):
-- [ ] Stop loss hit (2 × ATR)
-- [ ] Target hit (4 × ATR = 2:1 R:R)
-- [ ] Time stop (7 days, no movement)
-- [ ] Market regime changes to crisis (VIX > 35)
-
----
-
-## ⚠️ Important Disclaimers
-
-| Risk | Mitigation |
-|------|------------|
-| **Market Risk** | Position sizing, stop losses, VIX gates |
-| **Model Risk** | Ensemble approach, walk-forward validation |
-| **Execution Risk** | Limit orders, GTT, auto close |
-| **Psychological Risk** | Automated system, no manual intervention |
-
-**Legal Disclaimer:**
-- Past performance does not guarantee future results
-- This system is for **educational purposes only**
-- Always **paper trade for 30 days** before using real money
-- Start with **small capital** (₹10,000-₹50,000)
-- **Never risk more than 2%** of your capital on a single trade
-- The author is not a SEBI-registered advisor
-
----
-
-## 🗺️ Roadmap
-
-### Completed ✅
-- [x] Real-time data pipeline (Alpaca/NSE)
-- [x] Ensemble model (ARIMA + XGBoost + LSTM + Meta-Learner)
-- [x] 25+ technical features
-- [x] Institutional risk management (10+ rules)
-- [x] Telegram notifications
-- [x] Web dashboard
-- [x] Zerodha GTT integration
-- [x] Auto close at 3:45 PM
-- [x] Earnings guard
-- [x] Paper trading simulator
-
-### In Progress 🚧
-- [ ] Options flow integration
-- [ ] News sentiment (FinBERT)
-- [ ] Multi-timeframe confirmation
-- [ ] Sector rotation filter
-
-### Planned 📅
-- [ ] Mobile app (React Native)
-- [ ] Social copy trading
-- [ ] Broker API integrations (Zerodha, Groww, Angel One)
-- [ ] A/B testing framework for strategies
-- [ ] Cloud deployment (DigitalOcean, Railway)
-
----
-
-## 🤝 Contributing
-
-Contributions welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
-
----
-
-## 🙏 Acknowledgments
-
-- **Alpaca** for free paper trading API
-- **Zerodha** for GTT orders
-- **NSE** for corporate action data
-- **Open-source community** for amazing libraries (pandas, numpy, scikit-learn, tensorflow, xgboost, statsmodels)
-
-
-
----
-
-
-## 📊 Quick Reference Card
-
-```bash
-# Daily Commands
-python -m src.daily_briefing --capital 50000    # Morning scan
-python -m src.dashboard --port 5000             # Web dashboard
+# ── DAILY ────────────────────────────────────────────────────────
+python -m src.daily_briefing --capital 50000    # 9 AM scan
 python -m src.auto_close                        # 3:45 PM close
+python -m src.paper_trader                      # view portfolio
 
-# One-time Setup
-cp .env.example .env                            # Configure keys
-python -m src.paper_trader --paper --days 30    # Paper trade
+# ── WEEKLY ───────────────────────────────────────────────────────
+python -m src.pipeline --ticker RELIANCE --years 5   # retrain
+python scripts/compare_models.py                      # compare runs
+python -m src.drift_detector --ticker RELIANCE        # drift check
+mlflow ui                                             # view at localhost:5000
 
-# Testing
-python -c "from src.notify import _send; _send('Test')"  # Telegram test
-python -m src.pipeline --ticker RELIANCE --years 5       # Backtest
+# ── ANYTIME ──────────────────────────────────────────────────────
+open demo.html                                  # visual dashboard
+pytest tests/ -v                                # run all tests
 ```
 
+---
+
+*Built by Taaqib Masood · NSE/BSE India · For educational purposes only*
