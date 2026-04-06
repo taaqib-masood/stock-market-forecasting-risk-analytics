@@ -463,6 +463,10 @@
     <div class="tab" onclick="showTab('montecarlo',this)">🎲 Monte Carlo</div>
     <div class="tab" onclick="showTab('drift',this)">🔍 Drift</div>
     <div class="tab" onclick="showTab('features',this)">🧮 52 Features</div>
+    <div class="tab" onclick="showTab('fiidii',this)">🏦 FII/DII</div>
+    <div class="tab" onclick="showTab('india',this)">🇮🇳 India Signals</div>
+    <div class="tab" onclick="showTab('watchlist',this)">📋 Watchlist</div>
+    <div class="tab" onclick="showTab('zakat',this)">🌙 Zakat</div>
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════ -->
@@ -806,6 +810,306 @@
     </div>
   </div>
 
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <!-- TAB 10 — FII / DII FLOWS                                          -->
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <div id="tab-fiidii" class="section">
+    <div class="card p-4 mb-4 flex items-center gap-4 flex-wrap">
+      <div class="text-3xl">🏦</div>
+      <div class="flex-1">
+        <div class="font-bold text-base">Institutional Flow — Last 7 Days</div>
+        <div class="text-sm mt-1" style="color:var(--text2)">Net FII: <span style="color:#f87171;font-weight:700">-₹2,340 Cr</span> · Net DII: <span style="color:#34d399;font-weight:700">+₹3,870 Cr</span> · DII absorbing FII selling</div>
+      </div>
+      <button class="info-btn" onclick="showInfo('fii')" style="width:22px;height:22px;font-size:11px">i</button>
+    </div>
+    <!-- Stat cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+      <div class="bauhaus-card p-4" onmousemove="trackMouse(event,this)">
+        <div class="flex items-center gap-1 text-xs mb-2" style="color:var(--text2)">Today FII <button class="info-btn" onclick="showInfo('fii')">i</button></div>
+        <div class="metric-val" style="color:#f87171">-₹842 Cr</div>
+        <span class="badge-red text-xs px-2 py-0.5 rounded-full mt-1 inline-block">Selling</span>
+      </div>
+      <div class="bauhaus-card p-4" onmousemove="trackMouse(event,this)">
+        <div class="flex items-center gap-1 text-xs mb-2" style="color:var(--text2)">Today DII <button class="info-btn" onclick="showInfo('dii')">i</button></div>
+        <div class="metric-val" style="color:#34d399">+₹1,230 Cr</div>
+        <span class="badge-green text-xs px-2 py-0.5 rounded-full mt-1 inline-block">Buying ✓</span>
+      </div>
+      <div class="bauhaus-card p-4" onmousemove="trackMouse(event,this)">
+        <div class="flex items-center gap-1 text-xs mb-2" style="color:var(--text2)">Net Flow <button class="info-btn" onclick="showInfo('net_flow')">i</button></div>
+        <div class="metric-val" style="color:#60a5fa">+₹388 Cr</div>
+        <span class="badge-blue text-xs px-2 py-0.5 rounded-full mt-1 inline-block">Positive ✓</span>
+      </div>
+      <div class="bauhaus-card p-4" onmousemove="trackMouse(event,this)">
+        <div class="flex items-center gap-1 text-xs mb-2" style="color:var(--text2)">FII Streak <button class="info-btn" onclick="showInfo('fii_streak')">i</button></div>
+        <div class="metric-val" style="color:#fbbf24">3 days</div>
+        <span class="badge-yellow text-xs px-2 py-0.5 rounded-full mt-1 inline-block">Selling streak</span>
+      </div>
+    </div>
+    <!-- 7-day chart -->
+    <div class="card p-4 mb-4">
+      <div class="font-semibold text-sm mb-3">📊 7-Day FII vs DII Flows (₹ Crore)</div>
+      <canvas id="fiiChart" height="140"></canvas>
+    </div>
+    <!-- Historical context accordion -->
+    <div class="card p-0 overflow-hidden">
+      <div class="accordion-header" onclick="toggleAccordion('fiiContext',this)">
+        <div class="font-semibold text-sm">📖 How to Read FII/DII Data</div>
+        <div class="accordion-icon">▼</div>
+      </div>
+      <div class="accordion-body" id="fiiContext">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 pt-0 text-sm" style="color:var(--text2)">
+          <div class="p-3 rounded-xl" style="background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.18)">
+            <div style="color:#f87171;font-weight:700;margin-bottom:6px">⚠️ FII Selling &gt; 3 Days</div>
+            Usually signals caution. Watch if DII is absorbing the selling — if yes, market holds up. If DII also pulls back, prepare for a correction.
+          </div>
+          <div class="p-3 rounded-xl" style="background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.18)">
+            <div style="color:#34d399;font-weight:700;margin-bottom:6px">✅ DII &gt; FII Outflow</div>
+            Domestic institutions (mutual funds, LIC) absorbing foreign selling = strong floor. This is India's structural advantage over other EMs.
+          </div>
+          <div class="p-3 rounded-xl" style="background:rgba(96,165,250,.07);border:1px solid rgba(96,165,250,.18)">
+            <div style="color:#60a5fa;font-weight:700;margin-bottom:6px">💡 Combined Net Flow</div>
+            When FII + DII net is positive, money is entering markets. Sustained 5+ days of positive net = strong uptrend signal.
+          </div>
+          <div class="p-3 rounded-xl" style="background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.18)">
+            <div style="color:#a78bfa;font-weight:700;margin-bottom:6px">📅 F&amp;O Expiry Effect</div>
+            FII flows tend to be volatile in the week of NSE F&amp;O expiry (last Thursday). Don't over-react to single-day spikes around expiry.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <!-- TAB 11 — INDIA SIGNALS                                            -->
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <div id="tab-india" class="section">
+    <div class="card p-4 mb-4 flex items-center gap-4 flex-wrap">
+      <div class="text-3xl">🇮🇳</div>
+      <div class="flex-1">
+        <div class="font-bold text-base">India-Specific Market Signals</div>
+        <div class="text-sm mt-1" style="color:var(--text2)">India VIX · PCR · Delivery Volume · Advance/Decline — NSE proprietary data</div>
+      </div>
+    </div>
+    <!-- Stat grid -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+      <div class="bauhaus-card p-4" onmousemove="trackMouse(event,this)">
+        <div class="flex items-center gap-1 text-xs mb-2" style="color:var(--text2)">India VIX <button class="info-btn" onclick="showInfo('india_vix')">i</button></div>
+        <div class="metric-val" style="color:#34d399">13.8</div>
+        <span class="badge-green text-xs px-2 py-0.5 rounded-full mt-1 inline-block">Calm ✓</span>
+      </div>
+      <div class="bauhaus-card p-4" onmousemove="trackMouse(event,this)">
+        <div class="flex items-center gap-1 text-xs mb-2" style="color:var(--text2)">Put-Call Ratio <button class="info-btn" onclick="showInfo('pcr')">i</button></div>
+        <div class="metric-val" style="color:#60a5fa">0.92</div>
+        <span class="badge-blue text-xs px-2 py-0.5 rounded-full mt-1 inline-block">Neutral</span>
+      </div>
+      <div class="bauhaus-card p-4" onmousemove="trackMouse(event,this)">
+        <div class="flex items-center gap-1 text-xs mb-2" style="color:var(--text2)">Delivery Vol % <button class="info-btn" onclick="showInfo('delivery_vol')">i</button></div>
+        <div class="metric-val" style="color:#a78bfa">58%</div>
+        <span class="badge-purple text-xs px-2 py-0.5 rounded-full mt-1 inline-block">High Conviction</span>
+      </div>
+      <div class="bauhaus-card p-4" onmousemove="trackMouse(event,this)">
+        <div class="flex items-center gap-1 text-xs mb-2" style="color:var(--text2)">Advance/Decline <button class="info-btn" onclick="showInfo('advance_decline')">i</button></div>
+        <div class="metric-val" style="color:#34d399">1.42</div>
+        <span class="badge-green text-xs px-2 py-0.5 rounded-full mt-1 inline-block">Breadth Good ✓</span>
+      </div>
+    </div>
+    <!-- Options data accordion -->
+    <div class="card p-0 overflow-hidden mb-4">
+      <div class="accordion-header" onclick="toggleAccordion('optionsData',this)">
+        <div class="font-semibold text-sm">📊 Options Data — Max Pain &amp; IV Skew</div>
+        <div class="accordion-icon">▼</div>
+      </div>
+      <div class="accordion-body" id="optionsData">
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 p-4 pt-0">
+          <div class="p-3 rounded-xl" style="background:var(--surface2)">
+            <div class="flex items-center gap-1 text-xs mb-1" style="color:var(--text2)">Max Pain (Nifty) <button class="info-btn" onclick="showInfo('max_pain')">i</button></div>
+            <div style="color:#fbbf24;font-weight:800;font-size:1.4rem">₹22,900</div>
+            <span class="badge-yellow text-xs px-2 py-0.5 rounded-full mt-1 inline-block">53 pts below spot</span>
+          </div>
+          <div class="p-3 rounded-xl" style="background:var(--surface2)">
+            <div class="flex items-center gap-1 text-xs mb-1" style="color:var(--text2)">IV Skew <button class="info-btn" onclick="showInfo('iv_skew')">i</button></div>
+            <div style="color:#60a5fa;font-weight:800;font-size:1.4rem">+2.3%</div>
+            <span class="badge-blue text-xs px-2 py-0.5 rounded-full mt-1 inline-block">Calls pricier</span>
+          </div>
+          <div class="p-3 rounded-xl" style="background:var(--surface2)">
+            <div class="text-xs mb-1" style="color:var(--text2)">Expiry This Thursday</div>
+            <div style="color:#34d399;font-weight:800;font-size:1.4rem">3 days</div>
+            <span class="badge-green text-xs px-2 py-0.5 rounded-full mt-1 inline-block">F&amp;O Expiry</span>
+          </div>
+        </div>
+        <div class="p-4 pt-0 text-xs" style="color:var(--text2)">
+          <strong style="color:var(--text)">Interpretation:</strong> Spot (22,953) is above max pain (22,900) by 53 pts. Market may drift toward max pain by Thursday. Positive IV skew means options market expects upside — calls are in demand. Delivery volume 58% confirms genuine buying, not just intraday speculation.
+        </div>
+      </div>
+    </div>
+    <!-- NSE Shariah accordion -->
+    <div class="card p-0 overflow-hidden">
+      <div class="accordion-header" onclick="toggleAccordion('shariahCheck',this)">
+        <div class="font-semibold text-sm">☪️ NSE Shariah Compliance Check (AAOIFI)</div>
+        <div class="accordion-icon">▼</div>
+      </div>
+      <div class="accordion-body" id="shariahCheck">
+        <div class="p-4 pt-0 text-sm" style="color:var(--text2)">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+            <div class="p-3 rounded-xl" style="background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.18)">
+              <div style="color:#34d399;font-weight:700;margin-bottom:6px">✅ Nifty50 Shariah</div>
+              Screened by TASIS. Only pure-play halal businesses. Excludes banks, insurance, NBFCs, alcohol, tobacco.
+            </div>
+            <div class="p-3 rounded-xl" style="background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.18)">
+              <div style="color:#34d399;font-weight:700;margin-bottom:6px">✅ Nifty Shariah 25</div>
+              Stricter 25-stock subset. Max debt/assets 33%, interest income &lt;5% revenue. Reviewed quarterly by scholars.
+            </div>
+            <div class="p-3 rounded-xl" style="background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.18)">
+              <div style="color:#34d399;font-weight:700;margin-bottom:6px">✅ Nifty500 Shariah</div>
+              Broadest halal index — 500 screened NSE stocks. Used as our watchlist universe basis.
+            </div>
+          </div>
+          <div class="p-3 rounded-xl" style="background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.15)">
+            <strong style="color:var(--text)">AAOIFI Screening Criteria:</strong> (1) Debt/Assets &lt; 33% — avoids riba-heavy companies. (2) Interest income &lt; 5% of revenue — excludes banks/NBFCs. (3) Haram revenue &lt; 5% — excludes alcohol, tobacco, weapons, adult entertainment. (4) Accounts receivable &lt; 49% of assets — avoids interest-based receivables.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <!-- TAB 12 — WATCHLIST                                                -->
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <div id="tab-watchlist" class="section">
+    <div class="card p-4 mb-4 flex items-center gap-4 flex-wrap">
+      <div class="text-3xl">📋</div>
+      <div class="flex-1">
+        <div class="font-bold text-base">Halal Watchlist — 195 Stocks</div>
+        <div class="text-sm mt-1" style="color:var(--text2)">All screened for Shariah compliance · NSE India · Click any stock to focus</div>
+      </div>
+    </div>
+    <!-- Tier counts -->
+    <div class="grid grid-cols-3 gap-3 mb-4">
+      <div class="card p-4 text-center">
+        <div style="color:#34d399;font-weight:800;font-size:1.8rem">78</div>
+        <div class="text-xs mt-1" style="color:var(--text2)">Default Scan</div>
+        <div class="text-xs mt-0.5" style="color:var(--text3)">Nifty50 + Next50</div>
+      </div>
+      <div class="card beam-card p-4 text-center">
+        <div style="color:#60a5fa;font-weight:800;font-size:1.8rem">165</div>
+        <div class="text-xs mt-1" style="color:var(--text2)">Extended Scan</div>
+        <div class="text-xs mt-0.5" style="color:var(--text3)">+ MidCap + Thematic</div>
+      </div>
+      <div class="card p-4 text-center">
+        <div style="color:#a78bfa;font-weight:800;font-size:1.8rem">195</div>
+        <div class="text-xs mt-1" style="color:var(--text2)">Deep Scan</div>
+        <div class="text-xs mt-0.5" style="color:var(--text3)">+ SmallCap</div>
+      </div>
+    </div>
+    <!-- Sector filter -->
+    <div class="flex flex-wrap gap-2 mb-4">
+      <button onclick="filterWatchlist('all',this)" class="sector-btn active" style="font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid var(--border2);background:rgba(99,102,241,.18);color:var(--text);cursor:pointer">All Sectors</button>
+      <button onclick="filterWatchlist('IT',this)" class="sector-btn" style="font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer">💻 IT</button>
+      <button onclick="filterWatchlist('Pharma',this)" class="sector-btn" style="font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer">💊 Pharma</button>
+      <button onclick="filterWatchlist('Auto',this)" class="sector-btn" style="font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer">🚗 Auto</button>
+      <button onclick="filterWatchlist('Energy',this)" class="sector-btn" style="font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer">⚡ Energy</button>
+      <button onclick="filterWatchlist('FMCG',this)" class="sector-btn" style="font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer">🛒 FMCG</button>
+      <button onclick="filterWatchlist('Infra',this)" class="sector-btn" style="font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer">🏗 Infra</button>
+      <button onclick="filterWatchlist('GreenEnergy',this)" class="sector-btn" style="font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer">🌱 Green</button>
+    </div>
+    <!-- Search -->
+    <div class="mb-4">
+      <input id="watchlistSearch" oninput="filterWatchlistBySearch()" type="text" placeholder="🔍 Search ticker or company..." style="width:100%;padding:10px 14px;border-radius:12px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:13px;outline:none"/>
+    </div>
+    <!-- Stock pills grid -->
+    <div id="watchlistGrid" class="card p-4">
+      <div class="flex flex-wrap gap-2" id="pillContainer">
+        <!-- Pills generated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <!-- TAB 13 — ZAKAT CALCULATOR                                         -->
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <div id="tab-zakat" class="section">
+    <div class="card p-4 mb-4 flex items-center gap-4 flex-wrap">
+      <div class="text-3xl">🌙</div>
+      <div class="flex-1">
+        <div class="font-bold text-base">Zakat Calculator — Stock Portfolio</div>
+        <div class="text-sm mt-1" style="color:var(--text2)">Calculate your annual Zakat obligation on equity investments · AAOIFI method</div>
+      </div>
+      <button class="info-btn" onclick="showInfo('zakat_explained')" style="width:22px;height:22px;font-size:11px">i</button>
+    </div>
+    <!-- Calculator form -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div class="card p-5">
+        <h3 class="font-semibold text-sm mb-4">Enter Your Holdings (₹)</h3>
+        <div class="space-y-4 text-sm">
+          <div>
+            <label style="color:var(--text2);font-size:12px;display:block;margin-bottom:4px">Current Portfolio Value <button class="info-btn" onclick="showInfo('zakat_explained')">i</button></label>
+            <input id="z_portfolio" type="number" value="124300" oninput="calcZakat()" style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:14px;outline:none"/>
+          </div>
+          <div>
+            <label style="color:var(--text2);font-size:12px;display:block;margin-bottom:4px">Initial Investment (Cost Basis)</label>
+            <input id="z_cost" type="number" value="100000" oninput="calcZakat()" style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:14px;outline:none"/>
+          </div>
+          <div>
+            <label style="color:var(--text2);font-size:12px;display:block;margin-bottom:4px">Cash in Trading Account</label>
+            <input id="z_cash" type="number" value="15000" oninput="calcZakat()" style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:14px;outline:none"/>
+          </div>
+          <div>
+            <label style="color:var(--text2);font-size:12px;display:block;margin-bottom:4px">Gold Value (if any, ₹) <button class="info-btn" onclick="showInfo('nisab')">i</button></label>
+            <input id="z_gold" type="number" value="0" oninput="calcZakat()" style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:14px;outline:none"/>
+          </div>
+        </div>
+      </div>
+      <div class="card p-5">
+        <h3 class="font-semibold text-sm mb-4">Zakat Calculation Result</h3>
+        <div id="zakatResult" class="space-y-3">
+          <!-- Populated by calcZakat() -->
+        </div>
+      </div>
+    </div>
+    <!-- Scholarly opinions accordion -->
+    <div class="card p-0 overflow-hidden mb-4">
+      <div class="accordion-header" onclick="toggleAccordion('zakatOpinions',this)">
+        <div class="font-semibold text-sm">📚 Scholarly Opinions on Stock Zakat</div>
+        <div class="accordion-icon">▼</div>
+      </div>
+      <div class="accordion-body" id="zakatOpinions">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 pt-0 text-sm" style="color:var(--text2)">
+          <div class="p-3 rounded-xl" style="background:var(--surface2)">
+            <div style="color:#34d399;font-weight:700;margin-bottom:6px">Method 1 — On Market Value (Majority view)</div>
+            Pay 2.5% on the current market value of your entire portfolio if held for 1 lunar year (hawl). This is the more conservative and widely followed opinion.
+          </div>
+          <div class="p-3 rounded-xl" style="background:var(--surface2)">
+            <div style="color:#60a5fa;font-weight:700;margin-bottom:6px">Method 2 — On Gains Only (Minority view)</div>
+            Some scholars say pay 2.5% only on profits (capital gains), not the principal. This applies if you are a trader (buy/sell frequently) rather than a long-term investor.
+          </div>
+          <div class="p-3 rounded-xl" style="background:var(--surface2)">
+            <div style="color:#a78bfa;font-weight:700;margin-bottom:6px">Method 3 — Zakatable Assets Ratio</div>
+            For each company, calculate the proportion of Zakatable assets (cash + receivables) in their balance sheet. Apply 2.5% only to that proportion. Complex but most precise.
+          </div>
+          <div class="p-3 rounded-xl" style="background:var(--surface2)">
+            <div style="color:#fbbf24;font-weight:700;margin-bottom:6px">Our Recommendation</div>
+            Use Method 1 for simplicity. It is the opinion of AAOIFI and most contemporary scholars. Consult your local scholar if your circumstances are complex.
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Hawl accordion -->
+    <div class="card p-0 overflow-hidden">
+      <div class="accordion-header" onclick="toggleAccordion('hawlDetail',this)">
+        <div class="font-semibold text-sm">📅 Hawl (Lunar Year Condition) <button class="info-btn" onclick="showInfo('hawl')" style="width:18px;height:18px;font-size:10px">i</button></div>
+        <div class="accordion-icon">▼</div>
+      </div>
+      <div class="accordion-body" id="hawlDetail">
+        <div class="p-4 pt-0 text-sm" style="color:var(--text2)">
+          <p class="mb-3">Zakat is only due if your wealth has been <strong style="color:var(--text)">above the nisab threshold for a complete lunar year (354 days).</strong> If your portfolio dropped below nisab at any point during the year, the hawl resets — you start counting again from when it rises above nisab.</p>
+          <div class="p-3 rounded-xl" style="background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2)">
+            <strong style="color:var(--text)">Nisab in 2026:</strong> Silver nisab ≈ ₹45,000 (612.36g × ₹73.5/g). Gold nisab ≈ ₹5,85,000 (87.48g × ₹6,686/g). Most scholars use the silver nisab as it catches more people — and your portfolio value of ₹1,24,300 is well above it.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div><!-- /container -->
 
 <!-- ══════════════════════════════════════════════════════════════════════ -->
@@ -858,6 +1162,22 @@ const INFO = {
   feat_volatility:{ icon:'🌊', cat:'Feature Group', title:'Volatility Features', desc:'Volatility features help the AI understand how risky or uncertain the market currently is. High volatility = bigger price swings = higher risk. ATR is used to calculate where to place stop-losses. Bollinger Bands capture volatility cycles.', rule:'AI uses ATR to set stop-losses automatically: stop = entry price - (2 × ATR). This makes stops adaptive to current market conditions rather than fixed percentages.' },
   feat_volume:   { icon:'📊', cat:'Feature Group', title:'Volume Features', desc:'Volume features show whether price moves are backed by real buying/selling pressure. A price rise with high volume = strong conviction. A price rise with low volume = weak, likely to reverse. OBV tracks the cumulative flow of money.', rule:'<strong>Volume Z-Score above 2:</strong> Unusual volume — investigate why. <strong>MFI above 80:</strong> Overbought with high money flow. <strong>CMF positive and rising:</strong> Steady accumulation by smart money.' },
   feat_calendar: { icon:'📅', cat:'Feature Group', title:'Calendar Features', desc:'Markets behave differently at different times. NSE F&O (derivatives) expires every last Thursday of the month — creating predictable volatility patterns. Holiday proximity affects liquidity. Day-of-week patterns (Monday effect, etc.) are statistically real.', rule:'<strong>Days to Expiry below 3:</strong> F&O expiry approaching — may see higher volatility. <strong>Holiday Proximity = 1:</strong> Next day is a holiday — liquidity may be lower, consider smaller position.' },
+  // FII/DII entries
+  fii:           { icon:'🏦', cat:'Institutional Flow', title:'FII — Foreign Institutional Investors', desc:'FIIs are large overseas funds (Goldman Sachs, Morgan Stanley, SoftBank etc.) that invest in Indian markets. When FIIs buy, money floods in and markets rise. When they sell, markets can fall sharply. FII flows are reported daily by NSE/SEBI.', rule:'<strong>FII buying 3+ days:</strong> Strong upward momentum — consider going long. <strong>FII selling 3+ days:</strong> Headwind — wait for DII absorption confirmation before buying. <strong>Key driver:</strong> USD/INR and US interest rates.' },
+  dii:           { icon:'🏛️', cat:'Institutional Flow', title:'DII — Domestic Institutional Investors', desc:'DIIs are Indian institutions — mutual funds (SBI MF, HDFC MF), LIC, EPFO pension fund. DIIs are "countercyclical" — they tend to buy when FIIs sell (protecting the market floor). This is India\'s structural strength vs other emerging markets.', rule:'<strong>DII > FII outflow:</strong> Market likely to hold or recover — the floor is being built. <strong>Both FII and DII selling:</strong> Serious red flag — step aside and wait for clarity.' },
+  net_flow:      { icon:'💰', cat:'Institutional Flow', title:'Net Institutional Flow', desc:'The combined FII + DII net buying or selling for the day. When both are net buyers, markets surge. When FII sells but DII absorbs it, net flow can still be positive — indicating a healthy market structure.', rule:'<strong>Positive net flow 5+ days:</strong> Strong bull signal — markets being supported by institutions. <strong>Negative net flow:</strong> Cautious mode — wait for reversal confirmation before new entries.' },
+  fii_streak:    { icon:'📅', cat:'Institutional Flow', title:'FII Consecutive Streak', desc:'How many consecutive days FIIs have been buying or selling. A long selling streak (5+ days) indicates sustained foreign outflows and usually leads to Nifty underperformance. A sustained buying streak (5+ days) is a very strong bull signal.', rule:'<strong>Selling streak 1–3 days:</strong> Normal churn — DII likely absorbing. <strong>Selling streak 5+ days:</strong> Reduce equity exposure by 20–30%. <strong>Buying streak 5+ days:</strong> Add to positions — foreign conviction building.' },
+  // India Signals entries
+  india_vix:     { icon:'🇮🇳', cat:'India Volatility', title:'India VIX — NSE Fear Index', desc:'India VIX is NSE\'s own volatility index — calculated from Nifty options prices. Unlike CBOE VIX (which measures US markets), India VIX measures <em>Indian market</em> fear. It predicts how much Nifty might move in the next 30 days.', rule:'<strong>Below 15:</strong> Calm — good to invest. <strong>15–20:</strong> Mild concern. <strong>20–25:</strong> Elevated fear — reduce new positions. <strong>Above 25:</strong> High fear — move to cash or reduce by 30–50%.' },
+  pcr:           { icon:'📊', cat:'Options Sentiment', title:'PCR — Put-Call Ratio', desc:'Put-Call Ratio measures how many Put options (bets the market falls) are being bought vs. Call options (bets the market rises). A high PCR = more puts = market is fearful. Contrarians treat extreme PCR as a buy signal ("wall of worry").', rule:'<strong>PCR below 0.7:</strong> Overconfidence — market may correct soon. <strong>0.7–1.2:</strong> Neutral. <strong>Above 1.2:</strong> Fear peak — contrarian BUY signal (market may bounce). <strong>Current 0.92:</strong> Balanced — neutral signal.' },
+  delivery_vol:  { icon:'📦', cat:'Volume Quality', title:'Delivery Volume %', desc:'NSE unique metric: what percentage of a stock\'s traded volume resulted in actual delivery (real ownership transfer) vs intraday trading (buy and sell same day). High delivery% = real buyers taking positions. Low delivery% = mostly speculative noise.', rule:'<strong>Above 50%:</strong> High conviction buying — institutions and long-term investors are buying (RELIANCE at 58% ✓). <strong>Below 30%:</strong> Mostly intraday speculation — price move may not sustain. <strong>Spike to 70%+:</strong> Major accumulation event.' },
+  advance_decline:{ icon:'📈', cat:'Market Breadth', title:'Advance/Decline Ratio', desc:'How many NSE-listed stocks went up vs. how many went down today. A ratio above 1 = more stocks rising = broad-based rally. A ratio below 1 = more stocks falling = broad decline. Much more reliable than just looking at Nifty (which can be distorted by a few big stocks).', rule:'<strong>Above 1.5:</strong> Very broad rally — strong market. <strong>1.0–1.5:</strong> Mild positive breadth. <strong>Below 1.0:</strong> More stocks falling than rising — even if Nifty is up, be cautious (narrow leadership). <strong>Below 0.5:</strong> Broad selloff.' },
+  max_pain:      { icon:'💥', cat:'Options Theory', title:'Max Pain — F&O Expiry Price', desc:'Max Pain is the options strike price at which the maximum number of options contracts (both calls and puts) expire worthless — causing maximum financial pain to options buyers. Market makers and large institutions tend to pin price near max pain as expiry approaches.', rule:'<strong>Spot above Max Pain:</strong> Downward pressure expected as expiry approaches (market may drift down). <strong>Spot below Max Pain:</strong> Upward pressure expected. <strong>Within 50 pts of Max Pain:</strong> Expect range-bound trading near expiry.' },
+  iv_skew:       { icon:'📐', cat:'Options Theory', title:'IV Skew — Implied Volatility Skew', desc:'IV Skew compares the implied volatility of call options vs. put options at the same distance from current price. Positive skew (calls pricier) = options market expects upside. Negative skew (puts pricier) = market is hedging for downside.', rule:'<strong>Positive skew (calls pricier):</strong> Bullish sentiment in options market. <strong>Negative skew (puts pricier):</strong> Hedging/fear dominant — be cautious. <strong>Flat skew:</strong> No strong directional bias in options.' },
+  // Zakat entries
+  zakat_explained:{ icon:'🌙', cat:'Islamic Finance', title:'Zakat on Stocks — Overview', desc:'Zakat is the 3rd pillar of Islam — an annual obligatory purification of wealth. For stock portfolios, you calculate 2.5% on the zakatable value (usually current market value) if it has been above the nisab threshold for a full lunar year (hawl).', rule:'<strong>Simple rule:</strong> Portfolio value × 2.5% = Zakat due. For ₹1,24,300 portfolio → Zakat = ₹3,107.5/year. Pay on your Zakat date (same Islamic date each year). Most scholars recommend setting aside 2.5% annually from portfolio gains.' },
+  nisab:         { icon:'⚖️', cat:'Islamic Finance', title:'Nisab — Minimum Threshold', desc:'Nisab is the minimum amount of wealth you must have before Zakat becomes obligatory. It is set at the value of 87.48 grams of gold OR 612.36 grams of silver (whichever applies). Most scholars use the silver nisab as it is lower and more inclusive.', rule:'<strong>2026 estimates:</strong> Silver nisab ≈ ₹45,000. Gold nisab ≈ ₹5,85,000. <strong>If your total zakatable wealth (portfolio + cash + gold) is above the silver nisab:</strong> Zakat is due. Your portfolio of ₹1,24,300 is well above the silver nisab — Zakat applies.' },
+  hawl:          { icon:'📅', cat:'Islamic Finance', title:'Hawl — The Lunar Year Condition', desc:'Hawl means a complete Islamic lunar year (354 days) must pass with your wealth continuously above the nisab. If your portfolio drops below nisab at any point, the hawl resets. The clock starts again once wealth rises back above nisab.', rule:'<strong>Practical approach:</strong> Choose a consistent date (e.g., 1st Ramadan) as your annual Zakat date. Calculate and pay on that date every year. If your portfolio had a major crash below nisab during the year, consult a scholar about whether hawl was broken.' },
 };
 
 function showInfo(key) {
@@ -888,6 +1208,9 @@ function showTab(id, el) {
   if (el) el.classList.add('active');
   if (id === 'montecarlo') drawMCChart();
   if (id === 'sentiment') drawSentimentChart();
+  if (id === 'fiidii') drawFIIChart();
+  if (id === 'watchlist') renderWatchlist();
+  if (id === 'zakat') calcZakat();
 }
 
 /* ── ACCORDION ───────────────────────────────────────────────────────────── */
@@ -924,6 +1247,136 @@ function updateChartTheme(chart) {
 function trackMouse(e, card) {
   const r = card.getBoundingClientRect();
   card.style.setProperty('--rotation', Math.atan2(-(e.clientX - r.left - r.width/2), e.clientY - r.top - r.height/2) + 'rad');
+}
+
+/* ── FII/DII CHART ───────────────────────────────────────────────────────── */
+let fiiChart;
+function drawFIIChart() {
+  if (fiiChart) return;
+  const ctx = document.getElementById('fiiChart').getContext('2d');
+  const days = ['Mon','Tue','Wed','Thu','Fri','Mon','Tue'];
+  fiiChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: days,
+      datasets: [
+        { label: 'FII', data: [-1240, 820, -630, -1480, 340, -2100, -842],
+          backgroundColor: 'rgba(248,113,113,.75)', borderRadius: 5, borderSkipped: false },
+        { label: 'DII', data: [980, 1240, 1560, 2100, 640, 2840, 1230],
+          backgroundColor: 'rgba(52,211,153,.75)', borderRadius: 5, borderSkipped: false },
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } }, tooltip: { callbacks: { label: c => c.dataset.label + ': ₹' + Math.abs(c.parsed.y) + ' Cr' } } },
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#475569', font: { size: 11 } } },
+        y: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#475569', font: { size: 11 }, callback: v => '₹' + v + ' Cr' } }
+      }
+    }
+  });
+}
+
+/* ── WATCHLIST ────────────────────────────────────────────────────────────── */
+const WATCHLIST = {
+  'RELIANCE': 'Energy', 'TCS': 'IT', 'INFY': 'IT', 'WIPRO': 'IT', 'HCLTECH': 'IT',
+  'TECHM': 'IT', 'LTIM': 'IT', 'PERSISTENT': 'IT', 'COFORGE': 'IT', 'MPHASIS': 'IT',
+  'NIITTECH': 'IT', 'TATAELXSI': 'IT', 'CYIENT': 'IT', 'HAPPSTMNDS': 'IT', 'BIRLASOFT': 'IT',
+  'DRREDDY': 'Pharma', 'SUNPHARMA': 'Pharma', 'CIPLA': 'Pharma', 'DIVISLAB': 'Pharma',
+  'BIOCON': 'Pharma', 'AUROPHARMA': 'Pharma', 'LUPIN': 'Pharma', 'ALKEM': 'Pharma',
+  'TORNTPHARM': 'Pharma', 'IPCALAB': 'Pharma', 'NATCOPHARMA': 'Pharma', 'METROPOLIS': 'Pharma',
+  'MARUTI': 'Auto', 'TATAMOTORS': 'Auto', 'BAJAJ-AUTO': 'Auto', 'EICHERMOT': 'Auto',
+  'ASHOKLEY': 'Auto', 'TIINDIA': 'Auto', 'MOTHERSON': 'Auto', 'BOSCHLTD': 'Auto',
+  'ONGC': 'Energy', 'NTPC': 'Energy', 'POWERGRID': 'Energy', 'PETRONET': 'Energy',
+  'ADANIGREEN': 'GreenEnergy', 'TATAPOWER': 'GreenEnergy', 'SJVN': 'GreenEnergy',
+  'NHPC': 'GreenEnergy', 'CESC': 'GreenEnergy', 'TORNTPOWER': 'GreenEnergy',
+  'HINDUNILVR': 'FMCG', 'ITC': 'FMCG', 'NESTLEIND': 'FMCG', 'BRITANNIA': 'FMCG',
+  'DABUR': 'FMCG', 'MARICO': 'FMCG', 'EMAMILTD': 'FMCG', 'GODREJCP': 'FMCG',
+  'LARSEN': 'Infra', 'ABB': 'Infra', 'THERMAX': 'Infra', 'CUMMINSIND': 'Infra',
+  'KEC': 'Infra', 'KALPATPOWR': 'Infra', 'APLAPOLLO': 'Infra', 'MINDAIND': 'Infra',
+  'NMDC': 'Energy', 'MOIL': 'Energy', 'VEDANT': 'FMCG', 'BLUEDART': 'Infra',
+  'CLEAN': 'GreenEnergy', 'DEEPAKNTR': 'Pharma', 'ZYDUSLIFE': 'Pharma',
+  'PIIND': 'Pharma', 'SUVENPHAR': 'Pharma', 'GRANULES': 'Pharma', 'LALPATHLAB': 'Pharma',
+  'HDFCLIFE': 'FMCG', 'SBILIFE': 'FMCG', 'BAJAJFINSV': 'FMCG',
+  'ULTRACEMCO': 'Infra', 'AMBUJACEM': 'Infra', 'ACC': 'Infra', 'RAMCOCEM': 'Infra',
+  'SHREECEM': 'Infra', 'JKCEMENT': 'Infra', 'DALMIACERA': 'Infra',
+  'TITAN': 'FMCG', 'TRENT': 'FMCG', 'ABFRL': 'FMCG', 'PAGEIND': 'FMCG',
+};
+const SIGNALS = ['🟢','🟢','🟢','🟡','🟡','🔴','🟢','🟡','🟢','🟢'];
+let watchlistRendered = false;
+let activeFilter = 'all';
+
+function renderWatchlist() {
+  if (watchlistRendered) return;
+  watchlistRendered = true;
+  const container = document.getElementById('pillContainer');
+  let html = '';
+  Object.entries(WATCHLIST).forEach(([ticker, sector], i) => {
+    const sig = SIGNALS[i % SIGNALS.length];
+    const sigColor = sig === '🟢' ? '#34d399' : sig === '🟡' ? '#fbbf24' : '#f87171';
+    html += `<span class="watchlist-pill" data-sector="${sector}" data-ticker="${ticker}" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);font-size:12px;cursor:pointer;color:var(--text);margin-bottom:2px" onclick="this.style.borderColor='${sigColor}';this.style.background='rgba(99,102,241,.15)'">${sig} <strong>${ticker}</strong> <span style="color:var(--text3);font-size:10px">${sector}</span></span>`;
+  });
+  container.innerHTML = html;
+}
+
+function filterWatchlist(sector, btn) {
+  activeFilter = sector;
+  document.querySelectorAll('.sector-btn').forEach(b => {
+    b.style.background = 'transparent';
+    b.style.color = 'var(--text2)';
+    b.style.borderColor = 'var(--border)';
+  });
+  btn.style.background = 'rgba(99,102,241,.18)';
+  btn.style.color = 'var(--text)';
+  btn.style.borderColor = 'var(--border2)';
+  renderWatchlist();
+  document.querySelectorAll('.watchlist-pill').forEach(p => {
+    p.style.display = (sector === 'all' || p.dataset.sector === sector) ? 'inline-flex' : 'none';
+  });
+}
+
+function filterWatchlistBySearch() {
+  renderWatchlist();
+  const q = document.getElementById('watchlistSearch').value.toUpperCase();
+  document.querySelectorAll('.watchlist-pill').forEach(p => {
+    const match = p.dataset.ticker.includes(q) || p.dataset.sector.toUpperCase().includes(q);
+    p.style.display = match ? 'inline-flex' : 'none';
+  });
+}
+
+/* ── ZAKAT CALCULATOR ────────────────────────────────────────────────────── */
+function calcZakat() {
+  const portfolio = parseFloat(document.getElementById('z_portfolio').value) || 0;
+  const cost      = parseFloat(document.getElementById('z_cost').value) || 0;
+  const cash      = parseFloat(document.getElementById('z_cash').value) || 0;
+  const gold      = parseFloat(document.getElementById('z_gold').value) || 0;
+  const NISAB     = 45000; // Silver nisab 2026 approx
+  const RATE      = 0.025;
+  const total     = portfolio + cash + gold;
+  const zakat     = total * RATE;
+  const gain      = portfolio - cost;
+  const gainZakat = Math.max(gain, 0) * RATE;
+  const nisabMet  = total >= NISAB;
+  const el = document.getElementById('zakatResult');
+  el.innerHTML = `
+    <div class="p-3 rounded-xl mb-2" style="background:${nisabMet ? 'rgba(52,211,153,.08)' : 'rgba(248,113,113,.08)'};border:1px solid ${nisabMet ? 'rgba(52,211,153,.25)' : 'rgba(248,113,113,.25)'}">
+      <div style="font-size:12px;color:var(--text2);margin-bottom:4px">Nisab Check (Silver ~₹45,000)</div>
+      <div style="font-weight:800;font-size:1.1rem;color:${nisabMet ? '#34d399' : '#f87171'}">${nisabMet ? '✅ Zakat Applicable' : '❌ Below Nisab'}</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:2px">Total zakatable wealth: ₹${total.toLocaleString('en-IN')}</div>
+    </div>
+    <div class="p-3 rounded-xl mb-2" style="background:var(--surface2)">
+      <div style="font-size:12px;color:var(--text2);margin-bottom:4px">Method 1 — On Full Portfolio Value</div>
+      <div style="font-weight:800;font-size:1.4rem;color:#60a5fa">₹${zakat.toLocaleString('en-IN', {maximumFractionDigits:0})}</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:2px">2.5% × ₹${total.toLocaleString('en-IN')} (portfolio + cash + gold)</div>
+    </div>
+    <div class="p-3 rounded-xl mb-2" style="background:var(--surface2)">
+      <div style="font-size:12px;color:var(--text2);margin-bottom:4px">Method 2 — On Gains Only</div>
+      <div style="font-weight:800;font-size:1.4rem;color:#a78bfa">₹${gainZakat.toLocaleString('en-IN', {maximumFractionDigits:0})}</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:2px">2.5% × ₹${Math.max(gain,0).toLocaleString('en-IN')} profit (market value − cost)</div>
+    </div>
+    <div class="p-3 rounded-xl" style="background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.2)">
+      <div style="font-size:11px;color:#fbbf24;font-weight:600">📌 Recommendation: Use Method 1 (₹${zakat.toLocaleString('en-IN', {maximumFractionDigits:0})}) — majority scholarly opinion</div>
+    </div>`;
 }
 
 /* ── CHARTS ──────────────────────────────────────────────────────────────── */
