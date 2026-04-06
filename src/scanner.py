@@ -171,10 +171,37 @@ def _trade_card(ticker: str, s: dict, capital: float, max_risk_pct: float = 0.02
     }
 
 
+def _weekly_trend(ticker: str) -> str:
+    """
+    Returns 'UP', 'DOWN', or 'NEUTRAL' based on weekly chart.
+    UP   = price > weekly SMA10 AND weekly MACD histogram > 0
+    DOWN = price < weekly SMA10 AND weekly MACD histogram < 0
+    """
+    try:
+        with contextlib.redirect_stderr(io.StringIO()):
+            df = yf.download(nse(ticker), period="1y", interval="1wk",
+                             progress=False, auto_adjust=True)
+        if df.empty or len(df) < 12:
+            return "NEUTRAL"
+        df.columns = [c[0] if isinstance(c, tuple) else c for c in df.columns]
+        c = df["Close"].values.astype(float)
+        sma10 = np.mean(c[-10:])
+        macd  = _ema(c, 12) - _ema(c, 26)
+        sig   = _ema(c[-9:], 9) if len(c) >= 9 else 0
+        hist  = macd - sig
+        price = c[-1]
+        if price > sma10 and hist > 0:
+            return "UP"
+        elif price < sma10 and hist < 0:
+            return "DOWN"
+        return "NEUTRAL"
+    except Exception:
+        return "NEUTRAL"
+
+
 def _scan_one(ticker: str, capital: float) -> dict | None:
     """Fetch data and score a single ticker. Returns None on failure."""
     try:
-        import contextlib, io
         with contextlib.redirect_stderr(io.StringIO()):
             df = yf.download(nse(ticker), period="6mo", interval="1d",
                              progress=False, auto_adjust=True)
@@ -191,10 +218,19 @@ def _scan_one(ticker: str, capital: float) -> dict | None:
         )
 
         if s["direction"] == 0:
-            return None  # skip WAIT signals
+            return None
+
+        # ── Multi-timeframe: skip if weekly trend disagrees ───────────────
+        weekly = _weekly_trend(ticker)
+        if s["signal"] == "BUY" and weekly == "DOWN":
+            return None   # daily BUY but weekly DOWN → skip
+        if s["signal"] == "SELL" and weekly == "UP":
+            return None   # daily SELL but weekly UP → skip
 
         card = _trade_card(ticker, s, capital)
-        card["last_updated"] = datetime.now().strftime("%Y-%m-%d %H:%M")
+        card["last_updated"]  = datetime.now().strftime("%Y-%m-%d %H:%M")
+        card["weekly_trend"]  = weekly
+        card["mtf_confirmed"] = weekly in ("UP", "NEUTRAL")
         return card
 
     except Exception:
@@ -206,15 +242,27 @@ def scan(
     capital: float = 100_000,
     top_n: int = 5,
     workers: int = 8,
+    use_sector_rotation: bool = True,
+    use_backtest_filter: bool = True,
 ) -> list[dict]:
     """
-    Scan all tickers concurrently, return top_n ranked trade cards.
-    Ranked by: score (higher = more criteria met).
-    Only BUY signals returned (suitable for long-only retail trading).
+    Full scan pipeline:
+      1. Sector rotation  → only scan top 2 sectors
+      2. Multi-timeframe  → daily + weekly must agree
+      3. Backtest filter  → historical win rate >= 52%
+      4. Rank by score    → return top N
     """
     if tickers is None:
-        tickers = DEFAULT_SCAN
+        if use_sector_rotation:
+            from src.sector_rotation import rank_sectors, stocks_in_sectors
+            top_sectors = rank_sectors(top_n=2)
+            tickers = stocks_in_sectors(top_sectors)
+            print(f"  Top sectors: {', '.join(top_sectors)} "
+                  f"({len(tickers)} stocks)")
+        else:
+            tickers = DEFAULT_SCAN
 
+    # Stage 1: score + multi-timeframe
     results = []
     with ThreadPoolExecutor(max_workers=workers) as pool:
         futures = {pool.submit(_scan_one, t, capital): t for t in tickers}
@@ -222,6 +270,18 @@ def scan(
             card = fut.result()
             if card and card["signal"] == "BUY" and card["rr"] >= 2.0:
                 results.append(card)
+
+    if not results:
+        return []
+
+    # Stage 2: backtest filter
+    if use_backtest_filter:
+        from src.backtest_filter import filter_cards as bt_filter
+        passed, failed = bt_filter(results)
+        if failed:
+            print(f"  Backtest filter blocked: "
+                  f"{', '.join(c['ticker'] for c in failed)}")
+        results = passed
 
     results.sort(key=lambda x: x["score"], reverse=True)
     return results[:top_n]
