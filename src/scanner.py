@@ -15,7 +15,7 @@ import yfinance as yf
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 
-from src.watchlist import DEFAULT_SCAN, nse
+from src.watchlist import DEFAULT_SCAN, EXTENDED_SCAN, nse
 
 warnings.filterwarnings("ignore")
 
@@ -292,29 +292,34 @@ def scan(
             print(f"  Top sectors: {', '.join(top_sectors)} "
                   f"({len(tickers)} stocks)")
         else:
-            tickers = DEFAULT_SCAN
+            tickers = EXTENDED_SCAN
             top_sectors = []
     else:
         top_sectors = []
 
     # Halal: only BUY signals, no short selling ever
-    # In bear mode (TRENDING_DOWN) raise score threshold to 71
-    min_score = 71 if _bear_mode else 57
+    # In bear mode (TRENDING_DOWN) raise score threshold to 63
+    min_score = 63 if _bear_mode else 57
 
     # Stage 1: score + multi-timeframe
     results = []
+    near_misses = []
     with ThreadPoolExecutor(max_workers=workers) as pool:
         futures = {pool.submit(_scan_one, t, capital): t for t in tickers}
         for fut in as_completed(futures):
             card = fut.result()
-            if (card
-                    and card["signal"] == "BUY"   # halal: no short selling
-                    and card["rr"] >= 2.0
-                    and card["score"] >= min_score):
+            if not card or card["signal"] != "BUY":
+                continue
+            if card["rr"] >= 2.0 and card["score"] >= min_score:
                 results.append(card)
+            elif card["rr"] >= 1.5 and card["score"] >= (min_score - 10):
+                near_misses.append(card)
+
+    near_misses.sort(key=lambda x: x["score"], reverse=True)
 
     if not results:
-        return {"cards": [], "blocked": [], "regime": regime_info, "sectors": top_sectors}
+        return {"cards": [], "blocked": [], "regime": regime_info,
+                "sectors": top_sectors, "near_misses": near_misses[:5]}
 
     # Stage 2: backtest filter
     if use_backtest_filter:
@@ -337,10 +342,11 @@ def scan(
 
     results.sort(key=lambda x: x["score"], reverse=True)
     return {
-        "cards":   results[:top_n],
-        "blocked": all_blocked,
-        "regime":  regime_info,
-        "sectors": top_sectors,
+        "cards":       results[:top_n],
+        "blocked":     all_blocked,
+        "regime":      regime_info,
+        "sectors":     top_sectors,
+        "near_misses": near_misses[:5],
     }
 
 
