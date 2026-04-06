@@ -5,3 +5,7 @@ statsmodels
 tensorflow
 yfinance
 matplotlib
+lightgbm
+xgboost
+ta
+pmdarima
