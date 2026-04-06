@@ -1,4 +1,6 @@
+# **COMPLETE README.md - ONE SHOT COPY PASTE**
 
+```markdown
 # Stock Market Forecasting & Risk Analytics
 
 **Production-Ready Trading System** | ARIMA + XGBoost + LSTM Ensemble | Real-time Web Dashboard | Automated Risk Management
@@ -33,7 +35,7 @@ A **complete, production-ready trading system** that combines classical time-ser
 
 ## 🏗️ System Architecture
 
-
+```
 ┌─────────────────────────────────────────────────────────────────┐
 │                         DATA LAYER                               │
 │         Alpaca API → Real-time prices | NSE API → Actions        │
@@ -73,10 +75,9 @@ A **complete, production-ready trading system** that combines classical time-ser
 │  • Telegram alerts → Manual execution                            │
 │  • Auto close at 3:45 PM                                         │
 └─────────────────────────────────────────────────────────────────┘
-
+```
 
 ---
-
 
 ## 🚀 Quick Start
 
@@ -86,6 +87,7 @@ A **complete, production-ready trading system** that combines classical time-ser
 git clone https://github.com/taaqib-masood/stock-market-forecasting-risk-analytics.git
 cd stock-market-forecasting-risk-analytics
 pip install -r requirements.txt
+```
 
 ### 2. Configure Environment
 
@@ -115,18 +117,22 @@ python -m src.dashboard --port 5000
 
 ---
 
-1. Intelligent Signal Generation
-python
+## 📈 Features Deep Dive
+
+### 1. Intelligent Signal Generation
+
+```python
 # How signals are generated
 1. Fetch live data for 20+ stocks
 2. Calculate 25+ technical features
 3. Run through ensemble (ARIMA + XGBoost + LSTM)
 4. Meta-Learner outputs confidence score
 5. Only show signals with ≥70% confidence
+```
 
-   
-2. Institutional Risk Management
-python
+### 2. Institutional Risk Management
+
+```python
 # Risk rules applied to every signal
 - Max loss per trade: 2% of capital
 - Stop loss: 2 × ATR (dynamic, not fixed %)
@@ -135,6 +141,7 @@ python
 - Correlation: Skip if >0.7 with existing positions
 - Daily limit: Max 3 trades per day
 - Earnings: Block 5 days before/after
+```
 
 ### 3. Execution Options
 
@@ -398,14 +405,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 ---
 
-## 📄 License
-
-MIT License - see [LICENSE](LICENSE) file for details.
-
-Free for personal and commercial use. Attribution appreciated but not required.
-
----
-
 ## 🙏 Acknowledgments
 
 - **Alpaca** for free paper trading API
@@ -413,26 +412,10 @@ Free for personal and commercial use. Attribution appreciated but not required.
 - **NSE** for corporate action data
 - **Open-source community** for amazing libraries (pandas, numpy, scikit-learn, tensorflow, xgboost, statsmodels)
 
----
 
-## 📞 Contact & Support
-
-| Platform | Link |
-|----------|------|
-| **GitHub Issues** | [Create an issue](https://github.com/taaqib-masood/stock-market-forecasting-risk-analytics/issues) |
-| **Telegram** | [@TaaqibMasood](https://t.me/TaaqibMasood) |
-| **Email** | taaqib.masood@example.com |
 
 ---
 
-## ⭐ Star History
-
-If this project helps you:
-- ⭐ Star it on GitHub
-- 🔄 Fork it for your own use
-- 📢 Share it with others
-
----
 
 ## 📊 Quick Reference Card
 
@@ -451,55 +434,3 @@ python -c "from src.notify import _send; _send('Test')"  # Telegram test
 python -m src.pipeline --ticker RELIANCE --years 5       # Backtest
 ```
 
----
-
-**Built with ❤️ for Indian and US markets**
-
-*Last Updated: April 2026*
-*Version: 3.0.0*
-```
-
----
-
-## **HOW TO USE THIS:**
-
-1. **Copy the entire markdown above** (from `# Stock Market Forecasting...` to the end)
-
-2. **Save to your project:**
-```bash
-# Replace your old README
-cat > README.md << 'EOF'
-[PASTE THE ENTIRE README HERE]
-EOF
-
-# Verify
-head -20 README.md
-```
-
-3. **Commit to GitHub:**
-```bash
-git add README.md
-git commit -m "Complete README with full trading system documentation"
-git push origin main
-```
-
-4. **View on GitHub:**
-- Go to your repository
-- Refresh the page
-- Your new README will be displayed
-
----
-
-## **WHAT TO REPLACE BEFORE PUBLISHING:**
-
-| Placeholder | Replace With |
-|-------------|--------------|
-| `your_bot_token_here` | Your actual Telegram bot token |
-| `your_chat_id_here` | Your actual Telegram chat ID |
-| `your_key_here` | Your Alpaca API key |
-| `your_secret_here` | Your Alpaca secret key |
-| `taaqib.masood@example.com` | Your actual email |
-
----
-
-**This README is ready to copy, paste, and push!** 🚀
