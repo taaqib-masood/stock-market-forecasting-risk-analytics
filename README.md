@@ -7,6 +7,7 @@
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![TradingView](https://img.shields.io/badge/TradingView-Webhook-orange.svg)](https://www.tradingview.com/)
 [![Telegram](https://img.shields.io/badge/Telegram-Bot-blue.svg)](https://telegram.org/)
+[![Trading Pipeline](https://github.com/taaqib-masood/stock-market-forecasting-risk-analytics/actions/workflows/trading_pipeline.yml/badge.svg)](https://github.com/taaqib-masood/stock-market-forecasting-risk-analytics/actions/workflows/trading_pipeline.yml)
 
 ---
 

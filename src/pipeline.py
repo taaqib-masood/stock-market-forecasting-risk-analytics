@@ -19,18 +19,28 @@ from src.lstm_model import LSTMModel
 from src.ensemble import EnsembleModel
 from src.risk_manager import RiskManager, backtest_with_risk
 from src.metrics import summarise
+import src.mlflow_tracker as tracker
 
 warnings.filterwarnings("ignore")
 
 FEATURE_COLS = [
+    # Price returns
     "return_1d", "return_3d", "return_5d",
     "return_lag_1", "return_lag_2", "return_lag_3", "return_lag_5",
-    "price_vs_sma20", "price_vs_sma50", "sma5_vs_sma20",
-    "rsi_14", "rsi_7", "macd", "macd_signal", "macd_hist",
-    "roc_5", "roc_10",
-    "atr_pct", "volatility_20", "volatility_5", "bb_width", "bb_pct_b",
-    "volume_ratio",
-    "day_of_week", "month",
+    # Trend
+    "price_vs_sma20", "price_vs_sma50", "price_vs_sma200",
+    "sma5_vs_sma20", "golden_cross", "sma200_slope",
+    # Momentum
+    "rsi_14", "rsi_7", "rsi_21",
+    "macd", "macd_signal", "macd_hist",
+    "roc_5", "roc_10", "roc_20", "williams_r",
+    # Volatility
+    "atr_pct", "volatility_20", "volatility_10", "volatility_5",
+    "bb_width", "bb_pct_b",
+    # Volume
+    "volume_ratio", "volume_zscore", "obv", "mfi_14", "cmf",
+    # Calendar
+    "day_of_week", "month", "days_to_expiry", "holiday_proximity",
 ]
 
 MARKET_COLS = ["spy_return", "spy_above_sma50", "vix_close", "vix_regime"]
@@ -62,10 +72,18 @@ def run(ticker: str = "AAPL", years: int = 5, capital: float = 100_000,
     print(f"  Stock: {ticker} | History: {years}yr | Capital: ${capital:,.0f}")
     print(f"{'='*60}\n")
 
+    _mlflow_run = tracker.start_run(
+        ticker=ticker,
+        model_type="ensemble",
+        params={"years": years, "confidence_threshold": confidence_threshold, "use_lstm": use_lstm},
+    )
+    _mlflow_run.__enter__()
+
     # ── 1. Data & Features ────────────────────────────────────────────────────
     print("[1/5] Downloading data and engineering features...")
     raw = load_data(ticker, years)
     df = add_features(raw, fetch_context=True)
+    tracker.log_dataset_hash(df)
     feat_cols = get_feature_cols(df)
     X, y = df[feat_cols], df["target"]
     print(f"  Features: {len(feat_cols)}  |  Samples: {len(df)}")
@@ -95,6 +113,8 @@ def run(ticker: str = "AAPL", years: int = 5, capital: float = 100_000,
     tree_train_acc = (tree.predict(X_train) == y_train).mean()
     tree_test_acc  = (tree.predict(X_test)  == y_test).mean()
     print(f"  ✓ Tree  — train acc: {tree_train_acc:.2%}  test acc: {tree_test_acc:.2%}")
+    tracker.log_model_artifact(tree.model if hasattr(tree, "model") else tree, "tree_model")
+    tracker.log_feature_importance(tree.model if hasattr(tree, "model") else tree, feat_cols)
 
     # LSTM (optional — slow, skip by default for fast runs)
     if use_lstm:
@@ -188,6 +208,16 @@ def run(ticker: str = "AAPL", years: int = 5, capital: float = 100_000,
 │  Slippage (0.1%) + Commission    │ ${total_costs:<15.2f} │
 │  Avg Return / Trade              │ {summary['avg_return_per_trade_pct']:<15.4f}% │
 └──────────────────────────────────┴──────────────────┘""")
+        tracker.log_metrics({
+            "sharpe_ratio": summary["sharpe"],
+            "win_rate": summary["win_rate_pct"] / 100,
+            "profit_factor": summary["profit_factor"],
+            "max_drawdown": summary["max_drawdown_pct"] / 100,
+            "annual_return": summary["annual_return_pct"] / 100,
+            "total_trades": summary["total_trades"],
+            "accuracy": ensemble_acc,
+        })
+
         print(f"\n  Tree Feature Importance (top 10):")
         top10 = tree.feature_importance().head(10)
         for feat, imp in top10.items():
@@ -223,6 +253,7 @@ def run(ticker: str = "AAPL", years: int = 5, capital: float = 100_000,
         print(f"  Equity curve saved → {plot_path}")
 
     print("\n" + "="*60 + "\n")
+    _mlflow_run.__exit__(None, None, None)
     return trade_log
 
 
