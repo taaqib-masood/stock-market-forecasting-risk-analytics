@@ -129,7 +129,7 @@ def _call_groq(prompt: str, api_key: str) -> str:
         client = Groq(api_key=api_key)
         response = client.chat.completions.create(
             messages=[{"role": "user", "content": prompt}],
-            model="llama3-8b-8192",
+            model="llama-3.1-8b-instant",
             temperature=0.3,
             max_tokens=400,
         )
