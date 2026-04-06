@@ -9,3 +9,27 @@ lightgbm
 xgboost
 ta
 pmdarima
+
+# Upgrade 1: News Sentiment (FinBERT)
+transformers
+torch
+feedparser
+newspaper3k
+praw
+
+# Upgrade 2: Macro Indicators
+requests
+
+# Upgrade 3: AI Explanations
+shap
+groq
+langchain
+
+# Upgrade 5: MLflow Experiment Tracking
+mlflow
+
+# Upgrade 6: Drift Detection
+scipy
+
+# Testing
+pytest
