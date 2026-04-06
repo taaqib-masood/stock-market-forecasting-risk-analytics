@@ -67,8 +67,9 @@ def test_import_scanner():
 
 
 def test_import_notify():
-    from src.notify import send
-    assert callable(send)
+    from src.notify import _send, send_trade_cards
+    assert callable(_send)
+    assert callable(send_trade_cards)
 
 
 # ---------------------------------------------------------------------------
