@@ -73,7 +73,6 @@ text
 
 ### Installation
 
-```bash
 # Clone repository
 git clone https://github.com/taaqib-masood/stock-market-forecasting-risk-analytics.git
 cd stock-market-forecasting-risk-analytics
