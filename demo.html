@@ -1,664 +1,700 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Stock AI Dashboard — Halal Portfolio</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
   <style>
+    /* ── CSS Variables — Dark / Light ─────────────────────────────────────── */
+    :root, [data-theme="dark"] {
+      --bg:        #060912;
+      --bg2:       #0c1024;
+      --surface:   rgba(15,18,35,.88);
+      --surface2:  rgba(20,24,48,.7);
+      --border:    rgba(99,102,241,.18);
+      --border2:   rgba(99,102,241,.45);
+      --text:      #e2e8f0;
+      --text2:     #94a3b8;
+      --text3:     #475569;
+      --shadow:    rgba(0,0,0,.5);
+      --card-hover: rgba(99,102,241,.12);
+      --tip-bg:    #12152a;
+      --tip-border: rgba(99,102,241,.45);
+      --mesh1: rgba(99,102,241,.13);
+      --mesh2: rgba(167,139,250,.10);
+      --mesh3: rgba(16,185,129,.06);
+    }
+    [data-theme="light"] {
+      --bg:        #f1f5fb;
+      --bg2:       #e8edf8;
+      --surface:   rgba(255,255,255,.92);
+      --surface2:  rgba(241,245,251,.8);
+      --border:    rgba(99,102,241,.22);
+      --border2:   rgba(99,102,241,.55);
+      --text:      #0f172a;
+      --text2:     #475569;
+      --text3:     #94a3b8;
+      --shadow:    rgba(0,0,0,.12);
+      --card-hover: rgba(99,102,241,.07);
+      --tip-bg:    #ffffff;
+      --tip-border: rgba(99,102,241,.4);
+      --mesh1: rgba(99,102,241,.07);
+      --mesh2: rgba(167,139,250,.06);
+      --mesh3: rgba(16,185,129,.04);
+    }
+
     /* ── Base ─────────────────────────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; }
     body {
-      background: #060912;
-      color: #e2e8f0;
-      font-family: 'Inter', sans-serif;
-      min-height: 100vh;
-      overflow-x: hidden;
+      background: var(--bg); color: var(--text);
+      font-family: 'Inter', sans-serif; min-height: 100vh; overflow-x: hidden;
+      transition: background .3s, color .3s;
     }
 
-    /* ── Animated mesh background ─────────────────────────────────────────── */
+    /* ── Mesh background ──────────────────────────────────────────────────── */
     .bg-mesh {
       position: fixed; inset: 0; z-index: 0; pointer-events: none;
       background:
-        radial-gradient(ellipse 80% 50% at 20% 10%, rgba(99,102,241,.12) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(167,139,250,.10) 0%, transparent 60%),
-        radial-gradient(ellipse 40% 60% at 60% 30%, rgba(16,185,129,.06) 0%, transparent 60%);
-      animation: mesh-drift 20s ease-in-out infinite alternate;
+        radial-gradient(ellipse 80% 50% at 20% 10%, var(--mesh1) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 80%, var(--mesh2) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 60% at 60% 30%, var(--mesh3) 0%, transparent 60%);
+      animation: mesh-drift 22s ease-in-out infinite alternate;
     }
     @keyframes mesh-drift {
-      0%   { transform: scale(1) rotate(0deg); }
-      100% { transform: scale(1.05) rotate(1deg); }
+      from { transform: scale(1) rotate(0deg); }
+      to   { transform: scale(1.06) rotate(1.2deg); }
     }
 
     /* ── Cards ────────────────────────────────────────────────────────────── */
     .card {
-      background: rgba(15,18,35,.85);
-      border: 1px solid rgba(99,102,241,.18);
-      border-radius: 16px;
-      backdrop-filter: blur(12px);
-      position: relative;
-      overflow: hidden;
-      transition: box-shadow .3s, border-color .3s;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; backdrop-filter: blur(14px);
+      position: relative; overflow: visible;
+      transition: box-shadow .25s, border-color .25s;
     }
-    .card:hover { border-color: rgba(99,102,241,.45); box-shadow: 0 0 32px rgba(99,102,241,.12); }
+    .card:hover { border-color: var(--border2); box-shadow: 0 0 28px var(--card-hover); }
 
-    /* ── Border Beam (CSS-only, adapted from MagicUI) ─────────────────────── */
+    /* ── Border Beam ──────────────────────────────────────────────────────── */
     .beam-card { overflow: hidden; }
     .beam-card::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      padding: 1.5px;
-      background: conic-gradient(from var(--beam-angle, 0deg),
-        transparent 0%, #6366f1 30%, #a78bfa 50%, transparent 70%);
+      content:''; position:absolute; inset:0; border-radius:inherit; padding:1.5px;
+      background: conic-gradient(from var(--beam-angle,0deg),
+        transparent 0%,#6366f1 30%,#a78bfa 50%,transparent 70%);
       -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      animation: spin-beam 4s linear infinite;
-      pointer-events: none;
+      -webkit-mask-composite: xor; mask-composite: exclude;
+      animation: spin-beam 4s linear infinite; pointer-events: none;
     }
-    @keyframes spin-beam {
-      to { --beam-angle: 360deg; }
-    }
-    @property --beam-angle {
-      syntax: '<angle>'; initial-value: 0deg; inherits: false;
-    }
+    @keyframes spin-beam { to { --beam-angle: 360deg; } }
+    @property --beam-angle { syntax:'<angle>'; initial-value:0deg; inherits:false; }
 
     /* ── Bauhaus mouse-track border ───────────────────────────────────────── */
     .bauhaus-card {
       --rotation: 4.2rad;
       background-image:
-        linear-gradient(#0f1223, #0f1223),
-        linear-gradient(calc(var(--rotation)), #6366f1 0, #0f1223 30%, transparent 80%);
-      background-origin: border-box;
-      background-clip: padding-box, border-box;
-      border: 1.5px solid transparent;
-      border-radius: 16px;
+        linear-gradient(var(--surface), var(--surface)),
+        linear-gradient(calc(var(--rotation)), #6366f1 0, var(--bg) 30%, transparent 80%);
+      background-origin: border-box; background-clip: padding-box, border-box;
+      border: 1.5px solid transparent; border-radius: 16px;
+    }
+
+    /* ── "Today" card ─────────────────────────────────────────────────────── */
+    .today-card {
+      background: linear-gradient(135deg,rgba(16,36,12,.9) 0%,rgba(5,46,22,.9) 100%);
+      border: 1.5px solid #059669; border-radius: 20px; position: relative; overflow: hidden;
+    }
+    [data-theme="light"] .today-card {
+      background: linear-gradient(135deg,#f0fdf4 0%,#dcfce7 100%);
+      border-color: #16a34a;
+    }
+    .today-card::before {
+      content:''; position:absolute; top:-60px; right:-60px;
+      width:200px; height:200px; border-radius:50%;
+      background: radial-gradient(circle, rgba(52,211,153,.18) 0%, transparent 70%);
+      pointer-events: none;
     }
 
     /* ── Tab nav ──────────────────────────────────────────────────────────── */
-    .tab-nav { background: rgba(15,18,35,.7); border: 1px solid rgba(99,102,241,.15); border-radius: 14px; padding: 6px; backdrop-filter: blur(8px); }
-    .tab {
-      cursor: pointer; padding: 8px 16px; border-radius: 10px; font-size: 12.5px;
-      font-weight: 600; transition: all .2s; white-space: nowrap; color: #94a3b8;
+    .tab-nav {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 5px; backdrop-filter: blur(8px);
     }
-    .tab.active { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; box-shadow: 0 4px 14px rgba(99,102,241,.4); }
-    .tab:not(.active):hover { background: rgba(99,102,241,.12); color: #c4b5fd; }
+    .tab {
+      cursor:pointer; padding:7px 15px; border-radius:10px; font-size:12px;
+      font-weight:600; transition:all .2s; white-space:nowrap; color:var(--text2);
+    }
+    .tab.active { background: linear-gradient(135deg,#6366f1,#8b5cf6); color:#fff; box-shadow:0 4px 12px rgba(99,102,241,.35); }
+    .tab:not(.active):hover { background: rgba(99,102,241,.1); color:#818cf8; }
+
+    /* ── Sections ─────────────────────────────────────────────────────────── */
     .section { display:none; }
-    .section.active { display:block; animation: fade-in-up .35s ease both; }
-    @keyframes fade-in-up {
-      from { opacity:0; transform:translateY(14px); }
+    .section.active { display:block; animation: slide-in .3s cubic-bezier(.4,0,.2,1) both; }
+    @keyframes slide-in {
+      from { opacity:0; transform:translateY(12px); }
       to   { opacity:1; transform:translateY(0); }
     }
 
     /* ── Badges ───────────────────────────────────────────────────────────── */
-    .badge-green  { background:#0a2e1d; color:#34d399; border:1px solid #064e3b; }
+    .badge-green  { background:#052e16; color:#34d399; border:1px solid #065f46; }
     .badge-red    { background:#2d0f0f; color:#f87171; border:1px solid #7f1d1d; }
     .badge-yellow { background:#271c00; color:#fbbf24; border:1px solid #78350f; }
     .badge-blue   { background:#0a1d3d; color:#60a5fa; border:1px solid #1e3a5f; }
     .badge-purple { background:#18094a; color:#a78bfa; border:1px solid #4c1d95; }
-    .badge-orange { background:#2d1200; color:#fb923c; border:1px solid #92400e; }
+    [data-theme="light"] .badge-green  { background:#dcfce7; color:#15803d; border-color:#86efac; }
+    [data-theme="light"] .badge-red    { background:#fef2f2; color:#dc2626; border-color:#fca5a5; }
+    [data-theme="light"] .badge-yellow { background:#fefce8; color:#ca8a04; border-color:#fde047; }
+    [data-theme="light"] .badge-blue   { background:#eff6ff; color:#2563eb; border-color:#93c5fd; }
+    [data-theme="light"] .badge-purple { background:#faf5ff; color:#7c3aed; border-color:#c4b5fd; }
 
-    /* ── Metric values ────────────────────────────────────────────────────── */
-    .metric-val { font-size: 1.75rem; font-weight: 800; line-height: 1.1; }
-    .gradient-text { background: linear-gradient(90deg,#818cf8,#a78bfa,#c084fc); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    /* ── Metrics ──────────────────────────────────────────────────────────── */
+    .metric-val { font-size:1.7rem; font-weight:800; line-height:1.1; }
+    .gradient-text {
+      background:linear-gradient(90deg,#818cf8,#a78bfa,#c084fc);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
 
     /* ── Progress ─────────────────────────────────────────────────────────── */
-    .progress { background: rgba(45,49,72,.6); border-radius: 99px; overflow: hidden; height: 6px; }
-    .progress-fill { height: 6px; border-radius: 99px; transition: width 1.2s cubic-bezier(.4,0,.2,1); }
+    .progress { background:rgba(45,49,72,.5); border-radius:99px; overflow:hidden; height:5px; }
+    .progress-fill { height:5px; border-radius:99px; transition:width 1.3s cubic-bezier(.4,0,.2,1); }
+    [data-theme="light"] .progress { background:rgba(99,102,241,.12); }
 
     /* ── Table ────────────────────────────────────────────────────────────── */
-    table { border-collapse: collapse; width: 100%; }
-    th { background: rgba(12,14,25,.8); color: #64748b; font-size: 10.5px; text-transform: uppercase; letter-spacing:.06em; padding:10px 14px; text-align:left; }
-    td { padding: 10px 14px; border-top: 1px solid rgba(45,49,72,.5); font-size: 12.5px; }
-    tr:hover td { background: rgba(30,34,60,.5); }
+    table { border-collapse:collapse; width:100%; }
+    th { background:var(--surface2); color:var(--text3); font-size:10px; text-transform:uppercase; letter-spacing:.07em; padding:10px 14px; text-align:left; }
+    td { padding:10px 14px; border-top:1px solid var(--border); font-size:12px; color:var(--text); }
+    tr:hover td { background:var(--surface2); }
 
-    /* ── Info tooltip "ⓘ" ────────────────────────────────────────────────── */
-    .info-wrap { position: relative; display: inline-flex; align-items: center; }
+    /* ── INFO SYSTEM ──────────────────────────────────────────────────────── */
+    /* The ⓘ button */
     .info-btn {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 16px; height: 16px; border-radius: 50%;
-      background: rgba(99,102,241,.18); border: 1px solid rgba(99,102,241,.35);
-      color: #818cf8; font-size: 9px; font-weight: 700; cursor: help;
-      margin-left: 5px; flex-shrink: 0; transition: background .2s;
-      line-height: 1;
+      display:inline-flex; align-items:center; justify-content:center;
+      width:18px; height:18px; border-radius:50%;
+      background:rgba(99,102,241,.15); border:1.5px solid rgba(99,102,241,.4);
+      color:#818cf8; font-size:10px; font-weight:700;
+      cursor:pointer; margin-left:5px; flex-shrink:0;
+      transition:background .2s, transform .2s, box-shadow .2s;
+      font-style:normal; line-height:1; vertical-align:middle;
+      position:relative; z-index:1; user-select:none;
     }
-    .info-btn:hover { background: rgba(99,102,241,.35); }
-    .info-tip {
-      position: absolute; left: 50%; bottom: calc(100% + 8px);
-      transform: translateX(-50%);
-      background: #12152a; border: 1px solid rgba(99,102,241,.4);
-      color: #cbd5e1; font-size: 11.5px; line-height: 1.5; font-weight: 400;
-      padding: 10px 14px; border-radius: 10px; width: 240px; z-index: 999;
-      box-shadow: 0 8px 24px rgba(0,0,0,.5);
-      opacity: 0; pointer-events: none;
-      transition: opacity .18s;
+    .info-btn:hover {
+      background:rgba(99,102,241,.3); transform:scale(1.15);
+      box-shadow:0 0 12px rgba(99,102,241,.35);
     }
-    .info-tip::after {
-      content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
-      border: 6px solid transparent; border-top-color: rgba(99,102,241,.4);
+    .info-btn.active {
+      background:#6366f1; color:#fff; border-color:#6366f1;
+      box-shadow:0 0 18px rgba(99,102,241,.5);
     }
-    .info-wrap:hover .info-tip { opacity: 1; pointer-events: auto; }
+
+    /* The floating info card */
+    .info-card-overlay {
+      display:none; position:fixed; inset:0; z-index:9000;
+      background:rgba(0,0,0,.4); backdrop-filter:blur(4px);
+      align-items:center; justify-content:center; padding:20px;
+    }
+    .info-card-overlay.open { display:flex; animation:fade-bg .2s ease both; }
+    @keyframes fade-bg { from{opacity:0} to{opacity:1} }
+
+    .info-card {
+      background:var(--tip-bg); border:1.5px solid var(--tip-border);
+      border-radius:20px; max-width:440px; width:100%;
+      box-shadow:0 24px 60px rgba(0,0,0,.5);
+      animation:card-pop .25s cubic-bezier(.34,1.56,.64,1) both;
+      overflow:hidden;
+    }
+    @keyframes card-pop {
+      from { opacity:0; transform:scale(.88) translateY(16px); }
+      to   { opacity:1; transform:scale(1) translateY(0); }
+    }
+    .info-card-header {
+      background:linear-gradient(135deg,rgba(99,102,241,.18),rgba(139,92,246,.12));
+      padding:20px 24px 16px; border-bottom:1px solid var(--border);
+    }
+    .info-card-header .icon { font-size:28px; margin-bottom:8px; }
+    .info-card-header h3 { font-size:16px; font-weight:700; color:var(--text); margin:0 0 4px; }
+    .info-card-header .subtitle { font-size:11px; color:var(--text2); font-weight:500; text-transform:uppercase; letter-spacing:.06em; }
+    .info-card-body { padding:20px 24px; }
+    .info-card-body p { font-size:13.5px; line-height:1.65; color:var(--text2); margin:0 0 14px; }
+    .info-card-body p:last-child { margin-bottom:0; }
+    .info-card-rule {
+      background:rgba(99,102,241,.08); border:1px solid rgba(99,102,241,.2);
+      border-radius:10px; padding:10px 14px; margin-top:12px;
+      font-size:12px; color:#818cf8; line-height:1.5;
+    }
+    .info-card-rule strong { color:#a78bfa; }
+    .info-card-close {
+      position:absolute; top:16px; right:16px;
+      width:28px; height:28px; border-radius:50%;
+      background:rgba(255,255,255,.08); border:none;
+      color:var(--text2); cursor:pointer; font-size:14px;
+      display:flex; align-items:center; justify-content:center;
+      transition:background .15s;
+    }
+    .info-card-close:hover { background:rgba(255,255,255,.16); }
+
+    /* ── Accordion / Progressive Disclosure ───────────────────────────────── */
+    .accordion-header {
+      display:flex; align-items:center; justify-content:space-between;
+      cursor:pointer; padding:14px 18px;
+      border-radius:12px; transition:background .2s;
+      user-select:none;
+    }
+    .accordion-header:hover { background:var(--surface2); }
+    .accordion-icon {
+      width:22px; height:22px; display:flex; align-items:center; justify-content:center;
+      border-radius:50%; background:rgba(99,102,241,.15);
+      color:#818cf8; font-size:11px; flex-shrink:0;
+      transition:transform .3s cubic-bezier(.4,0,.2,1);
+    }
+    .accordion-body {
+      overflow:hidden; max-height:0;
+      transition:max-height .4s cubic-bezier(.4,0,.2,1), opacity .3s;
+      opacity:0;
+    }
+    .accordion-body.open { max-height:1200px; opacity:1; }
+    .accordion-icon.open { transform:rotate(180deg); background:rgba(99,102,241,.3); }
+
+    /* ── Dark/Light toggle ────────────────────────────────────────────────── */
+    .theme-toggle {
+      display:flex; align-items:center; gap:6px; cursor:pointer;
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:99px; padding:5px 12px; font-size:12px; color:var(--text2);
+      transition:all .2s;
+    }
+    .theme-toggle:hover { border-color:var(--border2); color:var(--text); }
+    .toggle-knob {
+      width:32px; height:18px; background:rgba(99,102,241,.25); border-radius:99px;
+      position:relative; transition:background .3s;
+    }
+    .toggle-knob::after {
+      content:''; position:absolute; top:2px; left:2px;
+      width:14px; height:14px; border-radius:50%; background:#818cf8;
+      transition:transform .3s; font-size:9px;
+    }
+    [data-theme="light"] .toggle-knob { background:rgba(99,102,241,.5); }
+    [data-theme="light"] .toggle-knob::after { transform:translateX(14px); background:#6366f1; }
+
+    /* ── Live dot ─────────────────────────────────────────────────────────── */
+    .live-dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:#34d399; animation:live-pulse 1.4s ease-in-out infinite; }
+    @keyframes live-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,.4)} 50%{box-shadow:0 0 0 6px rgba(52,211,153,0)} }
+
+    /* ── Glow divider ─────────────────────────────────────────────────────── */
+    .glow-divider { height:1px; background:linear-gradient(90deg,transparent,var(--border2),transparent); margin:18px 0; }
+
+    /* ── Feature pills ────────────────────────────────────────────────────── */
+    .feat-pill {
+      background:rgba(99,102,241,.1); border:1px solid rgba(99,102,241,.22);
+      color:#a5b4fc; border-radius:6px; padding:3px 9px;
+      font-size:11px; font-weight:500; display:inline-block; margin:2px;
+    }
+    [data-theme="light"] .feat-pill { background:rgba(99,102,241,.07); color:#6366f1; }
+
+    /* ── Signal colours ───────────────────────────────────────────────────── */
+    .signal-buy  { background:linear-gradient(135deg,rgba(5,46,22,.9),rgba(10,46,29,.9)); border:1px solid #059669; }
+    .signal-sell { background:linear-gradient(135deg,rgba(45,15,15,.9),rgba(59,15,15,.9)); border:1px solid #dc2626; }
+    [data-theme="light"] .signal-buy  { background:linear-gradient(135deg,#f0fdf4,#dcfce7); border-color:#16a34a; }
+    [data-theme="light"] .signal-sell { background:linear-gradient(135deg,#fff1f2,#ffe4e6); border-color:#dc2626; }
+
+    /* ── Drift colours ────────────────────────────────────────────────────── */
+    .drift-ok  { color:#34d399; } .drift-warn { color:#fbbf24; } .drift-bad { color:#f87171; }
 
     /* ── SHAP bars ────────────────────────────────────────────────────────── */
-    .shap-bar { height: 14px; border-radius: 4px; transition: width .8s ease; }
-
-    /* ── Number counter ───────────────────────────────────────────────────── */
-    @keyframes count-up { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
-    .count-anim { animation: count-up .5s ease both; }
-
-    /* ── Glow line divider ────────────────────────────────────────────────── */
-    .glow-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(99,102,241,.5), transparent); margin: 20px 0; }
+    .shap-row { display:flex; align-items:center; gap:8px; }
+    .shap-label { width:110px; flex-shrink:0; font-size:11px; color:var(--text2); }
+    .shap-track { flex:1; background:rgba(99,102,241,.08); border-radius:4px; height:12px; overflow:hidden; }
+    .shap-fill  { height:12px; border-radius:4px; transition:width .9s ease; }
 
     /* ── Scrollbar ────────────────────────────────────────────────────────── */
-    ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #060912; } ::-webkit-scrollbar-thumb { background: #2d3148; border-radius: 3px; }
+    ::-webkit-scrollbar { width:5px; } ::-webkit-scrollbar-track { background:var(--bg); } ::-webkit-scrollbar-thumb { background:rgba(99,102,241,.25); border-radius:3px; }
 
-    /* ── Feature pill ─────────────────────────────────────────────────────── */
-    .feat-pill { background: rgba(99,102,241,.1); border: 1px solid rgba(99,102,241,.25); color: #a5b4fc; border-radius: 6px; padding: 3px 9px; font-size: 11px; font-weight: 500; display: inline-block; margin: 2px; }
+    /* ── Number count-up animation ────────────────────────────────────────── */
+    @keyframes count-up { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
+    .count-anim { animation:count-up .45s ease both; }
 
-    /* ── Signal card ──────────────────────────────────────────────────────── */
-    .signal-buy  { background: linear-gradient(135deg, #052e16 0%, #0a2e1d 100%); border: 1px solid #059669; }
-    .signal-sell { background: linear-gradient(135deg, #2d0f0f 0%, #3b0f0f 100%); border: 1px solid #dc2626; }
-    .signal-hold { background: linear-gradient(135deg, #1c1500 0%, #271c00 100%); border: 1px solid #d97706; }
-
-    /* ── Drift gauge ──────────────────────────────────────────────────────── */
-    .drift-ok   { color: #34d399; }
-    .drift-warn { color: #fbbf24; }
-    .drift-bad  { color: #f87171; }
-
-    /* Live dot pulse */
-    .live-dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:#34d399; animation: live-pulse 1.4s ease-in-out infinite; }
-    @keyframes live-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,.5)} 50%{box-shadow:0 0 0 6px rgba(52,211,153,0)} }
+    /* ── Today action pill ────────────────────────────────────────────────── */
+    .action-pill {
+      display:inline-flex; align-items:center; gap:8px;
+      background:rgba(52,211,153,.12); border:1px solid rgba(52,211,153,.35);
+      border-radius:99px; padding:5px 16px; font-size:12px; font-weight:600; color:#34d399;
+    }
   </style>
 </head>
 <body>
 <div class="bg-mesh"></div>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<!-- INFO CARD OVERLAY                                                      -->
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<div class="info-card-overlay" id="infoOverlay" onclick="closeInfo(event)">
+  <div class="info-card" id="infoCard" style="position:relative">
+    <button class="info-card-close" onclick="closeInfoCard()">✕</button>
+    <div class="info-card-header">
+      <div class="icon" id="infoIcon">📊</div>
+      <div class="subtitle" id="infoCategory">Indicator</div>
+      <h3 id="infoTitle">Term</h3>
+    </div>
+    <div class="info-card-body">
+      <p id="infoDesc">Description</p>
+      <div class="info-card-rule" id="infoRule"></div>
+    </div>
+  </div>
+</div>
+
 <div class="relative z-10 max-w-7xl mx-auto px-4 py-6">
 
   <!-- ── Header ─────────────────────────────────────────────────────────── -->
-  <div class="flex items-start justify-between mb-8 gap-4 flex-wrap">
+  <div class="flex items-start justify-between mb-6 gap-4 flex-wrap">
     <div>
       <div class="flex items-center gap-2 mb-1">
         <span class="text-2xl">📈</span>
         <h1 class="text-2xl font-extrabold gradient-text tracking-tight">Stock AI Dashboard</h1>
       </div>
-      <p class="text-slate-500 text-sm">Halal Portfolio · NSE India · Powered by FinBERT + LightGBM + LSTM</p>
+      <p style="color:var(--text2)" class="text-sm">Halal Portfolio · NSE India · FinBERT + LightGBM + LSTM Ensemble</p>
     </div>
-    <div class="flex gap-3 items-center flex-wrap">
+    <div class="flex gap-2 items-center flex-wrap">
+      <!-- Theme toggle -->
+      <div class="theme-toggle" onclick="toggleTheme()">
+        <span id="themeIcon">🌙</span>
+        <div class="toggle-knob"></div>
+        <span id="themeLabel">Dark</span>
+      </div>
       <div class="card px-3 py-2 flex items-center gap-2 text-sm">
         <span class="live-dot"></span>
-        <span class="text-emerald-400 font-semibold">Live</span>
-        <span class="text-slate-500 text-xs">·</span>
-        <span class="text-slate-400 text-xs">RELIANCE · NSE</span>
+        <span style="color:#34d399" class="font-semibold">Live</span>
+        <span style="color:var(--text3)">·</span>
+        <span style="color:var(--text2)" class="text-xs">RELIANCE</span>
       </div>
-      <div class="card px-3 py-2 text-xs text-slate-400">
-        🕘 9:00 AM IST scan active
+      <div class="card px-3 py-2 text-xs" style="color:var(--text2)">🕘 9:00 AM IST</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <!-- TODAY CARD                                                          -->
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <div class="today-card p-5 mb-5">
+    <div class="flex items-start gap-4 flex-wrap">
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 mb-2 flex-wrap">
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#6ee7b7">📅 What Should I Do Today?</span>
+          <span style="color:#64748b;font-size:11px">Sunday 6 Apr 2026 · Market Closed</span>
+        </div>
+        <p class="font-bold text-xl" style="color:#f0fdf4;line-height:1.35">
+          <span style="color:#34d399">BUY</span> RELIANCE near ₹2,900–2,950 — all signals agree: bullish news (+0.62), healthy RSI (58), MACD crossover, and Nifty in expansion phase. Set stop at ₹2,800, target ₹3,200.
+        </p>
+        <div class="flex flex-wrap gap-2 mt-3">
+          <span class="action-pill">✅ 7/9 indicators bullish</span>
+          <span class="action-pill" style="background:rgba(96,165,250,.1);border-color:rgba(96,165,250,.3);color:#60a5fa">📊 Confidence 79%</span>
+          <span class="action-pill" style="background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.25);color:#fbbf24">⚖️ Risk/Reward 2.8:1</span>
+        </div>
+      </div>
+      <div class="text-center flex-shrink-0">
+        <div style="font-size:3rem;line-height:1">🟢</div>
+        <div style="font-size:11px;color:#6ee7b7;font-weight:600;margin-top:4px">STRONG BUY</div>
+      </div>
+    </div>
+    <!-- Expand for detail -->
+    <div class="accordion-header mt-3 -mx-1 rounded-xl" onclick="toggleAccordion('todayDetail', this)">
+      <span style="font-size:12px;font-weight:600;color:#6ee7b7">Show full analysis breakdown</span>
+      <div class="accordion-icon">▼</div>
+    </div>
+    <div class="accordion-body" id="todayDetail">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2 pb-2 text-xs" style="color:var(--text2)">
+        <div class="p-3 rounded-xl" style="background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.15)">
+          <div style="color:#34d399;font-weight:600;margin-bottom:4px">📰 News</div>
+          Sentiment +0.62 · 74% bullish · 38 headlines — strong positive momentum
+        </div>
+        <div class="p-3 rounded-xl" style="background:rgba(96,165,250,.06);border:1px solid rgba(96,165,250,.15)">
+          <div style="color:#60a5fa;font-weight:600;margin-bottom:4px">📊 Technical</div>
+          RSI 58 (healthy) · MACD bullish crossover · Price above SMA50
+        </div>
+        <div class="p-3 rounded-xl" style="background:rgba(167,139,250,.06);border:1px solid rgba(167,139,250,.15)">
+          <div style="color:#a78bfa;font-weight:600;margin-bottom:4px">🌍 Macro</div>
+          VIX 14.2 (calm) · Yield curve normal · Nifty expansion phase
+        </div>
+        <div class="p-3 rounded-xl" style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.15)">
+          <div style="color:#fbbf24;font-weight:600;margin-bottom:4px">⚠️ Watch</div>
+          DXY slightly high (104) · Earnings season approaching · Oil price dip
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- ── Quick stats bar ───────────────────────────────────────────────── -->
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+  <!-- ── Quick stat bar ────────────────────────────────────────────────── -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
     <div class="bauhaus-card p-4" onmousemove="trackMouse(event,this)">
-      <div class="flex items-center gap-1 text-slate-400 text-xs mb-2">Nifty 50
-        <span class="info-btn">ⓘ<span class="info-tip">India's main stock market index. Tracks top 50 companies. When Nifty is rising, most stocks tend to go up too. Think of it as the "health meter" of the Indian stock market.</span></span>
+      <div class="flex items-center gap-1 text-xs mb-2" style="color:var(--text2)">Nifty 50
+        <button class="info-btn" onclick="showInfo('nifty50')">i</button>
       </div>
-      <div class="metric-val text-emerald-400 count-anim">22,847</div>
-      <div class="flex items-center gap-1 mt-1"><span class="badge-green text-xs px-2 py-0.5 rounded-full">▲ +0.6%</span></div>
+      <div class="metric-val count-anim" style="color:#34d399">22,847</div>
+      <span class="badge-green text-xs px-2 py-0.5 rounded-full mt-1 inline-block">▲ +0.6%</span>
     </div>
     <div class="bauhaus-card p-4" onmousemove="trackMouse(event,this)">
-      <div class="flex items-center gap-1 text-slate-400 text-xs mb-2">VIX
-        <span class="info-btn">ⓘ<span class="info-tip">VIX = "Fear Index". Low VIX (under 20) = market is calm, good to invest. High VIX (above 25) = market is scared, be careful. Above 35 = panic — consider moving to cash.</span></span>
+      <div class="flex items-center gap-1 text-xs mb-2" style="color:var(--text2)">VIX Fear Index
+        <button class="info-btn" onclick="showInfo('vix')">i</button>
       </div>
-      <div class="metric-val text-blue-400 count-anim">14.2</div>
-      <div class="flex items-center gap-1 mt-1"><span class="badge-green text-xs px-2 py-0.5 rounded-full">Calm ✓</span></div>
+      <div class="metric-val count-anim" style="color:#60a5fa">14.2</div>
+      <span class="badge-green text-xs px-2 py-0.5 rounded-full mt-1 inline-block">Calm ✓</span>
     </div>
     <div class="bauhaus-card p-4" onmousemove="trackMouse(event,this)">
-      <div class="flex items-center gap-1 text-slate-400 text-xs mb-2">USD/INR
-        <span class="info-btn">ⓘ<span class="info-tip">How many rupees it takes to buy 1 US dollar. Rising INR (above 85) is bad for India — imports get expensive, foreign investors pull money out. Below 84 is healthy.</span></span>
+      <div class="flex items-center gap-1 text-xs mb-2" style="color:var(--text2)">USD / INR
+        <button class="info-btn" onclick="showInfo('usdinr')">i</button>
       </div>
-      <div class="metric-val text-yellow-400 count-anim">83.87</div>
-      <div class="flex items-center gap-1 mt-1"><span class="badge-yellow text-xs px-2 py-0.5 rounded-full">Neutral</span></div>
+      <div class="metric-val count-anim" style="color:#fbbf24">83.87</div>
+      <span class="badge-yellow text-xs px-2 py-0.5 rounded-full mt-1 inline-block">Neutral</span>
     </div>
     <div class="bauhaus-card p-4" onmousemove="trackMouse(event,this)">
-      <div class="flex items-center gap-1 text-slate-400 text-xs mb-2">Portfolio
-        <span class="info-btn">ⓘ<span class="info-tip">Your current portfolio value based on paper trading simulations. This is hypothetical — no real money is at risk in demo mode.</span></span>
+      <div class="flex items-center gap-1 text-xs mb-2" style="color:var(--text2)">Portfolio Value
+        <button class="info-btn" onclick="showInfo('portfolio')">i</button>
       </div>
-      <div class="metric-val text-purple-400 count-anim">₹1,24,300</div>
-      <div class="flex items-center gap-1 mt-1"><span class="badge-purple text-xs px-2 py-0.5 rounded-full">▲ +24.3%</span></div>
+      <div class="metric-val count-anim" style="color:#a78bfa">₹1,24,300</div>
+      <span class="badge-purple text-xs px-2 py-0.5 rounded-full mt-1 inline-block">▲ +24.3%</span>
     </div>
   </div>
 
   <!-- ── Tab Nav ───────────────────────────────────────────────────────── -->
-  <div class="tab-nav flex gap-1 flex-wrap mb-6">
-    <div class="tab active" onclick="showTab('sentiment')">📰 News Sentiment</div>
-    <div class="tab" onclick="showTab('technical')">📊 Technical</div>
-    <div class="tab" onclick="showTab('macro')">🌍 Macro</div>
-    <div class="tab" onclick="showTab('screener')">🔎 Screener</div>
-    <div class="tab" onclick="showTab('moat')">🏰 Moat</div>
-    <div class="tab" onclick="showTab('explainer')">🤖 AI Explainer</div>
-    <div class="tab" onclick="showTab('montecarlo')">🎲 Monte Carlo</div>
-    <div class="tab" onclick="showTab('drift')">🔍 Drift</div>
-    <div class="tab" onclick="showTab('features')">🧮 Features</div>
+  <div class="tab-nav flex gap-1 flex-wrap mb-5">
+    <div class="tab active" onclick="showTab('sentiment',this)">📰 Sentiment</div>
+    <div class="tab" onclick="showTab('technical',this)">📊 Technical</div>
+    <div class="tab" onclick="showTab('macro',this)">🌍 Macro</div>
+    <div class="tab" onclick="showTab('screener',this)">🔎 Screener</div>
+    <div class="tab" onclick="showTab('moat',this)">🏰 Moat</div>
+    <div class="tab" onclick="showTab('explainer',this)">🤖 AI Explainer</div>
+    <div class="tab" onclick="showTab('montecarlo',this)">🎲 Monte Carlo</div>
+    <div class="tab" onclick="showTab('drift',this)">🔍 Drift</div>
+    <div class="tab" onclick="showTab('features',this)">🧮 52 Features</div>
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════ -->
   <!-- TAB 1 — NEWS SENTIMENT                                            -->
   <!-- ══════════════════════════════════════════════════════════════════ -->
   <div id="tab-sentiment" class="section active">
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
       <div class="card beam-card p-4">
-        <div class="flex items-center gap-1 text-slate-400 text-xs mb-2">Sentiment Score
-          <span class="info-btn">ⓘ<span class="info-tip">A score from -1 (very bearish/bad news) to +1 (very bullish/good news). Calculated by our FinBERT AI reading all recent headlines. Above +0.3 = bullish signal.</span></span>
-        </div>
-        <div class="metric-val text-emerald-400">+0.62</div>
-        <div class="text-xs text-slate-500 mt-1">Bullish 🟢</div>
+        <div class="flex items-center gap-1 text-xs mb-2" style="color:var(--text2)">Sentiment Score <button class="info-btn" onclick="showInfo('sentiment_score')">i</button></div>
+        <div class="metric-val" style="color:#34d399">+0.62</div>
+        <div class="text-xs mt-1" style="color:var(--text3)">Bullish 🟢</div>
         <div class="progress mt-3"><div class="progress-fill bg-emerald-500" style="width:81%"></div></div>
       </div>
       <div class="card p-4">
-        <div class="flex items-center gap-1 text-slate-400 text-xs mb-2">Bullish Ratio
-          <span class="info-btn">ⓘ<span class="info-tip">What % of the news headlines are positive. 74% means 74 out of 100 headlines are good news for this stock. Above 60% = strong bullish signal.</span></span>
-        </div>
-        <div class="metric-val text-blue-400">74%</div>
-        <div class="text-xs text-slate-500 mt-1">of 38 headlines</div>
-        <div class="progress mt-3"><div class="progress-fill bg-blue-500" style="width:74%"></div></div>
+        <div class="flex items-center gap-1 text-xs mb-2" style="color:var(--text2)">Bullish Ratio <button class="info-btn" onclick="showInfo('bullish_ratio')">i</button></div>
+        <div class="metric-val" style="color:#60a5fa">74%</div>
+        <div class="text-xs mt-1" style="color:var(--text3)">of 38 headlines</div>
+        <div class="progress mt-3"><div class="progress-fill" style="width:74%;background:#60a5fa"></div></div>
       </div>
       <div class="card p-4">
-        <div class="flex items-center gap-1 text-slate-400 text-xs mb-2">News Volume
-          <span class="info-btn">ⓘ<span class="info-tip">How many news articles/headlines were found in the last hour. Higher volume can mean more market interest. Very high volume during a price drop = watch out.</span></span>
-        </div>
-        <div class="metric-val text-purple-400">38</div>
-        <div class="text-xs text-slate-500 mt-1">headlines (1h)</div>
-        <div class="progress mt-3"><div class="progress-fill bg-purple-500" style="width:55%"></div></div>
+        <div class="flex items-center gap-1 text-xs mb-2" style="color:var(--text2)">News Volume <button class="info-btn" onclick="showInfo('news_volume')">i</button></div>
+        <div class="metric-val" style="color:#a78bfa">38</div>
+        <div class="text-xs mt-1" style="color:var(--text3)">headlines (1h)</div>
+        <div class="progress mt-3"><div class="progress-fill" style="width:55%;background:#a78bfa"></div></div>
       </div>
       <div class="card p-4">
-        <div class="flex items-center gap-1 text-slate-400 text-xs mb-2">Momentum
-          <span class="info-btn">ⓘ<span class="info-tip">Is the news getting more positive or more negative over time? Positive momentum (+0.18) means this stock's news is improving — a good early signal before the price moves.</span></span>
-        </div>
-        <div class="metric-val text-yellow-400">+0.18</div>
-        <div class="text-xs text-slate-500 mt-1">Improving ↑</div>
-        <div class="progress mt-3"><div class="progress-fill bg-yellow-500" style="width:68%"></div></div>
+        <div class="flex items-center gap-1 text-xs mb-2" style="color:var(--text2)">Sent. Momentum <button class="info-btn" onclick="showInfo('sent_momentum')">i</button></div>
+        <div class="metric-val" style="color:#fbbf24">+0.18</div>
+        <div class="text-xs mt-1" style="color:var(--text3)">Improving ↑</div>
+        <div class="progress mt-3"><div class="progress-fill" style="width:68%;background:#fbbf24"></div></div>
       </div>
     </div>
-
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="card p-4">
-        <div class="flex items-center gap-2 mb-3">
-          <h3 class="font-semibold text-sm">Top Headlines</h3>
-          <span class="info-btn">ⓘ<span class="info-tip">Real headlines from Yahoo Finance, Google News, and Reddit, analysed by our FinBERT AI model. Green = positive, Red = negative, Yellow = neutral.</span></span>
-        </div>
+        <div class="flex items-center gap-2 mb-3"><h3 class="font-semibold text-sm">Top Headlines</h3><button class="info-btn" onclick="showInfo('headlines')">i</button></div>
         <div class="space-y-2 text-xs">
-          <div class="flex items-start gap-2 p-2 rounded-lg bg-emerald-900/20 border border-emerald-800/30">
-            <span class="badge-green text-xs px-2 py-0.5 rounded-full flex-shrink-0">BUY</span>
-            <span class="text-slate-300">Reliance Industries Q3 profit surges 12% on strong retail performance</span>
-          </div>
-          <div class="flex items-start gap-2 p-2 rounded-lg bg-emerald-900/20 border border-emerald-800/30">
-            <span class="badge-green text-xs px-2 py-0.5 rounded-full flex-shrink-0">BUY</span>
-            <span class="text-slate-300">Jio platforms adds 8M subscribers — fastest Q4 growth in 3 years</span>
-          </div>
-          <div class="flex items-start gap-2 p-2 rounded-lg bg-yellow-900/20 border border-yellow-800/30">
-            <span class="badge-yellow text-xs px-2 py-0.5 rounded-full flex-shrink-0">NEU</span>
-            <span class="text-slate-300">SEBI reviews new F&O regulations — retail impact unclear</span>
-          </div>
-          <div class="flex items-start gap-2 p-2 rounded-lg bg-red-900/20 border border-red-800/30">
-            <span class="badge-red text-xs px-2 py-0.5 rounded-full flex-shrink-0">SELL</span>
-            <span class="text-slate-300">Global oil prices dip 2% — minor headwind for refining margin</span>
-          </div>
-          <div class="flex items-start gap-2 p-2 rounded-lg bg-emerald-900/20 border border-emerald-800/30">
-            <span class="badge-green text-xs px-2 py-0.5 rounded-full flex-shrink-0">BUY</span>
-            <span class="text-slate-300">FII inflows hit ₹4,200 Cr in RIL — institutional confidence high</span>
-          </div>
+          <div class="flex items-start gap-2 p-2 rounded-lg" style="background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.2)"><span class="badge-green px-2 py-0.5 rounded-full flex-shrink-0">BUY</span><span style="color:var(--text)">Reliance Q3 profit surges 12% on strong retail performance</span></div>
+          <div class="flex items-start gap-2 p-2 rounded-lg" style="background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.2)"><span class="badge-green px-2 py-0.5 rounded-full flex-shrink-0">BUY</span><span style="color:var(--text)">Jio adds 8M subscribers — fastest Q4 growth in 3 years</span></div>
+          <div class="flex items-start gap-2 p-2 rounded-lg" style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2)"><span class="badge-yellow px-2 py-0.5 rounded-full flex-shrink-0">NEU</span><span style="color:var(--text)">SEBI reviews new F&amp;O regulations — retail impact unclear</span></div>
+          <div class="flex items-start gap-2 p-2 rounded-lg" style="background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.2)"><span class="badge-red px-2 py-0.5 rounded-full flex-shrink-0">NEG</span><span style="color:var(--text)">Global oil prices dip 2% — minor headwind for refining margin</span></div>
+          <div class="flex items-start gap-2 p-2 rounded-lg" style="background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.2)"><span class="badge-green px-2 py-0.5 rounded-full flex-shrink-0">BUY</span><span style="color:var(--text)">FII inflows ₹4,200 Cr in RIL — institutional confidence high</span></div>
         </div>
       </div>
-
       <div class="card p-4">
-        <div class="flex items-center gap-2 mb-3">
-          <h3 class="font-semibold text-sm">Sentiment Over Time</h3>
-          <span class="info-btn">ⓘ<span class="info-tip">How the sentiment score has changed over the past 7 days. A rising line = news improving. A falling line = news getting worse. Use this to spot early trend changes before price moves.</span></span>
-        </div>
-        <canvas id="sentimentChart" height="160"></canvas>
+        <div class="flex items-center gap-2 mb-3"><h3 class="font-semibold text-sm">7-Day Sentiment Trend</h3><button class="info-btn" onclick="showInfo('sent_trend')">i</button></div>
+        <canvas id="sentimentChart" height="170"></canvas>
       </div>
     </div>
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════ -->
-  <!-- TAB 2 — TECHNICAL ANALYSIS                                        -->
+  <!-- TAB 2 — TECHNICAL                                                 -->
   <!-- ══════════════════════════════════════════════════════════════════ -->
   <div id="tab-technical" class="section">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-      <div class="card beam-card p-5 text-center signal-buy rounded-2xl">
-        <div class="text-3xl mb-2">📈</div>
-        <div class="text-2xl font-extrabold text-emerald-400">STRONG BUY</div>
-        <div class="text-sm text-slate-400 mt-1">Confidence: 8/10</div>
-        <div class="text-xs text-slate-500 mt-3">7 of 9 indicators agree</div>
+    <!-- Verdict (always visible) -->
+    <div class="card signal-buy p-5 mb-4 rounded-2xl flex items-center gap-5 flex-wrap">
+      <div class="text-5xl">📈</div>
+      <div class="flex-1">
+        <div class="text-2xl font-extrabold" style="color:#34d399">STRONG BUY</div>
+        <div class="text-sm mt-1" style="color:var(--text2)">Confidence 8/10 · 7 of 9 indicators agree · RELIANCE ₹2,940</div>
       </div>
-      <div class="card p-4">
-        <h3 class="font-semibold text-sm mb-3 flex items-center gap-1">RSI
-          <span class="info-btn">ⓘ<span class="info-tip">RSI (Relative Strength Index) measures if a stock is overbought or oversold. Scale 0-100. Below 30 = oversold (cheap, possible buy). Above 70 = overbought (expensive, possible sell). 30-70 = healthy zone.</span></span>
-        </h3>
-        <div class="text-4xl font-bold text-blue-400">58.4</div>
-        <div class="text-xs text-slate-400 mt-2">14-day period · Healthy zone ✓</div>
-        <div class="progress mt-3"><div class="progress-fill bg-blue-500" style="width:58.4%"></div></div>
-        <div class="flex justify-between text-xs text-slate-600 mt-1"><span>0 (Oversold)</span><span>70+ (Overbought)</span></div>
-      </div>
-      <div class="card p-4">
-        <h3 class="font-semibold text-sm mb-3 flex items-center gap-1">MACD
-          <span class="info-btn">ⓘ<span class="info-tip">MACD shows the momentum of a trend. When the MACD line (blue) crosses above the Signal line (orange) = BUY signal. When it crosses below = SELL signal. The bars show if momentum is growing or shrinking.</span></span>
-        </h3>
-        <div class="flex gap-3 text-xs">
-          <div><div class="text-slate-400 mb-1">MACD Line</div><div class="text-blue-400 font-bold text-lg">+12.4</div></div>
-          <div><div class="text-slate-400 mb-1">Signal</div><div class="text-orange-400 font-bold text-lg">+9.1</div></div>
-          <div><div class="text-slate-400 mb-1">Histogram</div><div class="text-emerald-400 font-bold text-lg">+3.3</div></div>
-        </div>
-        <div class="mt-2 badge-green text-xs px-2 py-1 rounded-md inline-block">Bullish crossover ✓</div>
+      <div class="grid grid-cols-3 gap-2 text-xs text-center">
+        <div class="p-2 rounded-xl" style="background:rgba(52,211,153,.12)"><div style="color:#34d399;font-weight:700">Buy Near</div><div style="color:var(--text);font-weight:800;font-size:14px">₹2,925</div></div>
+        <div class="p-2 rounded-xl" style="background:rgba(248,113,113,.12)"><div style="color:#f87171;font-weight:700">Stop Loss</div><div style="color:var(--text);font-weight:800;font-size:14px">₹2,800</div></div>
+        <div class="p-2 rounded-xl" style="background:rgba(96,165,250,.12)"><div style="color:#60a5fa;font-weight:700">Target</div><div style="color:var(--text);font-weight:800;font-size:14px">₹3,200</div></div>
       </div>
     </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-      <div class="card p-4">
-        <h3 class="font-semibold text-sm mb-3 flex items-center gap-1">Bollinger Bands
-          <span class="info-btn">ⓘ<span class="info-tip">Bollinger Bands show price volatility. The price bounces between upper and lower bands. Price near upper band = overbought (risky to buy). Price near lower band = oversold (possible good buy). Narrowing bands = a big move is coming soon.</span></span>
-        </h3>
-        <div class="grid grid-cols-3 gap-2 text-xs text-center">
-          <div class="p-2 rounded-lg bg-red-900/20"><div class="text-slate-400 mb-1">Upper Band</div><div class="text-red-400 font-bold">₹3,180</div></div>
-          <div class="p-2 rounded-lg bg-blue-900/20 border border-blue-700/30"><div class="text-slate-400 mb-1">Price</div><div class="text-blue-400 font-bold">₹2,940</div></div>
-          <div class="p-2 rounded-lg bg-emerald-900/20"><div class="text-slate-400 mb-1">Lower Band</div><div class="text-emerald-400 font-bold">₹2,700</div></div>
-        </div>
-        <div class="mt-2 text-xs text-slate-400">BB Width: 15.9% · Position:
-          <span class="info-btn">ⓘ<span class="info-tip">BB %B shows where the price is within the bands. 0% = at lower band, 100% = at upper band. 44% = price is near the middle — neither overbought nor oversold.</span></span>
-          <span class="text-blue-400 font-semibold">44%</span>
-        </div>
+    <!-- Expand indicators -->
+    <div class="card p-0 mb-4 overflow-hidden">
+      <div class="accordion-header" onclick="toggleAccordion('techIndicators',this)">
+        <div class="flex items-center gap-2"><span class="font-semibold text-sm">📐 All Indicators</span><button class="info-btn" onclick="event.stopPropagation();showInfo('indicators')">i</button></div>
+        <div class="accordion-icon">▼</div>
       </div>
-      <div class="card p-4">
-        <h3 class="font-semibold text-sm mb-3 flex items-center gap-1">Support & Resistance
-          <span class="info-btn">ⓘ<span class="info-tip">Support = price level where buyers tend to step in (floor). Resistance = price level where sellers tend to appear (ceiling). Buy near support, sell near resistance. A break above resistance = strong bullish signal.</span></span>
-        </h3>
-        <div class="space-y-2 text-xs">
-          <div class="flex justify-between items-center p-2 rounded bg-red-900/20 border-l-2 border-red-500">
-            <span class="text-slate-400">Resistance 2</span><span class="text-red-400 font-bold">₹3,200</span><span class="badge-red px-2 py-0.5 rounded">Strong</span>
+      <div class="accordion-body" id="techIndicators">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 pt-0">
+          <div>
+            <div class="font-semibold text-xs mb-2 flex items-center gap-1" style="color:#818cf8">RSI (Momentum) <button class="info-btn" onclick="showInfo('rsi')">i</button></div>
+            <div style="font-size:2rem;font-weight:800;color:#60a5fa">58.4</div>
+            <div class="text-xs mt-1" style="color:var(--text3)">14-day · Healthy zone (30–70)</div>
+            <div class="progress mt-2"><div class="progress-fill" style="width:58.4%;background:#60a5fa"></div></div>
+            <div class="flex justify-between text-xs mt-1" style="color:var(--text3)"><span>0 Oversold</span><span>100 Overbought</span></div>
           </div>
-          <div class="flex justify-between items-center p-2 rounded bg-red-900/10 border-l-2 border-red-400/50">
-            <span class="text-slate-400">Resistance 1</span><span class="text-red-400 font-bold">₹3,050</span><span class="badge-red px-2 py-0.5 rounded">Moderate</span>
+          <div>
+            <div class="font-semibold text-xs mb-2 flex items-center gap-1" style="color:#818cf8">MACD (Trend Momentum) <button class="info-btn" onclick="showInfo('macd')">i</button></div>
+            <div class="flex gap-3 text-xs">
+              <div><div style="color:var(--text3)">MACD</div><div style="color:#60a5fa;font-weight:800;font-size:1.1rem">+12.4</div></div>
+              <div><div style="color:var(--text3)">Signal</div><div style="color:#fb923c;font-weight:800;font-size:1.1rem">+9.1</div></div>
+              <div><div style="color:var(--text3)">Hist</div><div style="color:#34d399;font-weight:800;font-size:1.1rem">+3.3</div></div>
+            </div>
+            <span class="badge-green text-xs px-2 py-1 rounded-md mt-2 inline-block">Bullish crossover ✓</span>
           </div>
-          <div class="flex justify-between items-center p-2 rounded bg-blue-900/30 border-l-2 border-blue-400">
-            <span class="text-slate-300 font-semibold">Current Price</span><span class="text-blue-400 font-bold">₹2,940</span><span></span>
-          </div>
-          <div class="flex justify-between items-center p-2 rounded bg-emerald-900/10 border-l-2 border-emerald-400/50">
-            <span class="text-slate-400">Support 1</span><span class="text-emerald-400 font-bold">₹2,820</span><span class="badge-green px-2 py-0.5 rounded">Strong</span>
-          </div>
-          <div class="flex justify-between items-center p-2 rounded bg-emerald-900/20 border-l-2 border-emerald-500">
-            <span class="text-slate-400">Support 2</span><span class="text-emerald-400 font-bold">₹2,650</span><span class="badge-green px-2 py-0.5 rounded">Very Strong</span>
+          <div>
+            <div class="font-semibold text-xs mb-2 flex items-center gap-1" style="color:#818cf8">Bollinger Bands <button class="info-btn" onclick="showInfo('bollinger')">i</button></div>
+            <div class="grid grid-cols-3 gap-1 text-xs text-center">
+              <div class="p-2 rounded" style="background:rgba(248,113,113,.08)"><div style="color:var(--text3)">Upper</div><div style="color:#f87171;font-weight:700">₹3,180</div></div>
+              <div class="p-2 rounded" style="background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.3)"><div style="color:var(--text3)">Price</div><div style="color:#60a5fa;font-weight:700">₹2,940</div></div>
+              <div class="p-2 rounded" style="background:rgba(52,211,153,.08)"><div style="color:var(--text3)">Lower</div><div style="color:#34d399;font-weight:700">₹2,700</div></div>
+            </div>
+            <div class="text-xs mt-2" style="color:var(--text3)">Position: <span style="color:#60a5fa;font-weight:600">44%</span> · Width: 15.9%</div>
           </div>
         </div>
       </div>
     </div>
-
-    <div class="card p-4">
-      <h3 class="font-semibold text-sm mb-3 flex items-center gap-1">📋 Beginner Trade Plan
-        <span class="info-btn">ⓘ<span class="info-tip">This is what our AI recommends to do in plain English. It tells you where to buy, where to cut your loss if wrong (Stop Loss), and where to take profit. Always use this as guidance, not a guarantee.</span></span>
-      </h3>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
-        <div class="p-3 rounded-xl bg-emerald-900/25 border border-emerald-700/30">
-          <div class="text-emerald-400 font-bold text-xs mb-1">✅ ENTRY ZONE</div>
-          <div class="text-white font-bold text-lg">₹2,900 – ₹2,950</div>
-          <div class="text-slate-400 text-xs mt-1">Buy near this range for best risk/reward</div>
-        </div>
-        <div class="p-3 rounded-xl bg-red-900/25 border border-red-700/30">
-          <div class="text-red-400 font-bold text-xs mb-1">🛑 STOP LOSS</div>
-          <div class="text-white font-bold text-lg">₹2,800</div>
-          <div class="text-slate-400 text-xs mt-1">Exit if price falls here — cap your loss</div>
-        </div>
-        <div class="p-3 rounded-xl bg-blue-900/25 border border-blue-700/30">
-          <div class="text-blue-400 font-bold text-xs mb-1">🎯 TARGET</div>
-          <div class="text-white font-bold text-lg">₹3,200</div>
-          <div class="text-slate-400 text-xs mt-1">Risk/Reward 2.8:1 — take profits here</div>
+    <!-- Support / Resistance expand -->
+    <div class="card p-0">
+      <div class="accordion-header" onclick="toggleAccordion('supportRes',this)">
+        <div class="flex items-center gap-2"><span class="font-semibold text-sm">📏 Support &amp; Resistance Levels</span><button class="info-btn" onclick="event.stopPropagation();showInfo('support_resistance')">i</button></div>
+        <div class="accordion-icon">▼</div>
+      </div>
+      <div class="accordion-body" id="supportRes">
+        <div class="p-4 pt-0 space-y-2 text-xs">
+          <div class="flex justify-between items-center p-2 rounded-lg" style="background:rgba(248,113,113,.08);border-left:3px solid #f87171"><span style="color:var(--text2)">Resistance 2</span><span style="color:#f87171;font-weight:700">₹3,200</span><span class="badge-red px-2 py-0.5 rounded">Strong</span></div>
+          <div class="flex justify-between items-center p-2 rounded-lg" style="background:rgba(248,113,113,.05);border-left:3px solid rgba(248,113,113,.4)"><span style="color:var(--text2)">Resistance 1</span><span style="color:#f87171;font-weight:700">₹3,050</span><span class="badge-red px-2 py-0.5 rounded">Moderate</span></div>
+          <div class="flex justify-between items-center p-3 rounded-lg" style="background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.35)"><span style="color:var(--text);font-weight:600">▶ Current Price</span><span style="color:#60a5fa;font-weight:800;font-size:14px">₹2,940</span><span></span></div>
+          <div class="flex justify-between items-center p-2 rounded-lg" style="background:rgba(52,211,153,.05);border-left:3px solid rgba(52,211,153,.4)"><span style="color:var(--text2)">Support 1</span><span style="color:#34d399;font-weight:700">₹2,820</span><span class="badge-green px-2 py-0.5 rounded">Strong</span></div>
+          <div class="flex justify-between items-center p-2 rounded-lg" style="background:rgba(52,211,153,.08);border-left:3px solid #34d399"><span style="color:var(--text2)">Support 2</span><span style="color:#34d399;font-weight:700">₹2,650</span><span class="badge-green px-2 py-0.5 rounded">Very Strong</span></div>
         </div>
       </div>
     </div>
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════ -->
-  <!-- TAB 3 — MACRO INDICATORS                                          -->
+  <!-- TAB 3 — MACRO                                                     -->
   <!-- ══════════════════════════════════════════════════════════════════ -->
   <div id="tab-macro" class="section">
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
-      <div class="card p-4">
-        <div class="flex items-center gap-1 text-slate-400 text-xs mb-2">Fed Funds Rate
-          <span class="info-btn">ⓘ<span class="info-tip">The interest rate set by the US Federal Reserve. High rates (above 5%) = expensive borrowing = bad for growth stocks. If the Fed cuts rates, stock markets typically rally. Impacts Indian markets through FII flows.</span></span>
-        </div>
-        <div class="metric-val text-yellow-400">5.33%</div>
-        <div class="badge-yellow text-xs px-2 py-0.5 rounded-full mt-1 inline-block">High</div>
+    <!-- Verdict -->
+    <div class="card p-4 mb-4 flex items-center gap-4 flex-wrap">
+      <div class="text-3xl">🌍</div>
+      <div class="flex-1">
+        <div class="font-bold text-base">Economic Phase: <span style="color:#34d399">Expansion</span></div>
+        <div class="text-sm mt-1" style="color:var(--text2)">Macro conditions are favourable. Invest normally — focus on IT, Auto, Retail, FMCG sectors.</div>
       </div>
-      <div class="card p-4">
-        <div class="flex items-center gap-1 text-slate-400 text-xs mb-2">US 10Y Yield
-          <span class="info-btn">ⓘ<span class="info-tip">The interest rate on 10-year US government bonds. Rising yields = money flows out of stocks into bonds. Above 4.5% = headwind for stocks. The 10Y-2Y spread tells us if a recession is coming.</span></span>
-        </div>
-        <div class="metric-val text-blue-400">4.28%</div>
-        <div class="badge-blue text-xs px-2 py-0.5 rounded-full mt-1 inline-block">Normal</div>
-      </div>
-      <div class="card p-4">
-        <div class="flex items-center gap-1 text-slate-400 text-xs mb-2">Yield Curve
-          <span class="info-btn">ⓘ<span class="info-tip">Spread between 10-year and 2-year US bond yields. Positive spread (normal) = economy is healthy. Negative spread (inverted) = recession warning. Has predicted every US recession for 50 years. Currently +0.18% = normal.</span></span>
-        </div>
-        <div class="metric-val text-emerald-400">+0.18%</div>
-        <div class="badge-green text-xs px-2 py-0.5 rounded-full mt-1 inline-block">Normal ✓</div>
-      </div>
-      <div class="card p-4">
-        <div class="flex items-center gap-1 text-slate-400 text-xs mb-2">DXY (Dollar Index)
-          <span class="info-btn">ⓘ<span class="info-tip">Measures the US dollar strength vs major currencies. DXY above 106 = strong dollar = bad for Indian markets (FIIs pull money out). Below 100 = weak dollar = great for Indian stocks as FIIs invest more.</span></span>
-        </div>
-        <div class="metric-val text-slate-300">104.2</div>
-        <div class="badge-yellow text-xs px-2 py-0.5 rounded-full mt-1 inline-block">Slightly High</div>
-      </div>
+      <button class="info-btn" onclick="showInfo('eco_cycle')" style="width:22px;height:22px;font-size:11px">i</button>
     </div>
-
-    <div class="card p-5 mb-4">
-      <div class="flex items-center gap-2 mb-4">
-        <h3 class="font-semibold">Economic Cycle</h3>
-        <span class="info-btn">ⓘ<span class="info-tip">Based on GDP growth, inflation, and interest rates, our system classifies the current economic phase. Different phases favour different types of stocks. Currently in Expansion = buy quality growth stocks.</span></span>
-        <span class="badge-green text-sm px-3 py-1 rounded-full ml-auto font-bold">📈 Expansion Phase</span>
+    <!-- Expand indicators -->
+    <div class="card p-0 mb-4 overflow-hidden">
+      <div class="accordion-header" onclick="toggleAccordion('macroDetail',this)">
+        <div class="flex items-center gap-2"><span class="font-semibold text-sm">📊 All Macro Indicators</span></div>
+        <div class="accordion-icon">▼</div>
       </div>
-      <p class="text-slate-400 text-sm mb-4">Economy is growing healthily with controlled inflation. Good time to hold quality stocks and increase equity allocation.</p>
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <div class="text-emerald-400 text-xs font-semibold mb-2 flex items-center gap-1">✅ FAVOUR THESE SECTORS
-            <span class="info-btn">ⓘ<span class="info-tip">In an Expansion phase, these sectors historically outperform the market. Focus your halal portfolio on these areas for better returns.</span></span>
-          </div>
-          <div class="flex flex-wrap gap-2">
-            <span class="feat-pill bg-emerald-900/20 border-emerald-700/30 text-emerald-400">IT</span>
-            <span class="feat-pill bg-emerald-900/20 border-emerald-700/30 text-emerald-400">Auto</span>
-            <span class="feat-pill bg-emerald-900/20 border-emerald-700/30 text-emerald-400">Retail</span>
-            <span class="feat-pill bg-emerald-900/20 border-emerald-700/30 text-emerald-400">FMCG</span>
-          </div>
+      <div class="accordion-body" id="macroDetail">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 pt-0">
+          <div class="p-3 rounded-xl" style="background:var(--surface2)"><div class="flex items-center gap-1 text-xs mb-1" style="color:var(--text2)">Fed Funds Rate <button class="info-btn" onclick="showInfo('fed_rate')">i</button></div><div style="color:#fbbf24;font-weight:800;font-size:1.4rem">5.33%</div><span class="badge-yellow text-xs px-2 py-0.5 rounded-full mt-1 inline-block">High</span></div>
+          <div class="p-3 rounded-xl" style="background:var(--surface2)"><div class="flex items-center gap-1 text-xs mb-1" style="color:var(--text2)">US 10Y Yield <button class="info-btn" onclick="showInfo('yield10y')">i</button></div><div style="color:#60a5fa;font-weight:800;font-size:1.4rem">4.28%</div><span class="badge-blue text-xs px-2 py-0.5 rounded-full mt-1 inline-block">Normal</span></div>
+          <div class="p-3 rounded-xl" style="background:var(--surface2)"><div class="flex items-center gap-1 text-xs mb-1" style="color:var(--text2)">Yield Curve <button class="info-btn" onclick="showInfo('yield_curve')">i</button></div><div style="color:#34d399;font-weight:800;font-size:1.4rem">+0.18%</div><span class="badge-green text-xs px-2 py-0.5 rounded-full mt-1 inline-block">Normal ✓</span></div>
+          <div class="p-3 rounded-xl" style="background:var(--surface2)"><div class="flex items-center gap-1 text-xs mb-1" style="color:var(--text2)">DXY Dollar Index <button class="info-btn" onclick="showInfo('dxy')">i</button></div><div style="color:var(--text);font-weight:800;font-size:1.4rem">104.2</div><span class="badge-yellow text-xs px-2 py-0.5 rounded-full mt-1 inline-block">Slightly High</span></div>
         </div>
-        <div>
-          <div class="text-red-400 text-xs font-semibold mb-2 flex items-center gap-1">⚠️ REDUCE EXPOSURE
-            <span class="info-btn">ⓘ<span class="info-tip">These sectors historically underperform in an Expansion phase, or carry higher risk. This is general guidance — individual stocks may still perform well.</span></span>
-          </div>
-          <div class="flex flex-wrap gap-2">
-            <span class="feat-pill bg-red-900/20 border-red-700/30 text-red-400">Defensives only</span>
-          </div>
+        <div class="glow-divider mx-4"></div>
+        <div class="grid grid-cols-2 gap-4 p-4 pt-0">
+          <div><div class="text-xs font-semibold mb-2" style="color:#34d399">✅ Favour Sectors</div><div class="flex flex-wrap gap-1"><span class="feat-pill" style="color:#34d399;border-color:rgba(52,211,153,.3)">IT</span><span class="feat-pill" style="color:#34d399;border-color:rgba(52,211,153,.3)">Auto</span><span class="feat-pill" style="color:#34d399;border-color:rgba(52,211,153,.3)">Retail</span><span class="feat-pill" style="color:#34d399;border-color:rgba(52,211,153,.3)">FMCG</span></div></div>
+          <div><div class="text-xs font-semibold mb-2" style="color:#f87171">⚠️ Reduce Exposure</div><div class="flex flex-wrap gap-1"><span class="feat-pill" style="color:#f87171;border-color:rgba(248,113,113,.3)">Defensives-only</span></div></div>
         </div>
-      </div>
-      <div class="glow-divider"></div>
-      <div class="grid grid-cols-3 gap-3 text-xs">
-        <div><div class="text-slate-500 mb-1 flex items-center gap-1">Portfolio Impact
-          <span class="info-btn">ⓘ<span class="info-tip">Specific actions the AI recommends based on current macro conditions. These are rules triggered by VIX, DXY, yield curve, and gold levels.</span></span>
-        </div>
-          <div class="text-emerald-400">✅ No major red flags</div>
-          <div class="text-emerald-400">✅ Normal market conditions</div>
-        </div>
-        <div><div class="text-slate-500 mb-1">Gold Signal</div><div class="text-yellow-400">$2,310/oz — Neutral</div></div>
-        <div><div class="text-slate-500 mb-1">Overall</div><div class="text-emerald-400 font-semibold">Invest normally ✓</div></div>
       </div>
     </div>
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════ -->
-  <!-- TAB 4 — STOCK SCREENER                                            -->
+  <!-- TAB 4 — SCREENER                                                  -->
   <!-- ══════════════════════════════════════════════════════════════════ -->
   <div id="tab-screener" class="section">
-    <div class="card p-4 mb-4">
-      <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
-        <h2 class="font-bold text-lg flex items-center gap-2">🔎 Fundamental Screener — RELIANCE
-          <span class="info-btn">ⓘ<span class="info-tip">Fundamental analysis looks at a company's financial health — profits, debt, growth. If a company is fundamentally strong, its stock tends to grow over time. This is how Warren Buffett picks stocks.</span></span>
-        </h2>
-        <span class="badge-green px-4 py-2 rounded-xl font-bold text-sm">Score 5/6 · STRONG BUY</span>
+    <!-- Verdict -->
+    <div class="card p-4 mb-4 flex items-center gap-4 flex-wrap">
+      <div class="text-3xl">🔎</div>
+      <div class="flex-1">
+        <div class="font-bold text-base">RELIANCE — <span style="color:#34d399">STRONG BUY</span> <span style="color:var(--text3);font-weight:400;font-size:13px">(5/6)</span></div>
+        <div class="text-sm mt-1" style="color:var(--text2)">Fundamentally strong: low debt, good ROE, solid revenue growth. Halal compliant ✓</div>
       </div>
-      <div class="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
-        <div class="p-3 rounded-xl bg-slate-800/40">
-          <div class="text-slate-400 text-xs mb-1 flex items-center gap-1">P/E Ratio
-            <span class="info-btn">ⓘ<span class="info-tip">Price-to-Earnings ratio = how much you're paying for ₹1 of profit. P/E of 25 means you pay ₹25 for every ₹1 the company earns. Lower P/E vs sector = cheaper stock. IT sector avg P/E = 28.</span></span>
-          </div>
-          <div class="text-white font-bold text-xl">23.4</div>
-          <div class="badge-green text-xs px-2 py-0.5 rounded-full mt-1">Fairly Valued</div>
-        </div>
-        <div class="p-3 rounded-xl bg-slate-800/40">
-          <div class="text-slate-400 text-xs mb-1 flex items-center gap-1">ROE
-            <span class="info-btn">ⓘ<span class="info-tip">Return on Equity = how much profit the company makes for every ₹100 of shareholder money. ROE above 15% = management is using money efficiently. Below 8% = not very good.</span></span>
-          </div>
-          <div class="text-white font-bold text-xl">18.2%</div>
-          <div class="badge-green text-xs px-2 py-0.5 rounded-full mt-1">Good ✓</div>
-        </div>
-        <div class="p-3 rounded-xl bg-slate-800/40">
-          <div class="text-slate-400 text-xs mb-1 flex items-center gap-1">Debt/Equity
-            <span class="info-btn">ⓘ<span class="info-tip">How much debt the company has compared to its own money. D/E below 0.5 = very little debt = safe. Above 2 = too much debt = risky, especially if interest rates rise. For halal investing, avoid high-debt companies.</span></span>
-          </div>
-          <div class="text-white font-bold text-xl">0.42</div>
-          <div class="badge-green text-xs px-2 py-0.5 rounded-full mt-1">Low Debt ✓</div>
-        </div>
-        <div class="p-3 rounded-xl bg-slate-800/40">
-          <div class="text-slate-400 text-xs mb-1 flex items-center gap-1">Revenue Growth
-            <span class="info-btn">ⓘ<span class="info-tip">How much the company's sales grew compared to last year. Above 10% = strong growth. A growing revenue means the business is expanding. This is one of the key signs of a quality stock.</span></span>
-          </div>
-          <div class="text-white font-bold text-xl">14.2%</div>
-          <div class="badge-green text-xs px-2 py-0.5 rounded-full mt-1">Strong ✓</div>
-        </div>
-        <div class="p-3 rounded-xl bg-slate-800/40">
-          <div class="text-slate-400 text-xs mb-1 flex items-center gap-1">Profit Margin
-            <span class="info-btn">ⓘ<span class="info-tip">Out of every ₹100 in sales, how much is actual profit? 12% margin = ₹12 profit per ₹100 sale. Above 15% = excellent (strong pricing power). Below 5% = thin margins = vulnerable to cost increases.</span></span>
-          </div>
-          <div class="text-white font-bold text-xl">12.1%</div>
-          <div class="badge-green text-xs px-2 py-0.5 rounded-full mt-1">Healthy</div>
-        </div>
-        <div class="p-3 rounded-xl bg-slate-800/40">
-          <div class="text-slate-400 text-xs mb-1 flex items-center gap-1">Risk Rating
-            <span class="info-btn">ⓘ<span class="info-tip">Our risk score 1-10 based on debt, beta (volatility), and current ratio (ability to pay short-term bills). 1 = safest, 10 = very risky. For halal investing, prefer stocks with risk rating below 6.</span></span>
-          </div>
-          <div class="text-white font-bold text-xl">4/10</div>
-          <div class="badge-green text-xs px-2 py-0.5 rounded-full mt-1">Low Risk ✓</div>
-        </div>
+      <button class="info-btn" onclick="showInfo('fundamentals')" style="width:22px;height:22px;font-size:11px">i</button>
+    </div>
+    <!-- Metrics expand -->
+    <div class="card p-0 mb-4 overflow-hidden">
+      <div class="accordion-header" onclick="toggleAccordion('screenerDetail',this)">
+        <div class="font-semibold text-sm">📋 Detailed Financials</div>
+        <div class="accordion-icon">▼</div>
       </div>
-      <div class="glow-divider"></div>
-      <div class="grid grid-cols-3 gap-3 text-xs text-center">
-        <div class="p-3 rounded-xl bg-emerald-900/20 border border-emerald-700/30">
-          <div class="text-slate-400 mb-1">Entry Zone</div>
-          <div class="text-emerald-400 font-bold text-base">₹2,862</div>
-          <div class="text-slate-500">Buy near here</div>
+      <div class="accordion-body" id="screenerDetail">
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 p-4 pt-0 text-sm">
+          <div class="p-3 rounded-xl" style="background:var(--surface2)"><div class="flex items-center gap-1 text-xs mb-1" style="color:var(--text2)">P/E Ratio <button class="info-btn" onclick="showInfo('pe_ratio')">i</button></div><div style="font-weight:800;font-size:1.3rem">23.4</div><span class="badge-green text-xs px-2 py-0.5 rounded-full mt-1 inline-block">Fairly Valued</span></div>
+          <div class="p-3 rounded-xl" style="background:var(--surface2)"><div class="flex items-center gap-1 text-xs mb-1" style="color:var(--text2)">ROE <button class="info-btn" onclick="showInfo('roe')">i</button></div><div style="font-weight:800;font-size:1.3rem">18.2%</div><span class="badge-green text-xs px-2 py-0.5 rounded-full mt-1 inline-block">Good ✓</span></div>
+          <div class="p-3 rounded-xl" style="background:var(--surface2)"><div class="flex items-center gap-1 text-xs mb-1" style="color:var(--text2)">Debt / Equity <button class="info-btn" onclick="showInfo('de_ratio')">i</button></div><div style="font-weight:800;font-size:1.3rem">0.42</div><span class="badge-green text-xs px-2 py-0.5 rounded-full mt-1 inline-block">Low Debt ✓</span></div>
+          <div class="p-3 rounded-xl" style="background:var(--surface2)"><div class="flex items-center gap-1 text-xs mb-1" style="color:var(--text2)">Revenue Growth <button class="info-btn" onclick="showInfo('rev_growth')">i</button></div><div style="font-weight:800;font-size:1.3rem">14.2%</div><span class="badge-green text-xs px-2 py-0.5 rounded-full mt-1 inline-block">Strong ✓</span></div>
+          <div class="p-3 rounded-xl" style="background:var(--surface2)"><div class="flex items-center gap-1 text-xs mb-1" style="color:var(--text2)">Profit Margin <button class="info-btn" onclick="showInfo('profit_margin')">i</button></div><div style="font-weight:800;font-size:1.3rem">12.1%</div><span class="badge-green text-xs px-2 py-0.5 rounded-full mt-1 inline-block">Healthy</span></div>
+          <div class="p-3 rounded-xl" style="background:var(--surface2)"><div class="flex items-center gap-1 text-xs mb-1" style="color:var(--text2)">Risk Rating <button class="info-btn" onclick="showInfo('risk_rating')">i</button></div><div style="font-weight:800;font-size:1.3rem">4/10</div><span class="badge-green text-xs px-2 py-0.5 rounded-full mt-1 inline-block">Low Risk ✓</span></div>
         </div>
-        <div class="p-3 rounded-xl bg-blue-900/20 border border-blue-700/30">
-          <div class="text-slate-400 mb-1">Bull Target</div>
-          <div class="text-blue-400 font-bold text-base">₹3,212</div>
-          <div class="text-slate-500">Take profit</div>
-        </div>
-        <div class="p-3 rounded-xl bg-red-900/20 border border-red-700/30">
-          <div class="text-slate-400 mb-1">Bear Target</div>
-          <div class="text-red-400 font-bold text-base">₹2,475</div>
-          <div class="text-slate-500">Stop loss</div>
+        <div class="glow-divider mx-4"></div>
+        <div class="grid grid-cols-3 gap-3 p-4 pt-0 text-xs text-center">
+          <div class="p-3 rounded-xl" style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2)"><div style="color:var(--text2)">Entry Zone</div><div style="color:#34d399;font-weight:800;font-size:16px;margin:4px 0">₹2,862</div><div style="color:var(--text3)">Buy near here</div></div>
+          <div class="p-3 rounded-xl" style="background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.2)"><div style="color:var(--text2)">Bull Target</div><div style="color:#60a5fa;font-weight:800;font-size:16px;margin:4px 0">₹3,212</div><div style="color:var(--text3)">Take profit</div></div>
+          <div class="p-3 rounded-xl" style="background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2)"><div style="color:var(--text2)">Bear Target</div><div style="color:#f87171;font-weight:800;font-size:16px;margin:4px 0">₹2,475</div><div style="color:var(--text3)">Worst case</div></div>
         </div>
       </div>
     </div>
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════ -->
-  <!-- TAB 5 — MOAT ANALYZER                                             -->
+  <!-- TAB 5 — MOAT                                                      -->
   <!-- ══════════════════════════════════════════════════════════════════ -->
   <div id="tab-moat" class="section">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-      <div class="card beam-card p-5 text-center">
-        <div class="text-4xl mb-2">🏰</div>
-        <div class="text-slate-400 text-xs mb-1 flex items-center justify-center gap-1">Moat Score
-          <span class="info-btn">ⓘ<span class="info-tip">A "moat" is a company's competitive advantage — why customers keep choosing them over competitors. Strong moat (4-5) = very hard to replace. Like how it's hard to imagine switching from Reliance Jio if you've been a user for years.</span></span>
-        </div>
-        <div class="text-4xl font-extrabold text-purple-400">4/5</div>
-        <div class="badge-purple px-3 py-1 rounded-full text-sm font-bold mt-2 inline-block">Strong Moat</div>
+    <div class="card p-4 mb-4 flex items-center gap-4 flex-wrap">
+      <div class="text-4xl">🏰</div>
+      <div class="flex-1">
+        <div class="font-bold text-base">Moat Score: <span style="color:#a78bfa">4/5 — Strong</span></div>
+        <div class="text-sm mt-1" style="color:var(--text2)">Reliance has a dominant competitive position. Very hard to replace in telecom, retail, and energy.</div>
       </div>
-      <div class="card p-4 md:col-span-2">
-        <h3 class="font-semibold text-sm mb-3">Why this moat rating?</h3>
-        <div class="space-y-2 text-xs">
-          <div class="flex items-center gap-2 text-emerald-400"><span>✓</span><span>Exceptional ROE (18%) — strong capital efficiency</span></div>
-          <div class="flex items-center gap-2 text-emerald-400"><span>✓</span><span>High profit margin (12%) — pricing power / cost advantage</span></div>
-          <div class="flex items-center gap-2 text-emerald-400"><span>✓</span><span>Very low debt (D/E 0.42) — financial fortress</span></div>
-          <div class="flex items-center gap-2 text-slate-500"><span>○</span><span>Revenue growth moderate — room to improve</span></div>
-        </div>
-        <div class="glow-divider"></div>
-        <div class="text-xs"><span class="text-slate-400">Best Pick Among Peers: </span><span class="text-emerald-400 font-bold">RELIANCE</span><span class="text-slate-500"> — Scores highest on ROE, margins, and debt metrics</span></div>
-      </div>
+      <button class="info-btn" onclick="showInfo('moat')" style="width:22px;height:22px;font-size:11px">i</button>
     </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-      <div class="card p-4">
-        <h3 class="font-semibold text-sm mb-3 flex items-center gap-1">SWOT Analysis
-          <span class="info-btn">ⓘ<span class="info-tip">SWOT = Strengths, Weaknesses, Opportunities, Threats. A classic business analysis framework. It helps you understand the full picture of a company before investing.</span></span>
-        </h3>
-        <div class="grid grid-cols-2 gap-2 text-xs">
-          <div class="p-2 rounded-lg bg-emerald-900/20">
-            <div class="text-emerald-400 font-bold mb-1">💪 Strengths</div>
-            <div class="text-slate-300 space-y-1">
-              <div>High ROE (18%) — efficient capital use</div>
-              <div>Strong margins (12%) — pricing power</div>
-              <div>Low debt — strong balance sheet</div>
-            </div>
-          </div>
-          <div class="p-2 rounded-lg bg-red-900/15">
-            <div class="text-red-400 font-bold mb-1">⚠️ Weaknesses</div>
-            <div class="text-slate-300 space-y-1">
-              <div>Large conglomerate — complex to analyse</div>
-              <div>Exposure to oil price volatility</div>
-            </div>
-          </div>
-          <div class="p-2 rounded-lg bg-blue-900/20">
-            <div class="text-blue-400 font-bold mb-1">🚀 Opportunities</div>
-            <div class="text-slate-300 space-y-1">
-              <div>Revenue growing 14% — expanding</div>
-              <div>Growing Indian consumer market</div>
-              <div>Jio + Retail digital transformation</div>
-            </div>
-          </div>
-          <div class="p-2 rounded-lg bg-yellow-900/15">
-            <div class="text-yellow-400 font-bold mb-1">🌩 Threats</div>
-            <div class="text-slate-300 space-y-1">
-              <div>Global macro / USD-INR volatility</div>
-              <div>Regulatory changes in telecom</div>
-            </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="card p-0 overflow-hidden">
+        <div class="accordion-header" onclick="toggleAccordion('swotDetail',this)">
+          <div class="font-semibold text-sm">🔲 SWOT Analysis</div>
+          <div class="accordion-icon">▼</div>
+        </div>
+        <div class="accordion-body" id="swotDetail">
+          <div class="grid grid-cols-2 gap-2 p-4 pt-0 text-xs">
+            <div class="p-3 rounded-xl" style="background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.18)"><div style="color:#34d399;font-weight:700;margin-bottom:6px">💪 Strengths</div><div style="color:var(--text2);line-height:1.6">High ROE (18%)<br>Strong margins (12%)<br>Low debt (D/E 0.42)</div></div>
+            <div class="p-3 rounded-xl" style="background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.15)"><div style="color:#f87171;font-weight:700;margin-bottom:6px">⚠️ Weaknesses</div><div style="color:var(--text2);line-height:1.6">Complex conglomerate<br>Oil price exposure</div></div>
+            <div class="p-3 rounded-xl" style="background:rgba(96,165,250,.07);border:1px solid rgba(96,165,250,.18)"><div style="color:#60a5fa;font-weight:700;margin-bottom:6px">🚀 Opportunities</div><div style="color:var(--text2);line-height:1.6">Revenue growing 14%<br>Jio + Retail digital<br>India consumer boom</div></div>
+            <div class="p-3 rounded-xl" style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.15)"><div style="color:#fbbf24;font-weight:700;margin-bottom:6px">🌩 Threats</div><div style="color:var(--text2);line-height:1.6">USD/INR volatility<br>Telecom regulation</div></div>
           </div>
         </div>
       </div>
-
       <div class="card p-4">
-        <h3 class="font-semibold text-sm mb-3">Peer Comparison</h3>
-        <div class="overflow-x-auto">
-          <table class="text-xs">
-            <thead><tr>
-              <th>Stock</th>
-              <th class="flex items-center gap-1">ROE%
-                <span class="info-btn">ⓘ<span class="info-tip">Return on Equity. Higher = company is more efficient with shareholder money.</span></span>
-              </th>
-              <th>Margin%</th>
-              <th>D/E</th>
-              <th>Moat</th>
-            </tr></thead>
-            <tbody>
-              <tr class="font-semibold"><td class="text-purple-400">RELIANCE ⭐</td><td class="text-emerald-400">18.2</td><td>12.1</td><td>0.42</td><td><span class="badge-green px-2 py-0.5 rounded">Strong</span></td></tr>
-              <tr><td>ONGC</td><td>11.4</td><td>8.2</td><td>0.38</td><td><span class="badge-yellow px-2 py-0.5 rounded">Moderate</span></td></tr>
-              <tr><td>BPCL</td><td>9.1</td><td>3.2</td><td>0.92</td><td><span class="badge-yellow px-2 py-0.5 rounded">Moderate</span></td></tr>
-              <tr><td>BHARTIARTL</td><td>14.3</td><td>11.8</td><td>1.84</td><td><span class="badge-yellow px-2 py-0.5 rounded">Moderate</span></td></tr>
-            </tbody>
-          </table>
-        </div>
+        <div class="flex items-center gap-2 mb-3"><h3 class="font-semibold text-sm">Peer Comparison</h3><button class="info-btn" onclick="showInfo('peer_compare')">i</button></div>
+        <table class="text-xs">
+          <thead><tr><th>Stock</th><th>ROE%</th><th>Margin%</th><th>D/E</th><th>Moat</th></tr></thead>
+          <tbody>
+            <tr style="font-weight:700"><td style="color:#a78bfa">RELIANCE ⭐</td><td style="color:#34d399">18.2</td><td>12.1</td><td>0.42</td><td><span class="badge-green px-2 py-0.5 rounded">Strong</span></td></tr>
+            <tr><td>ONGC</td><td>11.4</td><td>8.2</td><td>0.38</td><td><span class="badge-yellow px-2 py-0.5 rounded">Moderate</span></td></tr>
+            <tr><td>BPCL</td><td>9.1</td><td>3.2</td><td>0.92</td><td><span class="badge-yellow px-2 py-0.5 rounded">Moderate</span></td></tr>
+            <tr><td>BHARTIARTL</td><td>14.3</td><td>11.8</td><td>1.84</td><td><span class="badge-yellow px-2 py-0.5 rounded">Moderate</span></td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -668,58 +704,32 @@
   <!-- ══════════════════════════════════════════════════════════════════ -->
   <div id="tab-explainer" class="section">
     <div class="card beam-card p-5 mb-4">
-      <div class="flex items-start gap-4">
-        <div class="text-4xl">🤖</div>
-        <div>
-          <div class="font-bold text-lg mb-1">AI Decision Explainer — RELIANCE</div>
-          <div class="text-slate-400 text-sm">Signal: <span class="text-emerald-400 font-bold">BUY</span> · Confidence: <span class="text-blue-400 font-bold">79%</span> · Price: ₹2,940</div>
-        </div>
-      </div>
-      <div class="glow-divider"></div>
-      <div class="bg-slate-800/30 rounded-xl p-4 text-sm text-slate-300 border-l-4 border-indigo-500 leading-relaxed">
-        "RELIANCE shows a strong BUY signal driven by bullish MACD crossover, RSI in healthy zone at 58, and positive news sentiment (+0.62). The stock is trading below its 52-week high with strong support at ₹2,820. Macro conditions are favourable — VIX is low (14.2), yield curve is normal, and Nifty is in expansion phase. Risk/Reward is 2.8:1 which meets our minimum threshold of 2.0. Position size recommended: 4% of portfolio."
+      <div class="flex items-start gap-4 mb-4"><div class="text-4xl">🤖</div><div><div class="font-bold text-lg">AI Decision Explainer</div><div class="text-sm mt-1" style="color:var(--text2)">Signal: <span style="color:#34d399;font-weight:700">BUY</span> · Confidence: <span style="color:#60a5fa;font-weight:700">79%</span> · Price: ₹2,940</div></div><button class="info-btn ml-auto" onclick="showInfo('shap')" style="width:22px;height:22px;font-size:11px">i</button></div>
+      <div class="p-4 rounded-xl text-sm leading-relaxed" style="background:rgba(99,102,241,.07);border-left:3px solid #6366f1;color:var(--text2)">
+        "RELIANCE shows a strong BUY driven by bullish MACD crossover, RSI in healthy zone (58), and positive news sentiment (+0.62). Trading below 52-week high with strong support at ₹2,820. Macro is favourable — VIX low (14.2), yield curve normal, expansion phase. Risk/Reward 2.8:1 meets minimum threshold of 2.0. Recommended position: <strong style='color:var(--text)'>4% of portfolio</strong>."
       </div>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="card p-4">
-        <div class="flex items-center gap-2 mb-3">
-          <h3 class="font-semibold text-sm">SHAP Feature Importance</h3>
-          <span class="info-btn">ⓘ<span class="info-tip">SHAP values show WHY the AI made this decision. Each bar shows how much that feature pushed the prediction towards BUY (green/right) or SELL (red/left). Longer bar = more influence on the decision.</span></span>
-        </div>
-        <div class="space-y-2 text-xs">
-          <div class="flex items-center gap-2"><span class="w-28 text-slate-400 flex-shrink-0">RSI 14</span><div class="flex-1 flex justify-end"><div class="shap-bar bg-emerald-500" style="width:82%"></div></div><span class="ml-2 text-emerald-400 w-12 text-right">+0.41</span></div>
-          <div class="flex items-center gap-2"><span class="w-28 text-slate-400 flex-shrink-0">MACD Hist</span><div class="flex-1 flex justify-end"><div class="shap-bar bg-emerald-500" style="width:70%"></div></div><span class="ml-2 text-emerald-400 w-12 text-right">+0.35</span></div>
-          <div class="flex items-center gap-2"><span class="w-28 text-slate-400 flex-shrink-0">Sentiment</span><div class="flex-1 flex justify-end"><div class="shap-bar bg-emerald-500" style="width:62%"></div></div><span class="ml-2 text-emerald-400 w-12 text-right">+0.31</span></div>
-          <div class="flex items-center gap-2"><span class="w-28 text-slate-400 flex-shrink-0">VIX Regime</span><div class="flex-1 flex justify-end"><div class="shap-bar bg-emerald-500" style="width:55%"></div></div><span class="ml-2 text-emerald-400 w-12 text-right">+0.27</span></div>
-          <div class="flex items-center gap-2"><span class="w-28 text-slate-400 flex-shrink-0">BB %B</span><div class="flex-1 flex justify-end"><div class="shap-bar bg-red-500" style="width:25%"></div></div><span class="ml-2 text-red-400 w-12 text-right">-0.13</span></div>
-          <div class="flex items-center gap-2"><span class="w-28 text-slate-400 flex-shrink-0">Volume Z</span><div class="flex-1 flex justify-end"><div class="shap-bar bg-red-500" style="width:18%"></div></div><span class="ml-2 text-red-400 w-12 text-right">-0.09</span></div>
+        <div class="flex items-center gap-2 mb-3"><h3 class="font-semibold text-sm">Why this decision? (SHAP)</h3><button class="info-btn" onclick="showInfo('shap')">i</button></div>
+        <div class="space-y-3">
+          <div class="shap-row"><span class="shap-label" style="color:var(--text2)">RSI 14</span><div class="shap-track"><div class="shap-fill" style="width:82%;background:#34d399"></div></div><span style="color:#34d399;font-size:11px;margin-left:6px;width:40px;text-align:right">+0.41</span></div>
+          <div class="shap-row"><span class="shap-label" style="color:var(--text2)">MACD Histogram</span><div class="shap-track"><div class="shap-fill" style="width:70%;background:#34d399"></div></div><span style="color:#34d399;font-size:11px;margin-left:6px;width:40px;text-align:right">+0.35</span></div>
+          <div class="shap-row"><span class="shap-label" style="color:var(--text2)">Sentiment</span><div class="shap-track"><div class="shap-fill" style="width:62%;background:#34d399"></div></div><span style="color:#34d399;font-size:11px;margin-left:6px;width:40px;text-align:right">+0.31</span></div>
+          <div class="shap-row"><span class="shap-label" style="color:var(--text2)">VIX Regime</span><div class="shap-track"><div class="shap-fill" style="width:55%;background:#34d399"></div></div><span style="color:#34d399;font-size:11px;margin-left:6px;width:40px;text-align:right">+0.27</span></div>
+          <div class="shap-row"><span class="shap-label" style="color:var(--text2)">BB %B</span><div class="shap-track"><div class="shap-fill" style="width:25%;background:#f87171"></div></div><span style="color:#f87171;font-size:11px;margin-left:6px;width:40px;text-align:right">-0.13</span></div>
+          <div class="shap-row"><span class="shap-label" style="color:var(--text2)">Volume Z-Score</span><div class="shap-track"><div class="shap-fill" style="width:18%;background:#f87171"></div></div><span style="color:#f87171;font-size:11px;margin-left:6px;width:40px;text-align:right">-0.09</span></div>
         </div>
       </div>
       <div class="card p-4">
-        <div class="flex items-center gap-2 mb-3">
-          <h3 class="font-semibold text-sm">Confidence Breakdown</h3>
-          <span class="info-btn">ⓘ<span class="info-tip">Our ensemble combines ARIMA (time-series), LightGBM (ML), and LSTM (deep learning) models. The meta-learner blends all three to give a final confidence score. 79% confidence means strong agreement across models.</span></span>
-        </div>
+        <div class="flex items-center gap-2 mb-3"><h3 class="font-semibold text-sm">Model Confidence</h3><button class="info-btn" onclick="showInfo('ensemble')">i</button></div>
         <div class="space-y-3 text-xs">
-          <div>
-            <div class="flex justify-between mb-1"><span class="text-slate-400">ARIMA (Time Series)</span><span class="text-blue-400">65%</span></div>
-            <div class="progress"><div class="progress-fill bg-blue-500" style="width:65%"></div></div>
-          </div>
-          <div>
-            <div class="flex justify-between mb-1"><span class="text-slate-400">LightGBM (ML Model)</span><span class="text-purple-400">81%</span></div>
-            <div class="progress"><div class="progress-fill bg-purple-500" style="width:81%"></div></div>
-          </div>
-          <div>
-            <div class="flex justify-between mb-1"><span class="text-slate-400">Meta-Ensemble (Final)</span><span class="text-emerald-400 font-bold">79%</span></div>
-            <div class="progress"><div class="progress-fill bg-emerald-500" style="width:79%"></div></div>
-          </div>
+          <div><div class="flex justify-between mb-1"><span style="color:var(--text2)">ARIMA (Time-Series)</span><span style="color:#60a5fa;font-weight:700">65%</span></div><div class="progress"><div class="progress-fill" style="width:65%;background:#60a5fa"></div></div></div>
+          <div><div class="flex justify-between mb-1"><span style="color:var(--text2)">LightGBM (ML Model)</span><span style="color:#a78bfa;font-weight:700">81%</span></div><div class="progress"><div class="progress-fill" style="width:81%;background:#a78bfa"></div></div></div>
+          <div><div class="flex justify-between mb-1"><span style="color:var(--text2)">Meta-Ensemble (Final)</span><span style="color:#34d399;font-weight:700">79%</span></div><div class="progress"><div class="progress-fill" style="width:79%;background:#34d399"></div></div></div>
         </div>
         <div class="glow-divider"></div>
-        <div class="text-xs space-y-1">
-          <div class="text-yellow-400 font-semibold">⚠️ Risk Warnings</div>
-          <div class="text-slate-400">• Global macro uncertainty / USD/INR volatility</div>
-          <div class="text-slate-400">• Earnings date approaching — vol may rise</div>
-        </div>
+        <div class="text-xs space-y-1"><div style="color:#fbbf24;font-weight:600;margin-bottom:4px">⚠️ Risk Warnings</div><div style="color:var(--text2)">• Global macro uncertainty / USD/INR</div><div style="color:var(--text2)">• Earnings date approaching — vol may rise</div></div>
       </div>
     </div>
   </div>
@@ -728,129 +738,54 @@
   <!-- TAB 7 — MONTE CARLO                                               -->
   <!-- ══════════════════════════════════════════════════════════════════ -->
   <div id="tab-montecarlo" class="section">
-    <div class="card beam-card p-5 mb-4">
-      <div class="flex items-center gap-3 mb-2">
-        <span class="text-3xl">🎲</span>
-        <div>
-          <h2 class="font-bold text-lg">Monte Carlo Simulation</h2>
-          <p class="text-slate-400 text-xs flex items-center gap-1">1,000 simulated versions of this strategy
-            <span class="info-btn">ⓘ<span class="info-tip">Monte Carlo simulation randomly reshuffles your past trades 1,000 times to show the range of possible futures. It answers: "what's the worst realistic outcome?" and "what's my chance of making money?" — far more honest than simple backtesting.</span></span>
-          </p>
-        </div>
+    <div class="card p-4 mb-4 flex items-center gap-4 flex-wrap">
+      <div class="text-3xl">🎲</div>
+      <div class="flex-1">
+        <div class="font-bold text-base">Monte Carlo Simulation — 1,000 Runs</div>
+        <div class="text-sm mt-1" style="color:var(--text2)">Chance of ending profitable: <span style="color:#34d399;font-weight:700">78%</span> · Median outcome: <span style="color:#60a5fa;font-weight:700">+12.4%</span></div>
       </div>
-      <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mt-4">
-        <div class="p-3 rounded-xl bg-red-900/20 border border-red-700/30 text-center">
-          <div class="text-slate-400 text-xs mb-1 flex items-center justify-center gap-1">Worst 5%
-            <span class="info-btn">ⓘ<span class="info-tip">In the 5% worst simulations, your portfolio ended at this value. This is the realistic "nightmare scenario" — plan your risk management around this number.</span></span>
-          </div>
-          <div class="text-red-400 font-bold text-xl">₹86,200</div>
-          <div class="text-xs text-slate-500">-13.8%</div>
-        </div>
-        <div class="p-3 rounded-xl bg-orange-900/20 border border-orange-700/30 text-center">
-          <div class="text-slate-400 text-xs mb-1">Bad Case 25%</div>
-          <div class="text-orange-400 font-bold text-xl">₹95,800</div>
-          <div class="text-xs text-slate-500">-4.2%</div>
-        </div>
-        <div class="p-3 rounded-xl bg-blue-900/20 border border-blue-700/30 text-center">
-          <div class="text-slate-400 text-xs mb-1 flex items-center justify-center gap-1">Median
-            <span class="info-btn">ⓘ<span class="info-tip">The middle outcome — half of simulations did better, half did worse. This is the most realistic expectation for what your strategy might return.</span></span>
-          </div>
-          <div class="text-blue-400 font-bold text-xl">₹1,12,400</div>
-          <div class="text-xs text-slate-500">+12.4%</div>
-        </div>
-        <div class="p-3 rounded-xl bg-emerald-900/20 border border-emerald-700/30 text-center">
-          <div class="text-slate-400 text-xs mb-1">Good Case 75%</div>
-          <div class="text-emerald-400 font-bold text-xl">₹1,28,600</div>
-          <div class="text-xs text-slate-500">+28.6%</div>
-        </div>
-        <div class="p-3 rounded-xl bg-purple-900/20 border border-purple-700/30 text-center">
-          <div class="text-slate-400 text-xs mb-1">Best 5%</div>
-          <div class="text-purple-400 font-bold text-xl">₹1,64,200</div>
-          <div class="text-xs text-slate-500">+64.2%</div>
-        </div>
-      </div>
+      <button class="info-btn" onclick="showInfo('montecarlo')" style="width:22px;height:22px;font-size:11px">i</button>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-      <div class="card p-4 text-center">
-        <div class="text-slate-400 text-xs mb-2 flex items-center justify-center gap-1">Probability of Profit
-          <span class="info-btn">ⓘ<span class="info-tip">Out of 1,000 simulations, how many ended with more money than you started with? 78% means 780 out of 1,000 futures were profitable. Aim for strategies above 65%.</span></span>
-        </div>
-        <div class="metric-val text-emerald-400">78%</div>
-        <div class="text-xs text-slate-500 mt-1">780 of 1,000 runs profitable</div>
-      </div>
-      <div class="card p-4 text-center">
-        <div class="text-slate-400 text-xs mb-2 flex items-center justify-center gap-1">Avg Max Drawdown
-          <span class="info-btn">ⓘ<span class="info-tip">Max Drawdown = the biggest drop from peak to trough in a single run. -18.4% average means typically you'd see your portfolio drop 18.4% from its peak at some point. Can you emotionally handle that? If yes, proceed.</span></span>
-        </div>
-        <div class="metric-val text-yellow-400">-18.4%</div>
-        <div class="text-xs text-slate-500 mt-1">Average across simulations</div>
-      </div>
-      <div class="card p-4 text-center">
-        <div class="text-slate-400 text-xs mb-2">Starting Capital</div>
-        <div class="metric-val text-slate-300">₹1,00,000</div>
-        <div class="text-xs text-slate-500 mt-1">32 trades · 5 year history</div>
-      </div>
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
+      <div class="card p-3 text-center"><div class="text-xs mb-1 flex items-center justify-center gap-1" style="color:var(--text2)">Worst 5% <button class="info-btn" onclick="showInfo('mc_worst')">i</button></div><div style="color:#f87171;font-weight:800;font-size:1.3rem">₹86,200</div><div class="text-xs mt-1" style="color:var(--text3)">-13.8%</div></div>
+      <div class="card p-3 text-center"><div class="text-xs mb-1" style="color:var(--text2)">Bad Case 25%</div><div style="color:#fb923c;font-weight:800;font-size:1.3rem">₹95,800</div><div class="text-xs mt-1" style="color:var(--text3)">-4.2%</div></div>
+      <div class="card beam-card p-3 text-center"><div class="text-xs mb-1 flex items-center justify-center gap-1" style="color:var(--text2)">Median <button class="info-btn" onclick="showInfo('mc_median')">i</button></div><div style="color:#60a5fa;font-weight:800;font-size:1.3rem">₹1,12,400</div><div class="text-xs mt-1" style="color:var(--text3)">+12.4%</div></div>
+      <div class="card p-3 text-center"><div class="text-xs mb-1" style="color:var(--text2)">Good Case 75%</div><div style="color:#34d399;font-weight:800;font-size:1.3rem">₹1,28,600</div><div class="text-xs mt-1" style="color:var(--text3)">+28.6%</div></div>
+      <div class="card p-3 text-center"><div class="text-xs mb-1" style="color:var(--text2)">Best 5%</div><div style="color:#a78bfa;font-weight:800;font-size:1.3rem">₹1,64,200</div><div class="text-xs mt-1" style="color:var(--text3)">+64.2%</div></div>
     </div>
     <div class="card p-4">
-      <div class="flex items-center gap-2 mb-3">
-        <h3 class="font-semibold text-sm">Outcome Distribution</h3>
-        <span class="info-btn">ⓘ<span class="info-tip">This chart shows all 1,000 final portfolio values. The tall bar in the middle (green zone) means most simulations ended profitably. The red zone on the left = scenarios where you'd lose money. Thin red zone = good strategy.</span></span>
-      </div>
+      <div class="flex items-center gap-2 mb-3"><h3 class="font-semibold text-sm">Outcome Distribution</h3><button class="info-btn" onclick="showInfo('mc_chart')">i</button></div>
       <canvas id="mcChart" height="140"></canvas>
     </div>
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════ -->
-  <!-- TAB 8 — DRIFT DETECTION                                           -->
+  <!-- TAB 8 — DRIFT                                                     -->
   <!-- ══════════════════════════════════════════════════════════════════ -->
   <div id="tab-drift" class="section">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-      <div class="card p-4 text-center beam-card">
-        <div class="text-slate-400 text-xs mb-2 flex items-center justify-center gap-1">Data Drift Status
-          <span class="info-btn">ⓘ<span class="info-tip">Data drift = the market is behaving differently from when the AI was trained. If drift is detected, the model's predictions may be less accurate. Like a weather forecast trained in summer being wrong in winter.</span></span>
-        </div>
-        <div class="text-5xl mb-2">✅</div>
-        <div class="text-emerald-400 font-bold text-lg">No Drift</div>
-        <div class="text-xs text-slate-500 mt-1">2 of 22 features slightly shifted</div>
-      </div>
-      <div class="card p-4 text-center">
-        <div class="text-slate-400 text-xs mb-2 flex items-center justify-center gap-1">Model Accuracy (30d)
-          <span class="info-btn">ⓘ<span class="info-tip">Rolling 30-trade win rate of the model in live paper trading. If this drops below 50%, the system alerts you to consider retraining. Currently at 67% which is well above the floor.</span></span>
-        </div>
-        <div class="metric-val text-emerald-400">67%</div>
-        <div class="text-xs text-slate-500 mt-1">Floor: 50% · Status: ✓ OK</div>
-        <div class="progress mt-3"><div class="progress-fill bg-emerald-500" style="width:67%"></div></div>
-      </div>
-      <div class="card p-4 text-center">
-        <div class="text-slate-400 text-xs mb-2 flex items-center justify-center gap-1">PSI Score
-          <span class="info-btn">ⓘ<span class="info-tip">Population Stability Index measures how different the live data is from training data. Below 0.1 = stable. 0.1-0.2 = moderate shift. Above 0.2 = major drift — retrain urgently. Currently 0.04 = very stable.</span></span>
-        </div>
-        <div class="metric-val text-emerald-400">0.04</div>
-        <div class="text-xs text-slate-500 mt-1">&lt;0.10 = Stable ✓</div>
-      </div>
+    <div class="card p-4 mb-4 flex items-center gap-4 flex-wrap">
+      <div class="text-3xl">✅</div>
+      <div class="flex-1"><div class="font-bold text-base">No Drift Detected</div><div class="text-sm mt-1" style="color:var(--text2)">Model is accurate. 30-day win rate 67% (floor 50%). PSI 0.04 — very stable.</div></div>
+      <button class="info-btn" onclick="showInfo('drift')" style="width:22px;height:22px;font-size:11px">i</button>
     </div>
-    <div class="card p-4">
-      <h3 class="font-semibold text-sm mb-3">Feature Drift Report (KS Test)</h3>
-      <div class="overflow-x-auto">
-        <table class="text-xs">
-          <thead><tr>
-            <th>Feature</th>
-            <th class="flex items-center gap-1">KS Statistic
-              <span class="info-btn">ⓘ<span class="info-tip">KS (Kolmogorov-Smirnov) statistic measures how different the current feature distribution is from training. Below 0.1 = same. Above 0.2 = different. P-value below 0.05 = statistically significant drift.</span></span>
-            </th>
-            <th>P-Value</th>
-            <th>PSI</th>
-            <th>Status</th>
-          </tr></thead>
-          <tbody>
-            <tr><td>RSI 14</td><td>0.08</td><td>0.24</td><td>0.02</td><td><span class="drift-ok">✓ Stable</span></td></tr>
-            <tr><td>MACD</td><td>0.09</td><td>0.18</td><td>0.03</td><td><span class="drift-ok">✓ Stable</span></td></tr>
-            <tr><td>Volume Ratio</td><td>0.16</td><td>0.04</td><td>0.12</td><td><span class="drift-warn">⚠ Slight</span></td></tr>
-            <tr><td>VIX Close</td><td>0.12</td><td>0.09</td><td>0.08</td><td><span class="drift-warn">⚠ Slight</span></td></tr>
-            <tr><td>BB Width</td><td>0.07</td><td>0.31</td><td>0.01</td><td><span class="drift-ok">✓ Stable</span></td></tr>
-            <tr><td>OBV</td><td>0.06</td><td>0.42</td><td>0.01</td><td><span class="drift-ok">✓ Stable</span></td></tr>
-          </tbody>
-        </table>
+    <div class="card p-0 overflow-hidden">
+      <div class="accordion-header" onclick="toggleAccordion('driftTable',this)">
+        <div class="font-semibold text-sm">📋 Feature Drift Report (KS Test)</div>
+        <div class="accordion-icon">▼</div>
+      </div>
+      <div class="accordion-body" id="driftTable">
+        <div class="p-4 pt-0 overflow-x-auto">
+          <table class="text-xs">
+            <thead><tr><th>Feature</th><th class="flex items-center gap-1">KS Stat <button class="info-btn" onclick="showInfo('ks_test')">i</button></th><th>P-Value</th><th class="flex items-center gap-1">PSI <button class="info-btn" onclick="showInfo('psi')">i</button></th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>RSI 14</td><td>0.08</td><td>0.24</td><td>0.02</td><td><span class="drift-ok">✓ Stable</span></td></tr>
+              <tr><td>MACD</td><td>0.09</td><td>0.18</td><td>0.03</td><td><span class="drift-ok">✓ Stable</span></td></tr>
+              <tr><td>Volume Ratio</td><td>0.16</td><td>0.04</td><td>0.12</td><td><span class="drift-warn">⚠ Slight</span></td></tr>
+              <tr><td>VIX Close</td><td>0.12</td><td>0.09</td><td>0.08</td><td><span class="drift-warn">⚠ Slight</span></td></tr>
+              <tr><td>BB Width</td><td>0.07</td><td>0.31</td><td>0.01</td><td><span class="drift-ok">✓ Stable</span></td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -860,114 +795,143 @@
   <!-- ══════════════════════════════════════════════════════════════════ -->
   <div id="tab-features" class="section">
     <div class="card p-5">
-      <div class="flex items-center gap-2 mb-4">
-        <h2 class="font-bold text-lg">52 AI Features
-          <span class="info-btn">ⓘ<span class="info-tip">The AI model uses 52 different data points (features) to make each decision. These are grouped into categories: momentum, trend, volatility, volume, market context, calendar, and optionally sentiment & macro. More features = smarter decisions.</span></span>
-        </h2>
-        <span class="badge-blue px-3 py-1 rounded-full text-xs ml-auto">All Halal-Screened</span>
-      </div>
+      <div class="flex items-center gap-2 mb-4"><h2 class="font-bold text-lg">52 AI Features</h2><button class="info-btn" onclick="showInfo('features_overview')" style="width:22px;height:22px;font-size:11px">i</button><span class="badge-blue text-xs px-3 py-1 rounded-full ml-auto">Halal Only</span></div>
       <div class="space-y-4">
-        <div>
-          <div class="text-emerald-400 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1">Momentum
-            <span class="info-btn">ⓘ<span class="info-tip">Momentum features measure the speed and direction of price movement. Is the stock accelerating or decelerating? RSI and ROC are key momentum indicators.</span></span>
-          </div>
-          <div>
-            <span class="feat-pill">RSI 14</span><span class="feat-pill">RSI 7</span><span class="feat-pill">RSI 21</span>
-            <span class="feat-pill">MACD Line</span><span class="feat-pill">MACD Signal</span><span class="feat-pill">MACD Histogram</span>
-            <span class="feat-pill">ROC 5</span><span class="feat-pill">ROC 10</span><span class="feat-pill">ROC 20</span>
-            <span class="feat-pill">Williams %R</span>
-          </div>
-        </div>
-        <div>
-          <div class="text-blue-400 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1">Trend
-            <span class="info-btn">ⓘ<span class="info-tip">Trend features tell us the overall direction. Golden Cross (SMA50 > SMA200) is one of the most reliable long-term BUY signals in technical analysis.</span></span>
-          </div>
-          <div>
-            <span class="feat-pill">Price vs SMA20</span><span class="feat-pill">Price vs SMA50</span><span class="feat-pill">Price vs SMA200</span>
-            <span class="feat-pill">SMA5 vs SMA20</span><span class="feat-pill">Golden Cross</span><span class="feat-pill">SMA200 Slope</span>
-          </div>
-        </div>
-        <div>
-          <div class="text-yellow-400 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1">Volatility
-            <span class="info-btn">ⓘ<span class="info-tip">Volatility features measure how wildly the price swings. High volatility = risky. ATR (Average True Range) is used to set stop losses. Bollinger Band Width tells us if a big move is coming.</span></span>
-          </div>
-          <div>
-            <span class="feat-pill">ATR %</span><span class="feat-pill">Volatility 5d</span><span class="feat-pill">Volatility 10d</span>
-            <span class="feat-pill">Volatility 20d</span><span class="feat-pill">BB Width</span><span class="feat-pill">BB %B</span>
-          </div>
-        </div>
-        <div>
-          <div class="text-purple-400 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1">Volume
-            <span class="info-btn">ⓘ<span class="info-tip">Volume features confirm price moves. Price rising with high volume = genuine move. Price rising with low volume = weak, may reverse. OBV tracks money flowing in/out.</span></span>
-          </div>
-          <div>
-            <span class="feat-pill">Volume Ratio</span><span class="feat-pill">Volume Z-Score</span><span class="feat-pill">OBV</span>
-            <span class="feat-pill">MFI 14</span><span class="feat-pill">CMF 20</span>
-          </div>
-        </div>
-        <div>
-          <div class="text-orange-400 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1">Market Context
-            <span class="info-btn">ⓘ<span class="info-tip">These features tell the AI what the broader market is doing. VIX regime tells it if the market is in fear mode. SPY above SMA50 tells it if US markets are in bull mode (which affects Indian FII flows).</span></span>
-          </div>
-          <div>
-            <span class="feat-pill">SPY Return</span><span class="feat-pill">SPY Above SMA50</span>
-            <span class="feat-pill">VIX Close</span><span class="feat-pill">VIX Regime</span>
-          </div>
-        </div>
-        <div>
-          <div class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1">Calendar
-            <span class="info-btn">ⓘ<span class="info-tip">Stocks behave differently on different days and at month-end. Days to Expiry tracks F&O expiry (last Thursday of month) — markets often get volatile near expiry. Holiday Proximity flags if a holiday is coming (lower liquidity).</span></span>
-          </div>
-          <div>
-            <span class="feat-pill">Day of Week</span><span class="feat-pill">Month</span>
-            <span class="feat-pill">Days to Expiry</span><span class="feat-pill">Holiday Proximity</span>
-          </div>
-        </div>
-        <div>
-          <div class="text-pink-400 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1">Returns
-            <span class="info-btn">ⓘ<span class="info-tip">Historical return features. Return_lag_1 = yesterday's return. The AI learns patterns like "if the stock fell for 3 days in a row, what typically happens next?" — statistical edge from price history.</span></span>
-          </div>
-          <div>
-            <span class="feat-pill">Return 1d</span><span class="feat-pill">Return 3d</span><span class="feat-pill">Return 5d</span>
-            <span class="feat-pill">Return Lag 1</span><span class="feat-pill">Return Lag 2</span><span class="feat-pill">Return Lag 3</span><span class="feat-pill">Return Lag 5</span>
-          </div>
-        </div>
-        <div>
-          <div class="text-indigo-400 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1">Optional: Sentiment + Macro
-            <span class="info-btn">ⓘ<span class="info-tip">These features are optional (enable with add_sentiment=True, add_macro=True). They add news sentiment and macroeconomic data to the model. Slows training but can improve accuracy in volatile markets.</span></span>
-          </div>
-          <div>
-            <span class="feat-pill">Sentiment Score</span><span class="feat-pill">Sentiment Volume</span><span class="feat-pill">Sentiment Momentum</span>
-            <span class="feat-pill">VIX Level (FRED)</span><span class="feat-pill">DXY Level</span><span class="feat-pill">Yield Curve Spread</span><span class="feat-pill">Market Breadth</span>
-          </div>
-        </div>
+        <div><div class="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1" style="color:#34d399">Momentum <button class="info-btn" onclick="showInfo('feat_momentum')">i</button></div><div><span class="feat-pill">RSI 14</span><span class="feat-pill">RSI 7</span><span class="feat-pill">RSI 21</span><span class="feat-pill">MACD</span><span class="feat-pill">MACD Signal</span><span class="feat-pill">MACD Histogram</span><span class="feat-pill">ROC 5</span><span class="feat-pill">ROC 10</span><span class="feat-pill">ROC 20</span><span class="feat-pill">Williams %R</span></div></div>
+        <div><div class="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1" style="color:#60a5fa">Trend <button class="info-btn" onclick="showInfo('feat_trend')">i</button></div><div><span class="feat-pill">Price vs SMA20</span><span class="feat-pill">Price vs SMA50</span><span class="feat-pill">Price vs SMA200</span><span class="feat-pill">SMA5 vs SMA20</span><span class="feat-pill">Golden Cross</span><span class="feat-pill">SMA200 Slope</span></div></div>
+        <div><div class="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1" style="color:#fbbf24">Volatility <button class="info-btn" onclick="showInfo('feat_volatility')">i</button></div><div><span class="feat-pill">ATR %</span><span class="feat-pill">Volatility 5d</span><span class="feat-pill">Volatility 10d</span><span class="feat-pill">Volatility 20d</span><span class="feat-pill">BB Width</span><span class="feat-pill">BB %B</span></div></div>
+        <div><div class="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1" style="color:#a78bfa">Volume <button class="info-btn" onclick="showInfo('feat_volume')">i</button></div><div><span class="feat-pill">Volume Ratio</span><span class="feat-pill">Volume Z-Score</span><span class="feat-pill">OBV</span><span class="feat-pill">MFI 14</span><span class="feat-pill">CMF 20</span></div></div>
+        <div><div class="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1" style="color:#fb923c">Calendar <button class="info-btn" onclick="showInfo('feat_calendar')">i</button></div><div><span class="feat-pill">Day of Week</span><span class="feat-pill">Month</span><span class="feat-pill">Days to Expiry</span><span class="feat-pill">Holiday Proximity</span></div></div>
       </div>
     </div>
   </div>
 
-</div><!-- /max-w-7xl -->
+</div><!-- /container -->
 
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<!-- SCRIPTS                                                                -->
+<!-- ══════════════════════════════════════════════════════════════════════ -->
 <script>
-/* ── Tab switching ───────────────────────────────────────────────────── */
-function showTab(id) {
+/* ── INFO CARD DATA ──────────────────────────────────────────────────────── */
+const INFO = {
+  nifty50:       { icon:'📈', cat:'Market Index', title:'Nifty 50', desc:'India\'s flagship stock market index — tracks the top 50 largest companies listed on NSE. When Nifty rises, most stocks tend to follow. Think of it as the "temperature" of the Indian economy.', rule:'<strong>Above 22,000:</strong> Healthy bull market — good to invest. <strong>Below 18,000:</strong> Correction territory — be selective.' },
+  vix:           { icon:'😨', cat:'Fear Gauge', title:'VIX — Fear Index', desc:'The CBOE Volatility Index measures how much the market expects prices to move. It\'s often called the "fear gauge." When investors are scared, VIX spikes. When they\'re calm and confident, VIX is low.', rule:'<strong>Below 15:</strong> Calm — good conditions to invest. <strong>15–25:</strong> Normal. <strong>25–35:</strong> Fearful — reduce positions. <strong>Above 35:</strong> Panic — move to cash.' },
+  usdinr:        { icon:'💱', cat:'Currency', title:'USD/INR Exchange Rate', desc:'How many Indian Rupees it costs to buy 1 US Dollar. A weaker Rupee (higher number) means imports get expensive and foreign investors may pull money out of India, hurting stock prices.', rule:'<strong>Below 83:</strong> INR strong — FII inflows likely. <strong>83–86:</strong> Neutral. <strong>Above 86:</strong> INR weak — imports expensive, headwind for markets.' },
+  portfolio:     { icon:'💼', cat:'Your Portfolio', title:'Paper Portfolio Value', desc:'The current simulated value of your paper trading portfolio. No real money is used — this tracks how your AI-driven strategy would have performed in the real market.', rule:'Starting capital: ₹1,00,000. Current: ₹1,24,300. That\'s a <strong>+24.3% return</strong> from AI-generated signals on halal NSE stocks.' },
+  sentiment_score:{ icon:'📰', cat:'News Sentiment', title:'Sentiment Score', desc:'Our FinBERT AI reads every recent headline about this stock and assigns a score from -1.0 (very negative/bearish) to +1.0 (very positive/bullish). It understands financial language just like a professional analyst reading the news.', rule:'<strong>Above +0.4:</strong> Strong bullish signal. <strong>-0.2 to +0.4:</strong> Neutral. <strong>Below -0.4:</strong> Bearish — caution advised.' },
+  bullish_ratio: { icon:'📊', cat:'News Sentiment', title:'Bullish Ratio', desc:'What percentage of news headlines are positive (bullish) about this stock right now. Calculated from the last hour of news across Yahoo Finance, Google News, and Reddit.', rule:'<strong>Above 65%:</strong> Strong bullish signal. <strong>40–65%:</strong> Mixed/neutral. <strong>Below 40%:</strong> Bearish tone — be cautious.' },
+  news_volume:   { icon:'🗞️', cat:'News Sentiment', title:'News Volume', desc:'How many headlines were found in the last 1-hour window. More news = more market attention on this stock. Very high volume during a price drop is a red flag (panic selling). High volume on uptrend is confirmation.', rule:'<strong>10–30:</strong> Normal. <strong>30–60:</strong> High interest. <strong>Above 60:</strong> Major news event — verify the reason before trading.' },
+  sent_momentum: { icon:'📈', cat:'News Sentiment', title:'Sentiment Momentum', desc:'Is the news getting more positive or more negative compared to earlier? Positive momentum (+0.18) means sentiment is improving — often a leading indicator that predicts price movement before it happens.', rule:'<strong>Rising momentum:</strong> Good early signal — consider buying. <strong>Falling momentum:</strong> Warning sign — wait for clarity before entering.' },
+  sent_trend:    { icon:'📉', cat:'News Sentiment', title:'7-Day Sentiment Trend', desc:'A chart showing how the sentiment score has changed day by day over the past week. A rising line = improving news. A falling line = deteriorating news outlook. Look for sustained uptrends.', rule:'Best signal: sentiment trending up <em>and</em> price trending up together = strong confirmation.' },
+  headlines:     { icon:'📋', cat:'News Sentiment', title:'Top Headlines', desc:'The actual headlines our AI scanned, labelled by sentiment. BUY = positive news. NEG = negative. NEU = neutral/unclear. These are from Yahoo Finance RSS, Google News, and Reddit finance communities.', rule:'Focus on the <strong>ratio</strong> of green to red labels, not individual headlines. One bad headline among many good ones is noise — not signal.' },
+  rsi:           { icon:'⚡', cat:'Momentum Indicator', title:'RSI — Relative Strength Index', desc:'RSI measures how fast and how much a stock\'s price has moved recently. It tells you if a stock is being bought too aggressively (overbought) or sold too aggressively (oversold), suggesting a reversal may be coming.', rule:'<strong>Below 30:</strong> Oversold — possible bounce/buy opportunity. <strong>30–70:</strong> Healthy zone. <strong>Above 70:</strong> Overbought — momentum may slow. Currently at 58 = healthy and still has upside.' },
+  macd:          { icon:'📉', cat:'Trend Indicator', title:'MACD — Moving Average Convergence Divergence', desc:'MACD tracks the relationship between two moving averages of price. When the fast average crosses above the slow one, it\'s a bullish signal. The histogram bars show whether momentum is growing or shrinking.', rule:'<strong>MACD line above Signal:</strong> BUY signal (currently ✓). <strong>Histogram positive and growing:</strong> Strong momentum. <strong>Histogram shrinking:</strong> Momentum fading — prepare to exit.' },
+  bollinger:     { icon:'📏', cat:'Volatility Indicator', title:'Bollinger Bands', desc:'Bollinger Bands are like "price corridors." The middle band is the average price. Upper and lower bands expand when the market is volatile and contract when it\'s calm. Price bounces between these bands.', rule:'<strong>Price near lower band:</strong> Possible buy zone (oversold). <strong>Price near upper band:</strong> Possible sell zone (overbought). <strong>Bands squeezing:</strong> Big move coming — direction unclear.' },
+  support_resistance:{ icon:'🧱', cat:'Price Levels', title:'Support & Resistance', desc:'Support is a price floor where buyers historically step in — the stock tends to "bounce" off it. Resistance is a ceiling where sellers appear — the stock tends to "cap out." These are the most important price levels for timing entries and exits.', rule:'<strong>Buy near strong support</strong> with a stop just below it. <strong>Take profit near resistance.</strong> If price breaks through resistance with volume = strong breakout signal.' },
+  indicators:    { icon:'📐', cat:'Technical Analysis', title:'Technical Indicators', desc:'Technical indicators are mathematical formulas applied to price and volume data to identify patterns and predict future moves. Our AI uses 52 such indicators as "inputs" to generate trade signals.', rule:'No single indicator is reliable alone. Our system requires <strong>multiple indicators to agree</strong> before generating a signal — this dramatically reduces false positives.' },
+  eco_cycle:     { icon:'🔄', cat:'Macroeconomics', title:'Economic Cycle Phase', desc:'The economy moves in phases: Expansion (growth), Peak, Contraction (recession), and Trough. Each phase favours different sectors. Knowing the phase helps you allocate capital to the right sectors at the right time.', rule:'<strong>Expansion:</strong> Overweight IT, Auto, Consumer. <strong>Contraction:</strong> Overweight Pharma, FMCG, Energy. <strong>Rate Tightening:</strong> Avoid high-debt companies.' },
+  fed_rate:      { icon:'🏦', cat:'Interest Rates', title:'Fed Funds Rate', desc:'The US Federal Reserve\'s benchmark interest rate. This is the most important economic lever in the world. High rates make borrowing expensive, slow growth, and pull money out of emerging markets like India into US bonds.', rule:'<strong>Rate cuts (good):</strong> FII money flows into India, stocks rally. <strong>Rate hikes (bad):</strong> FII money leaves India, pressure on INR and Nifty.' },
+  yield10y:      { icon:'📜', cat:'Interest Rates', title:'US 10-Year Treasury Yield', desc:'The annual return on 10-year US government bonds — the global benchmark "safe" investment. When yields rise, investors prefer bonds over stocks (especially risky emerging market stocks). Affects FII allocation to India.', rule:'<strong>Below 3.5%:</strong> FII inflows into India likely. <strong>3.5–4.5%:</strong> Neutral. <strong>Above 4.5%:</strong> Headwind — FIIs may prefer US bonds over Indian equities.' },
+  yield_curve:   { icon:'📐', cat:'Recession Signal', title:'Yield Curve (10Y minus 2Y Spread)', desc:'The difference between 10-year and 2-year US Treasury yields. Normally 10-year yields are higher (positive spread = normal). When 2-year yields are higher (negative spread = inverted), it has predicted every US recession for 50+ years.', rule:'<strong>Positive spread (currently +0.18%):</strong> Economy healthy, invest normally. <strong>Negative spread (inverted):</strong> Recession warning — move to defensive stocks (Pharma, FMCG).' },
+  dxy:           { icon:'💵', cat:'Currency', title:'DXY — US Dollar Index', desc:'Measures the strength of the US Dollar against a basket of major currencies. A strong dollar is generally negative for Indian markets because it makes Indian assets relatively cheaper and draws investment back to the US.', rule:'<strong>Below 100:</strong> Weak dollar — great for Indian markets. <strong>100–106:</strong> Neutral. <strong>Above 106:</strong> Strong dollar — FII outflows from India, watch INR carefully.' },
+  fundamentals:  { icon:'📋', cat:'Fundamental Analysis', title:'Fundamental Analysis', desc:'Fundamental analysis evaluates a company\'s actual business health — how much profit it makes, how fast it\'s growing, how much debt it has. A fundamentally strong company\'s stock tends to grow over time, regardless of short-term noise.', rule:'Warren Buffett\'s approach: buy fundamentally strong companies at fair prices and hold long-term. Our screener automates this for halal NSE stocks.' },
+  pe_ratio:      { icon:'💰', cat:'Valuation', title:'P/E Ratio — Price to Earnings', desc:'P/E ratio tells you how much you\'re paying for ₹1 of company profit. P/E of 23 means you pay ₹23 for every ₹1 the company earns annually. It\'s the most common way to judge if a stock is cheap or expensive vs. peers.', rule:'Compare to <strong>sector average</strong>: IT avg P/E ≈ 28, Energy ≈ 12. <strong>Below sector avg:</strong> Cheap/undervalued. <strong>Above sector avg 1.2x:</strong> Expensive. RELIANCE at 23.4 vs energy benchmark 12 — slightly premium but justified by diversification.' },
+  roe:           { icon:'📈', cat:'Profitability', title:'ROE — Return on Equity', desc:'ROE measures how efficiently a company uses shareholder money to generate profit. ROE of 18% means for every ₹100 shareholders invested, the company makes ₹18 in profit per year. Higher is better.', rule:'<strong>Above 20%:</strong> Exceptional — strong competitive advantage. <strong>15–20%:</strong> Good (RELIANCE at 18.2%). <strong>8–15%:</strong> Average. <strong>Below 8%:</strong> Poor capital allocation.' },
+  de_ratio:      { icon:'⚖️', cat:'Financial Health', title:'Debt/Equity Ratio', desc:'How much debt a company has compared to its own money (equity). D/E of 0.42 means for every ₹100 of shareholders\' money, the company has only ₹42 in debt. Important for halal investing — high debt means paying interest (riba).', rule:'<strong>Below 0.5:</strong> Low debt — safe and halal-friendly (RELIANCE ✓). <strong>0.5–1.0:</strong> Moderate. <strong>Above 2.0:</strong> High debt — risky, especially if rates rise. Avoid for halal investing.' },
+  rev_growth:    { icon:'🚀', cat:'Growth', title:'Revenue Growth (YoY)', desc:'How much the company\'s total sales grew compared to the same period last year. Revenue growth is the engine of long-term stock appreciation — a company can\'t grow its stock price without growing its business.', rule:'<strong>Above 15%:</strong> High growth — potential compounding stock. <strong>8–15%:</strong> Solid growth (RELIANCE at 14.2% ✓). <strong>Below 5%:</strong> Slow — look at other opportunities.' },
+  profit_margin: { icon:'💹', cat:'Profitability', title:'Profit Margin (Net)', desc:'Out of every ₹100 in sales, how much becomes actual profit after all costs and taxes. High profit margin = company has pricing power and cost efficiency. Low margin = vulnerable to any cost increases.', rule:'<strong>Above 20%:</strong> Exceptional (IT companies). <strong>12–20%:</strong> Strong. <strong>5–12%:</strong> Average (RELIANCE at 12.1% ✓). <strong>Below 5%:</strong> Thin — risky business model.' },
+  risk_rating:   { icon:'🛡️', cat:'Risk Management', title:'Risk Rating (1–10)', desc:'Our composite risk score based on debt levels (D/E), stock volatility (Beta), and short-term financial stability (Current Ratio). 1 = very safe, 10 = very risky. Built for halal investing — penalises high-debt companies.', rule:'<strong>1–4:</strong> Low risk — suitable for halal long-term portfolio (RELIANCE at 4 ✓). <strong>5–6:</strong> Moderate. <strong>7+:</strong> High risk — only for experienced investors with smaller position sizes.' },
+  moat:          { icon:'🏰', cat:'Competitive Advantage', title:'Competitive Moat', desc:'A "moat" is what protects a company from competitors — like a castle\'s water moat. Companies with strong moats can maintain high profits for years. Warren Buffett calls it the most important quality to look for in any investment.', rule:'Score based on ROE (efficiency), profit margins (pricing power), and debt (financial strength). <strong>4–5/5:</strong> Strong moat — great long-term hold. <strong>2–3/5:</strong> Moderate. <strong>0–1/5:</strong> Weak — vulnerable to disruption.' },
+  peer_compare:  { icon:'🔍', cat:'Competitive Analysis', title:'Peer Comparison', desc:'How this stock\'s key metrics compare to its closest halal competitors in the same sector. The best pick is identified by scoring each peer on ROE, margins, and debt. Banks and insurance companies are excluded (not halal).', rule:'Look for the stock with the <strong>highest ROE</strong>, <strong>highest margins</strong>, and <strong>lowest D/E</strong> among peers. That\'s the one with the strongest moat.' },
+  shap:          { icon:'🤖', cat:'AI Explainability', title:'SHAP — Why did the AI decide this?', desc:'SHAP (SHapley Additive exPlanations) shows the exact contribution of each feature to the AI\'s decision. It opens the "black box" of machine learning — instead of just getting a signal, you can see exactly WHY the AI is bullish or bearish.', rule:'<strong>Green bars (positive SHAP):</strong> These factors pushed the AI toward BUY. <strong>Red bars (negative):</strong> These factors pushed toward SELL. Longer bar = stronger influence.' },
+  ensemble:      { icon:'🧠', cat:'AI Models', title:'Ensemble — 3 Models Combined', desc:'Our system combines three different AI models: ARIMA (classical time-series), LightGBM (gradient boosting ML), and a meta-learner that blends them. Using multiple models reduces the chance of any single model\'s blind spots causing a wrong signal.', rule:'We only trade when the <strong>meta-ensemble confidence exceeds 62%</strong>. Below that, we stay out. This filters out borderline signals and reduces false positives by ~35%.' },
+  montecarlo:    { icon:'🎲', cat:'Risk Analysis', title:'Monte Carlo Simulation', desc:'Monte Carlo randomly reshuffles your past trades 1,000 times to simulate all possible future outcomes. Instead of just one backtest result (which could be lucky), you get the full distribution — from the worst realistic scenario to the best.', rule:'If the <strong>probability of profit is below 55%</strong>, the strategy needs improvement. If the <strong>worst 5% scenario</strong> would lose more than you can handle emotionally, reduce your position size.' },
+  mc_worst:      { icon:'⚠️', cat:'Risk Analysis', title:'Worst 5% Outcome', desc:'In the worst 5% of all simulations (50 out of 1,000), your portfolio ended at this value. This is your "nightmare scenario" that you should plan for — not the absolute worst possible, but the realistic bad case.', rule:'Use this number to decide position sizing. Ask yourself: "If my portfolio dropped to ₹86,200, could I stay calm and stick to the plan?" If not, reduce your investment amount.' },
+  mc_median:     { icon:'📊', cat:'Risk Analysis', title:'Median Outcome (50th Percentile)', desc:'Half of all 1,000 simulations ended better than this, half ended worse. This is the most realistic expectation of what your strategy might deliver — not the optimistic average, but the true middle outcome.', rule:'The median should be compared to a simple index fund return. If median > Nifty return, the strategy adds value. Currently +12.4% vs Nifty\'s typical 12–15% annual return.' },
+  mc_chart:      { icon:'📉', cat:'Risk Analysis', title:'Outcome Distribution Chart', desc:'This histogram shows all 1,000 final portfolio values. The <span style="color:#f87171">red zone</span> on the left = simulations where money was lost. The <span style="color:#34d399">green zone</span> = profitable simulations. A narrow red zone = low risk strategy.', rule:'Ideal distribution: tall bars concentrated in the green zone, thin tail in the red zone. This means most scenarios are profitable and the losses are limited.' },
+  drift:         { icon:'🔍', cat:'Model Health', title:'Data Drift Detection', desc:'Drift occurs when the market starts behaving differently from how it behaved when the AI was trained. Like a recipe developed in summer that\'s wrong in winter — the "ingredients" (market conditions) changed. We detect this automatically.', rule:'<strong>PSI below 0.10:</strong> Stable — no action needed. <strong>0.10–0.20:</strong> Moderate shift — monitor closely. <strong>Above 0.20:</strong> Major drift — retrain the model urgently.' },
+  ks_test:       { icon:'📐', cat:'Statistics', title:'KS Test — Kolmogorov-Smirnov', desc:'A statistical test that measures how different the current distribution of a feature (e.g., RSI values this month) is compared to the training period distribution. If they\'re too different, the AI\'s calibration may be off.', rule:'<strong>KS stat below 0.10:</strong> Feature is stable. <strong>P-value above 0.05:</strong> No significant drift. <strong>P-value below 0.05:</strong> Statistically significant drift detected for this feature.' },
+  psi:           { icon:'📏', cat:'Statistics', title:'PSI — Population Stability Index', desc:'PSI is a single number that summarises how much a feature\'s overall distribution has shifted. More sensitive than the KS test for catching gradual drift. Used in banking models to monitor model stability over time.', rule:'<strong>PSI below 0.10:</strong> No meaningful change — model still valid. <strong>0.10–0.25:</strong> Moderate shift — review model. <strong>Above 0.25:</strong> Major drift — retrain immediately.' },
+  features_overview:{ icon:'🧮', cat:'Machine Learning', title:'52 AI Input Features', desc:'The AI model makes decisions based on 52 different "clues" extracted from price, volume, and market data. Each feature captures a different aspect of market behavior. More diverse features = better ability to identify genuine opportunities.', rule:'Features are grouped into: Momentum (speed of price moves), Trend (direction), Volatility (risk), Volume (conviction), Calendar (time patterns), and optional Sentiment + Macro layers.' },
+  feat_momentum: { icon:'⚡', cat:'Feature Group', title:'Momentum Features', desc:'Momentum features measure how fast and how powerfully a stock is moving. RSI measures overbought/oversold. MACD measures trend strength. ROC measures raw price change speed. Williams %R is another overbought/oversold measure.', rule:'When multiple momentum indicators agree (e.g., RSI healthy + MACD bullish + positive ROC), the signal has much higher conviction than any single indicator alone.' },
+  feat_trend:    { icon:'📈', cat:'Feature Group', title:'Trend Features', desc:'Trend features tell the AI the overall direction of the stock. Moving averages (SMA 20, 50, 200) smooth out noise. Golden Cross (SMA50 crossing above SMA200) is one of the most reliable long-term BUY signals in the market.', rule:'<strong>Price above SMA200:</strong> Long-term uptrend — bias toward BUY. <strong>Golden Cross active:</strong> Strong bull market signal. <strong>Price below SMA200:</strong> Caution — possible downtrend.' },
+  feat_volatility:{ icon:'🌊', cat:'Feature Group', title:'Volatility Features', desc:'Volatility features help the AI understand how risky or uncertain the market currently is. High volatility = bigger price swings = higher risk. ATR is used to calculate where to place stop-losses. Bollinger Bands capture volatility cycles.', rule:'AI uses ATR to set stop-losses automatically: stop = entry price - (2 × ATR). This makes stops adaptive to current market conditions rather than fixed percentages.' },
+  feat_volume:   { icon:'📊', cat:'Feature Group', title:'Volume Features', desc:'Volume features show whether price moves are backed by real buying/selling pressure. A price rise with high volume = strong conviction. A price rise with low volume = weak, likely to reverse. OBV tracks the cumulative flow of money.', rule:'<strong>Volume Z-Score above 2:</strong> Unusual volume — investigate why. <strong>MFI above 80:</strong> Overbought with high money flow. <strong>CMF positive and rising:</strong> Steady accumulation by smart money.' },
+  feat_calendar: { icon:'📅', cat:'Feature Group', title:'Calendar Features', desc:'Markets behave differently at different times. NSE F&O (derivatives) expires every last Thursday of the month — creating predictable volatility patterns. Holiday proximity affects liquidity. Day-of-week patterns (Monday effect, etc.) are statistically real.', rule:'<strong>Days to Expiry below 3:</strong> F&O expiry approaching — may see higher volatility. <strong>Holiday Proximity = 1:</strong> Next day is a holiday — liquidity may be lower, consider smaller position.' },
+};
+
+function showInfo(key) {
+  const d = INFO[key];
+  if (!d) return;
+  document.getElementById('infoIcon').textContent = d.icon;
+  document.getElementById('infoCategory').textContent = d.cat;
+  document.getElementById('infoTitle').textContent = d.title;
+  document.getElementById('infoDesc').innerHTML = d.desc;
+  document.getElementById('infoRule').innerHTML = '📌 <strong>Rule of Thumb:</strong> ' + d.rule;
+  document.getElementById('infoOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeInfoCard() {
+  document.getElementById('infoOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeInfo(e) {
+  if (e.target === document.getElementById('infoOverlay')) closeInfoCard();
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeInfoCard(); });
+
+/* ── TABS ────────────────────────────────────────────────────────────────── */
+function showTab(id, el) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-' + id).classList.add('active');
-  event.currentTarget.classList.add('active');
+  if (el) el.classList.add('active');
   if (id === 'montecarlo') drawMCChart();
   if (id === 'sentiment') drawSentimentChart();
 }
 
-/* ── Bauhaus mouse-track gradient ────────────────────────────────────── */
-function trackMouse(e, card) {
-  const r = card.getBoundingClientRect();
-  const x = e.clientX - r.left - r.width / 2;
-  const y = e.clientY - r.top - r.height / 2;
-  card.style.setProperty('--rotation', Math.atan2(-x, y) + 'rad');
+/* ── ACCORDION ───────────────────────────────────────────────────────────── */
+function toggleAccordion(bodyId, headerEl) {
+  const body = document.getElementById(bodyId);
+  const icon = headerEl.querySelector('.accordion-icon');
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  icon.classList.toggle('open', !isOpen);
 }
 
-/* ── Sentiment Chart ─────────────────────────────────────────────────── */
-let sentChart;
+/* ── THEME ───────────────────────────────────────────────────────────────── */
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('themeIcon').textContent = isDark ? '☀️' : '🌙';
+  document.getElementById('themeLabel').textContent = isDark ? 'Light' : 'Dark';
+  // Update chart colours
+  if (sentChart) { updateChartTheme(sentChart); sentChart.update(); }
+  if (mcChart)   { updateChartTheme(mcChart);   mcChart.update(); }
+}
+function updateChartTheme(chart) {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const gridColor = isDark ? 'rgba(255,255,255,.05)' : 'rgba(0,0,0,.06)';
+  const tickColor = isDark ? '#475569' : '#94a3b8';
+  chart.options.scales.x.grid.color = gridColor;
+  chart.options.scales.y.grid.color = gridColor;
+  chart.options.scales.x.ticks.color = tickColor;
+  chart.options.scales.y.ticks.color = tickColor;
+}
+
+/* ── BAUHAUS MOUSE TRACK ─────────────────────────────────────────────────── */
+function trackMouse(e, card) {
+  const r = card.getBoundingClientRect();
+  card.style.setProperty('--rotation', Math.atan2(-(e.clientX - r.left - r.width/2), e.clientY - r.top - r.height/2) + 'rad');
+}
+
+/* ── CHARTS ──────────────────────────────────────────────────────────────── */
+const chartDefaults = {
+  gridColor: 'rgba(255,255,255,.05)', tickColor: '#475569',
+};
+let sentChart, mcChart;
+
 function drawSentimentChart() {
   if (sentChart) return;
   const ctx = document.getElementById('sentimentChart').getContext('2d');
@@ -976,50 +940,42 @@ function drawSentimentChart() {
     data: {
       labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
       datasets: [{
-        label: 'Sentiment',
-        data: [0.21, 0.35, 0.28, 0.52, 0.44, 0.58, 0.62],
-        borderColor: '#34d399', backgroundColor: 'rgba(52,211,153,.1)',
-        tension: 0.4, fill: true, pointRadius: 4, pointBackgroundColor: '#34d399'
+        label: 'Sentiment', data: [0.21,0.35,0.28,0.52,0.44,0.58,0.62],
+        borderColor:'#34d399', backgroundColor:'rgba(52,211,153,.1)',
+        tension:0.45, fill:true, pointRadius:5, pointBackgroundColor:'#34d399',
+        pointBorderColor:'#0a2e1d', pointBorderWidth:2,
       }]
     },
     options: {
-      responsive: true, plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { color: 'rgba(255,255,255,.04)' }, ticks: { color: '#64748b', font: { size: 11 } } },
-        y: { grid: { color: 'rgba(255,255,255,.04)' }, ticks: { color: '#64748b', font: { size: 11 } }, min: -0.2, max: 1 }
+      responsive:true, plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{color:chartDefaults.gridColor},ticks:{color:chartDefaults.tickColor,font:{size:11}}},
+        y:{grid:{color:chartDefaults.gridColor},ticks:{color:chartDefaults.tickColor,font:{size:11}},min:-0.2,max:1}
       }
     }
   });
 }
 
-/* ── Monte Carlo Chart ───────────────────────────────────────────────── */
-let mcChart;
 function drawMCChart() {
   if (mcChart) return;
   const ctx = document.getElementById('mcChart').getContext('2d');
-  // Simulated histogram bins
-  const bins = [76000,82000,88000,94000,100000,106000,112000,118000,124000,130000,136000,142000,148000,154000,160000,166000];
+  const bins   = [76,82,88,94,100,106,112,118,124,130,136,142,148,154,160,166];
   const counts = [8,18,42,76,110,148,168,152,128,78,44,22,14,8,4,2];
-  const colors = bins.map(b => b < 100000 ? 'rgba(248,113,113,.7)' : 'rgba(52,211,153,.7)');
+  const colors = bins.map(b => b < 100 ? 'rgba(248,113,113,.75)' : 'rgba(52,211,153,.75)');
   mcChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: bins.map(b => '₹' + (b/1000).toFixed(0) + 'K'),
-      datasets: [{ data: counts, backgroundColor: colors, borderRadius: 4, borderSkipped: false }]
-    },
-    options: {
-      responsive: true, plugins: { legend: { display: false },
-        tooltip: { callbacks: { label: ctx => ctx.parsed.y + ' simulations' } }
-      },
-      scales: {
-        x: { grid: { color: 'rgba(255,255,255,.04)' }, ticks: { color: '#64748b', font: { size: 10 } } },
-        y: { grid: { color: 'rgba(255,255,255,.04)' }, ticks: { color: '#64748b', font: { size: 10 } } }
+    type:'bar',
+    data:{ labels:bins.map(b=>'₹'+b+'K'), datasets:[{data:counts,backgroundColor:colors,borderRadius:5,borderSkipped:false}] },
+    options:{
+      responsive:true,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+' simulations'}}},
+      scales:{
+        x:{grid:{color:chartDefaults.gridColor},ticks:{color:chartDefaults.tickColor,font:{size:10}}},
+        y:{grid:{color:chartDefaults.gridColor},ticks:{color:chartDefaults.tickColor,font:{size:10}}}
       }
     }
   });
 }
 
-// Initialise first tab charts
 drawSentimentChart();
 </script>
 </body>
