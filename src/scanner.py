@@ -264,15 +264,21 @@ def scan(
     regime_info = {}
 
     # Stage 0: Regime gate
+    # Only block in full CRASH. In TRENDING_DOWN we still scan but raise
+    # the score threshold so only the strongest BUY setups get through.
+    _bear_mode = False
     if use_regime_gate:
         try:
             from src.regime_detector import detect
             regime_info = detect().__dict__
             regime_name = regime_info.get("name", "UNKNOWN")
             print(f"  Market regime: {regime_name}")
-            if regime_name in ("CRASH", "TRENDING_DOWN"):
-                print(f"  Regime gate: blocking BUY signals in {regime_name}")
+            if regime_name == "CRASH":
+                print(f"  Regime gate: CRASH detected — protecting capital, no trades today.")
                 return {"cards": [], "blocked": [], "regime": regime_info, "sectors": []}
+            if regime_name == "TRENDING_DOWN":
+                print(f"  Regime gate: TRENDING_DOWN — scanning with strict 71+ score filter.")
+                _bear_mode = True   # stricter threshold applied below
             # Adjust VIX from regime info
             vix = float(regime_info.get("vix", vix))
         except Exception as e:
@@ -291,13 +297,20 @@ def scan(
     else:
         top_sectors = []
 
+    # Halal: only BUY signals, no short selling ever
+    # In bear mode (TRENDING_DOWN) raise score threshold to 71
+    min_score = 71 if _bear_mode else 57
+
     # Stage 1: score + multi-timeframe
     results = []
     with ThreadPoolExecutor(max_workers=workers) as pool:
         futures = {pool.submit(_scan_one, t, capital): t for t in tickers}
         for fut in as_completed(futures):
             card = fut.result()
-            if card and card["signal"] == "BUY" and card["rr"] >= 2.0:
+            if (card
+                    and card["signal"] == "BUY"   # halal: no short selling
+                    and card["rr"] >= 2.0
+                    and card["score"] >= min_score):
                 results.append(card)
 
     if not results:
