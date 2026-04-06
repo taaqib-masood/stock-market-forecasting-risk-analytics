@@ -1,6 +1,6 @@
 # Stock Market Forecasting & Risk Analytics
 
-**Production-Ready Trading System** | ARIMA + LightGBM + Ensemble | FinBERT Sentiment | SHAP Explainer | MLflow | Drift Detection
+**Production-Ready Halal Trading System** | ARIMA + LightGBM + Ensemble | FinBERT Sentiment | SHAP Explainer | MLflow | Drift Detection | 195-Stock Watchlist | Zakat Calculator
 
 [![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
@@ -125,6 +125,24 @@ pytest tests/ -v
 open demo.html
 ```
 
+The dashboard has **13 tabs** covering the full system:
+
+| Tab | What it shows |
+|-----|---------------|
+| 📰 Sentiment | FinBERT news scores, bullish ratio, 7-day trend, top headlines |
+| 📊 Technical | RSI, MACD, Bollinger Bands, Support/Resistance levels |
+| 🌍 Macro | VIX, Nifty, DXY, Gold, USD/INR, yield curve, economic cycle |
+| 🔎 Screener | P/E, ROE, Debt/Equity, revenue growth, entry/target/stop levels |
+| 🏰 Moat | Competitive moat score, SWOT analysis, peer comparison table |
+| 🤖 AI Explainer | SHAP feature importance, Groq LLM explanation, model confidence |
+| 🎲 Monte Carlo | 1,000-run simulation, outcome distribution chart, risk percentiles |
+| 🔍 Drift | KS test per feature, PSI, 30-day rolling accuracy monitoring |
+| 🧮 Features | All 52 AI features listed and explained with i-button tooltips |
+| 🏦 FII/DII | 7-day institutional flow chart, net flow, FII selling streak |
+| 🇮🇳 India Signals | India VIX, PCR, Delivery Volume%, Advance/Decline, Max Pain, IV Skew, Shariah checker |
+| 📋 Watchlist | 195 halal stocks, sector-filtered pills, live search, signal dots |
+| 🌙 Zakat | Portfolio Zakat calculator (2 methods), nisab check, hawl guide |
+
 ---
 
 ## 🤖 GitHub Actions — Automated Pipeline
@@ -136,7 +154,7 @@ Everything runs automatically. No action needed from you.
 | 🌅 Nightly Scan | Mon–Fri 9:00 AM IST | Scans Nifty 50, sends signals to Telegram |
 | 🔔 Auto-Close | Mon–Fri 3:45 PM IST | Closes positions, sends P&L to Telegram |
 | 📈 Weekly Backtest | Sunday 10:00 AM IST | Backtests RELIANCE + TCS, saves results |
-| 🧪 CI Tests | On every push to main | Runs all 12 tests, validates imports |
+| 🧪 CI Tests | On every push to main | Runs all 17 tests, validates imports |
 | 🔍 Drift Check | Mon–Fri (after scan) | Checks if model needs retraining |
 
 **View pipeline:** [github.com/taaqib-masood/stock-market-forecasting-risk-analytics/actions](https://github.com/taaqib-masood/stock-market-forecasting-risk-analytics/actions)
@@ -182,14 +200,14 @@ stock-market-forecasting-risk-analytics/
 │   └── compare_models.py       ← MLflow run comparison
 │
 ├── tests/
-│   └── test_imports.py         ← 12 smoke tests
+│   └── test_imports.py         ← 17 smoke tests
 │
 ├── .github/workflows/
 │   └── trading_pipeline.yml    ← Automated CI/CD pipeline
 │
 ├── results/                    ← Trade logs, equity curves (auto-created)
 ├── mlruns/                     ← MLflow experiment data (auto-created)
-├── demo.html                   ← Visual demo of all upgrades
+├── demo.html                   ← 13-tab visual dashboard (FII/DII, India Signals, Watchlist, Zakat)
 ├── .env                        ← Your API keys (never commit this)
 ├── requirements.txt            ← All Python dependencies
 └── venv/                       ← Virtual environment
@@ -207,6 +225,34 @@ Already configured at `.env`. Keys currently set:
 | `TELEGRAM_CHAT_ID` | Telegram | Your personal chat ID |
 | `GROQ_API_KEY` | Groq (Llama 3) | AI trade explanations |
 | `FRED_API_KEY` | Federal Reserve | Yield curve, Fed rate data |
+
+---
+
+## 🕌 Halal Watchlist — 195 Stocks
+
+All stocks are pre-screened for Shariah compliance (AAOIFI standard):
+- Debt/Assets < 33% — avoids riba-heavy companies
+- Interest income < 5% of revenue — excludes banks/NBFCs
+- No haram revenue (alcohol, tobacco, weapons, adult entertainment)
+
+| Tier | Count | Includes |
+|------|-------|---------|
+| Default Scan | 78 | Nifty50 Shariah + Next50 |
+| Extended Scan | ~165 | + MidCap 150 + Thematic baskets |
+| Deep Scan | ~195 | + SmallCap halal stocks |
+
+**Thematic baskets:** `HALAL_IT` (20 stocks), `HALAL_PHARMA` (24), `HALAL_GREEN_ENERGY` (12), `HALAL_CONSUMER` (14), `HALAL_INFRA` (21)
+
+---
+
+## 🌙 Zakat Calculator
+
+Built into the dashboard (`open demo.html` → Zakat tab). Calculates annual Zakat on your stock portfolio:
+
+- **Method 1** (majority view): 2.5% × full portfolio market value
+- **Method 2** (minority view): 2.5% × capital gains only
+- Nisab check: silver threshold ~₹45,000 (2026)
+- Hawl condition explained with reset logic
 
 ---
 
