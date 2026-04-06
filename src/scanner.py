@@ -1,0 +1,237 @@
+"""
+Multi-stock scanner.
+Scans the NSE watchlist, scores each stock, returns ranked trade cards.
+
+Run standalone:
+    python -m src.scanner
+"""
+
+import warnings
+import numpy as np
+import pandas as pd
+import yfinance as yf
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime
+
+from src.watchlist import DEFAULT_SCAN, nse
+
+warnings.filterwarnings("ignore")
+
+
+# ── Indicator helpers (no external TA lib needed) ────────────────────────────
+
+def _rsi(closes: np.ndarray, period: int = 14) -> float:
+    if len(closes) < period + 1:
+        return 50.0
+    delta = np.diff(closes)
+    gain  = np.where(delta > 0, delta, 0.0)
+    loss  = np.where(delta < 0, -delta, 0.0)
+    avg_g = np.mean(gain[-period:])
+    avg_l = np.mean(loss[-period:])
+    if avg_l == 0:
+        return 100.0
+    return 100 - (100 / (1 + avg_g / avg_l))
+
+
+def _ema(arr: np.ndarray, span: int) -> float:
+    k, e = 2 / (span + 1), arr[0]
+    for v in arr[1:]:
+        e = v * k + e * (1 - k)
+    return e
+
+
+def _atr(highs, lows, closes, period: int = 14) -> float:
+    trs = []
+    for i in range(1, len(closes)):
+        trs.append(max(
+            highs[i] - lows[i],
+            abs(highs[i] - closes[i - 1]),
+            abs(lows[i]  - closes[i - 1]),
+        ))
+    return float(np.mean(trs[-period:])) if trs else 0.0
+
+
+def _score(closes, highs, lows, volumes) -> dict:
+    """
+    Score a stock 0–100 on 7 criteria.
+    Returns score, signal, individual indicator values.
+    """
+    c = np.array(closes, dtype=float)
+    h = np.array(highs,  dtype=float)
+    l = np.array(lows,   dtype=float)
+    v = np.array(volumes, dtype=float)
+
+    rsi       = _rsi(c)
+    macd_line = _ema(c, 12) - _ema(c, 26)
+    sig_line  = _ema(c[-9:], 9) if len(c) >= 9 else 0
+    macd_hist = macd_line - sig_line
+    atr       = _atr(h, l, c)
+    sma20     = float(np.mean(c[-20:])) if len(c) >= 20 else c[-1]
+    sma50     = float(np.mean(c[-50:])) if len(c) >= 50 else c[-1]
+    vol_avg   = float(np.mean(v[-20:])) if len(v) >= 20 else v[-1]
+    vol_surge = v[-1] / vol_avg if vol_avg > 0 else 1.0
+
+    price = c[-1]
+
+    # Bollinger
+    std20   = float(np.std(c[-20:])) if len(c) >= 20 else 1
+    bb_up   = sma20 + 2 * std20
+    bb_lo   = sma20 - 2 * std20
+    bb_pctb = (price - bb_lo) / (bb_up - bb_lo + 1e-10)
+
+    # Momentum: 5d return
+    ret_5d = (price / c[-6] - 1) * 100 if len(c) >= 6 else 0
+
+    # ── Bullish scoring criteria ──────────────────────────────────────────────
+    criteria = {
+        "rsi_healthy":    40 <= rsi <= 68,                    # not overbought/oversold
+        "macd_bullish":   macd_hist > 0,                      # MACD histogram positive
+        "above_sma20":    price > sma20,                      # short-term uptrend
+        "above_sma50":    price > sma50,                      # medium-term uptrend
+        "volume_surge":   vol_surge >= 1.2,                   # above-average volume
+        "bb_position":    0.4 <= bb_pctb <= 0.85,             # mid-to-upper Bollinger
+        "momentum":       ret_5d > 0,                         # positive 5d momentum
+    }
+
+    score = sum(criteria.values()) / len(criteria) * 100
+
+    # Direction
+    bullish_count = sum(criteria.values())
+    if bullish_count >= 5:
+        direction, signal = 1,  "BUY"
+    elif bullish_count <= 2:
+        direction, signal = -1, "SELL"
+    else:
+        direction, signal = 0,  "WAIT"
+
+    return {
+        "score":      round(score, 1),
+        "signal":     signal,
+        "direction":  direction,
+        "rsi":        round(rsi, 1),
+        "macd_hist":  round(macd_hist, 4),
+        "atr":        round(atr, 2),
+        "sma20":      round(sma20, 2),
+        "sma50":      round(sma50, 2),
+        "vol_surge":  round(vol_surge, 2),
+        "bb_pctb":    round(bb_pctb, 3),
+        "ret_5d":     round(ret_5d, 2),
+        "price":      round(price, 2),
+        "criteria":   criteria,
+    }
+
+
+def _trade_card(ticker: str, s: dict, capital: float, max_risk_pct: float = 0.02) -> dict:
+    """Build an actionable trade card from a score dict."""
+    price      = s["price"]
+    atr        = s["atr"] if s["atr"] > 0 else price * 0.015
+    direction  = s["direction"]
+
+    stop_dist  = 2.0 * atr
+    target_dist = stop_dist * 2.5
+
+    if direction == 1:
+        stop   = round(price - stop_dist, 2)
+        target = round(price + target_dist, 2)
+    elif direction == -1:
+        stop   = round(price + stop_dist, 2)
+        target = round(price - target_dist, 2)
+    else:
+        stop = target = price
+
+    max_loss_rs  = capital * max_risk_pct
+    shares       = max(1, int(max_loss_rs / stop_dist)) if stop_dist > 0 else 0
+    max_shares_by_capital = int((capital * 0.20) / price)  # max 20% of capital per stock
+    shares       = min(shares, max_shares_by_capital)
+
+    invest       = round(shares * price, 2)
+    risk_rs      = round(shares * stop_dist, 2)
+    reward_rs    = round(shares * target_dist, 2)
+    rr           = round(target_dist / stop_dist, 2) if stop_dist > 0 else 0
+
+    return {
+        "ticker":     ticker,
+        "signal":     s["signal"],
+        "score":      s["score"],
+        "price":      price,
+        "entry":      price,
+        "stop":       stop,
+        "target":     target,
+        "rr":         rr,
+        "shares":     shares,
+        "invest":     invest,
+        "risk_rs":    risk_rs,
+        "reward_rs":  reward_rs,
+        "rsi":        s["rsi"],
+        "vol_surge":  s["vol_surge"],
+        "ret_5d":     s["ret_5d"],
+        "atr":        atr,
+        "criteria":   s["criteria"],
+        "direction":  direction,
+    }
+
+
+def _scan_one(ticker: str, capital: float) -> dict | None:
+    """Fetch data and score a single ticker. Returns None on failure."""
+    try:
+        import contextlib, io
+        with contextlib.redirect_stderr(io.StringIO()):
+            df = yf.download(nse(ticker), period="6mo", interval="1d",
+                             progress=False, auto_adjust=True)
+        if df.empty or len(df) < 30:
+            return None
+
+        df.columns = [c[0] if isinstance(c, tuple) else c for c in df.columns]
+
+        s = _score(
+            df["Close"].values,
+            df["High"].values,
+            df["Low"].values,
+            df["Volume"].values,
+        )
+
+        if s["direction"] == 0:
+            return None  # skip WAIT signals
+
+        card = _trade_card(ticker, s, capital)
+        card["last_updated"] = datetime.now().strftime("%Y-%m-%d %H:%M")
+        return card
+
+    except Exception:
+        return None
+
+
+def scan(
+    tickers: list[str] = None,
+    capital: float = 100_000,
+    top_n: int = 5,
+    workers: int = 8,
+) -> list[dict]:
+    """
+    Scan all tickers concurrently, return top_n ranked trade cards.
+    Ranked by: score (higher = more criteria met).
+    Only BUY signals returned (suitable for long-only retail trading).
+    """
+    if tickers is None:
+        tickers = DEFAULT_SCAN
+
+    results = []
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        futures = {pool.submit(_scan_one, t, capital): t for t in tickers}
+        for fut in as_completed(futures):
+            card = fut.result()
+            if card and card["signal"] == "BUY" and card["rr"] >= 2.0:
+                results.append(card)
+
+    results.sort(key=lambda x: x["score"], reverse=True)
+    return results[:top_n]
+
+
+if __name__ == "__main__":
+    print("Scanning NSE top 30... (takes ~20s)\n")
+    cards = scan(capital=100_000, top_n=5)
+    for i, c in enumerate(cards, 1):
+        print(f"#{i} {c['ticker']:<15} Score:{c['score']:>5}  "
+              f"Entry:{c['entry']:>8.2f}  Stop:{c['stop']:>8.2f}  "
+              f"Target:{c['target']:>8.2f}  R:R:{c['rr']}  "
+              f"Shares:{c['shares']}  Risk:₹{c['risk_rs']}")
