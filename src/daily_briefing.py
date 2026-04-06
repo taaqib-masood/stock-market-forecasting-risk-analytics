@@ -61,7 +61,7 @@ def _market_regime() -> tuple[str, str, float]:
 
 def _telegram_briefing(cards: list, blocked: list, regime: str,
                         emoji: str, nifty: float, capital: float,
-                        state: dict):
+                        state: dict, near_misses: list = None):
     """Build and send the full Telegram morning message."""
     pv    = portfolio_value(state)
     stats = trade_stats(state)
@@ -78,12 +78,18 @@ def _telegram_briefing(cards: list, blocked: list, regime: str,
 
     if not cards:
         lines += [
-            f"🔍 <b>No signals today.</b>",
+            f"🔍 <b>No confirmed signals today.</b>",
             f"",
-            f"{'⛔ Earnings blocked: ' + ', '.join(c['ticker'] for c in blocked) if blocked else ''}",
-            f"",
-            f"<i>Patience is a position. Check again tomorrow.</i>",
         ]
+        if blocked:
+            lines += [f"⛔ Earnings blocked: {', '.join(c['ticker'] for c in blocked)}", f""]
+        if near_misses:
+            lines.append(f"👀 <b>Stocks to watch (near misses):</b>")
+            for nm in near_misses[:5]:
+                lines.append(f"  • {nm['ticker']}  Score {nm['score']:.0f}/100  R:R {nm['rr']}:1  — not quite there yet")
+            lines += [f"", f"<i>These are close. Check again tomorrow — one good day could push them over.</i>"]
+        else:
+            lines += [f"<i>Patience is a position. Check again tomorrow.</i>"]
     else:
         lines.append(f"🎯 <b>TODAY'S TRADE SETUPS ({len(cards)})</b>")
         lines.append("")
@@ -139,9 +145,10 @@ def run(capital: float = 50_000, paper_auto_place: bool = False):
 
     # ── Scan ──────────────────────────────────────────────────────────────────
     print(f"  {C}Scanning NSE...{RESET}")
-    scan_result = scan(capital=capital, top_n=5)
-    raw_cards   = scan_result.get("cards", [])
+    scan_result  = scan(capital=capital, top_n=5)
+    raw_cards    = scan_result.get("cards", [])
     scan_blocked = scan_result.get("blocked", [])
+    near_misses  = scan_result.get("near_misses", [])
 
     if scan_blocked:
         print(f"  {Y}Gap/regime blocked: "
@@ -189,7 +196,7 @@ def run(capital: float = 50_000, paper_auto_place: bool = False):
 
     # ── Telegram ──────────────────────────────────────────────────────────────
     print(f"\n  {C}Sending Telegram briefing...{RESET}")
-    _telegram_briefing(safe_cards[:3], blocked, regime, emoji, nifty, capital, state)
+    _telegram_briefing(safe_cards[:3], blocked, regime, emoji, nifty, capital, state, near_misses)
     import os
     if os.environ.get("TELEGRAM_TOKEN") and os.environ.get("TELEGRAM_CHAT_ID"):
         print(f"  {G}✓ Telegram sent{RESET}")
