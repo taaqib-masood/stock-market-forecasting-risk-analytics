@@ -109,6 +109,43 @@ def test_add_features_no_network():
     assert len(feature_cols) >= 30, f"Only {len(feature_cols)} features: {feature_cols}"
 
 
+def test_import_technical_analyzer():
+    from src.technical_analyzer import analyze
+    assert callable(analyze)
+
+
+def test_import_stock_screener():
+    from src.stock_screener import screen_stock, screen_all
+    assert callable(screen_stock)
+    assert callable(screen_all)
+
+
+def test_import_pattern_finder():
+    from src.pattern_finder import full_pattern_report
+    assert callable(full_pattern_report)
+
+
+def test_import_moat_analyzer():
+    from src.moat_analyzer import analyze_moat
+    assert callable(analyze_moat)
+
+
+def test_import_macro_analyzer():
+    from src.macro_analyzer import full_macro_analysis
+    assert callable(full_macro_analysis)
+
+
+def test_monte_carlo():
+    from src.pipeline import monte_carlo_backtest
+    import numpy as np
+    np.random.seed(1)
+    rets = np.random.randn(30) * 0.01  # 30 random daily returns
+    result = monte_carlo_backtest(rets, capital=100_000, n_simulations=200)
+    assert "median_outcome" in result
+    assert "probability_profit" in result
+    assert result["n_simulations"] == 200
+
+
 def test_ensemble_fit_predict():
     from src.ensemble import EnsembleModel
 

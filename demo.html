@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stock Forecasting System — Upgrades Demo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { background: #0f1117; color: #e2e8f0; font-family: 'Inter', sans-serif; }
+    .card { background: #1a1d27; border: 1px solid #2d3148; border-radius: 12px; }
+    .badge-green  { background:#0d3321; color:#34d399; border:1px solid #065f46; }
+    .badge-red    { background:#3b0f0f; color:#f87171; border:1px solid #7f1d1d; }
+    .badge-yellow { background:#2d2005; color:#fbbf24; border:1px solid #78350f; }
+    .badge-blue   { background:#0d1f3c; color:#60a5fa; border:1px solid #1e3a5f; }
+    .badge-purple { background:#1e0d3b; color:#a78bfa; border:1px solid #4c1d95; }
+    .tab { cursor:pointer; padding:8px 18px; border-radius:8px; font-size:13px; font-weight:600; transition:all .2s; }
+    .tab.active   { background:#6366f1; color:#fff; }
+    .tab:not(.active) { color:#94a3b8; }
+    .tab:not(.active):hover { background:#2d3148; color:#e2e8f0; }
+    .section { display:none; }
+    .section.active { display:block; }
+    .shap-bar { height:16px; border-radius:4px; transition:width .6s ease; }
+    .pulse { animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+    .metric-val { font-size:1.6rem; font-weight:700; line-height:1; }
+    .gradient-text { background:linear-gradient(90deg,#6366f1,#a78bfa); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    table { border-collapse:collapse; width:100%; }
+    th { background:#12141f; color:#94a3b8; font-size:11px; text-transform:uppercase; letter-spacing:.05em; padding:10px 14px; text-align:left; }
+    td { padding:10px 14px; border-top:1px solid #2d3148; font-size:13px; }
+    tr:hover td { background:#1e2235; }
+    .progress { background:#2d3148; border-radius:99px; overflow:hidden; height:8px; }
+    .progress-fill { height:8px; border-radius:99px; transition:width .8s ease; }
+    .news-pill { display:inline-block; padding:2px 10px; border-radius:99px; font-size:11px; font-weight:600; margin-right:4px; }
+  </style>
+</head>
+<body class="min-h-screen p-6">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-2xl font-bold gradient-text">Stock Forecasting System</h1>
+      <p class="text-slate-400 text-sm mt-1">Production Upgrades Demo · RELIANCE · NSE</p>
+    </div>
+    <div class="flex gap-2 items-center">
+      <span class="badge-green text-xs px-3 py-1 rounded-full font-semibold">● LIVE</span>
+      <span class="text-slate-500 text-xs">Last sync: just now</span>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="flex gap-2 flex-wrap mb-6">
+    <div class="tab active" onclick="showTab('sentiment')">📰 News Sentiment</div>
+    <div class="tab" onclick="showTab('macro')">🌍 Macro Indicators</div>
+    <div class="tab" onclick="showTab('explainer')">🤖 AI Explainer</div>
+    <div class="tab" onclick="showTab('pipeline')">⚙️ CI/CD Pipeline</div>
+    <div class="tab" onclick="showTab('mlflow')">📊 MLflow Runs</div>
+    <div class="tab" onclick="showTab('drift')">🔍 Drift Detection</div>
+    <div class="tab" onclick="showTab('features')">🧮 Features (52)</div>
+  </div>
+
+  <!-- ── TAB 1: NEWS SENTIMENT ── -->
+  <div id="tab-sentiment" class="section active">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+      <div class="card p-4">
+        <div class="text-slate-400 text-xs mb-1">Sentiment Score</div>
+        <div class="metric-val text-emerald-400">+0.62</div>
+        <div class="text-xs text-slate-500 mt-1">Bullish signal</div>
+        <div class="progress mt-3"><div class="progress-fill bg-emerald-500" style="width:81%"></div></div>
+      </div>
+      <div class="card p-4">
+        <div class="text-slate-400 text-xs mb-1">Bullish Ratio</div>
+        <div class="metric-val text-blue-400">74%</div>
+        <div class="text-xs text-slate-500 mt-1">of 38 headlines</div>
+        <div class="progress mt-3"><div class="progress-fill bg-blue-500" style="width:74%"></div></div>
+      </div>
+      <div class="card p-4">
+        <div class="text-slate-400 text-xs mb-1">News Volume</div>
+        <div class="metric-val text-purple-400">38</div>
+        <div class="text-xs text-slate-500 mt-1">headlines (1h window)</div>
+        <div class="progress mt-3"><div class="progress-fill bg-purple-500" style="width:62%"></div></div>
+      </div>
+      <div class="card p-4">
+        <div class="text-slate-400 text-xs mb-1">Cached</div>
+        <div class="metric-val text-yellow-400">47m</div>
+        <div class="text-xs text-slate-500 mt-1">expires in 13 min</div>
+        <div class="progress mt-3"><div class="progress-fill bg-yellow-500" style="width:78%"></div></div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="card p-5">
+        <div class="text-sm font-semibold mb-4 text-slate-200">Top Headlines — FinBERT Analysis</div>
+        <div class="space-y-3">
+          <div class="bg-slate-800/50 rounded-lg p-3">
+            <div class="flex items-start justify-between gap-2">
+              <p class="text-xs text-slate-300 leading-relaxed">Reliance Industries reports record Q3 profit, JIO leads growth with 12% subscriber surge</p>
+              <span class="news-pill badge-green shrink-0">Bullish</span>
+            </div>
+            <div class="text-xs text-slate-500 mt-1">Yahoo Finance · 23m ago</div>
+          </div>
+          <div class="bg-slate-800/50 rounded-lg p-3">
+            <div class="flex items-start justify-between gap-2">
+              <p class="text-xs text-slate-300 leading-relaxed">RELIANCE eyes $2B green energy investment — analysts upgrade to BUY with ₹3200 target</p>
+              <span class="news-pill badge-green shrink-0">Bullish</span>
+            </div>
+            <div class="text-xs text-slate-500 mt-1">Google News · 1h ago</div>
+          </div>
+          <div class="bg-slate-800/50 rounded-lg p-3">
+            <div class="flex items-start justify-between gap-2">
+              <p class="text-xs text-slate-300 leading-relaxed">Mukesh Ambani's Reliance hits 52-week high as FII inflows accelerate</p>
+              <span class="news-pill badge-green shrink-0">Bullish</span>
+            </div>
+            <div class="text-xs text-slate-500 mt-1">Reddit r/IndiaInvestments · 2h ago</div>
+          </div>
+          <div class="bg-slate-800/50 rounded-lg p-3">
+            <div class="flex items-start justify-between gap-2">
+              <p class="text-xs text-slate-300 leading-relaxed">Telecom price hike fears: Jio faces regulatory scrutiny over bundled OTT pricing</p>
+              <span class="news-pill badge-yellow shrink-0">Neutral</span>
+            </div>
+            <div class="text-xs text-slate-500 mt-1">Google News · 3h ago</div>
+          </div>
+          <div class="bg-slate-800/50 rounded-lg p-3">
+            <div class="flex items-start justify-between gap-2">
+              <p class="text-xs text-slate-300 leading-relaxed">Petro-chem margins compress as crude input costs rise 8% QoQ</p>
+              <span class="news-pill badge-red shrink-0">Bearish</span>
+            </div>
+            <div class="text-xs text-slate-500 mt-1">Yahoo Finance · 4h ago</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card p-5">
+        <div class="text-sm font-semibold mb-4 text-slate-200">Label Distribution</div>
+        <canvas id="sentimentChart" height="180"></canvas>
+        <div class="mt-4 grid grid-cols-3 gap-2 text-center">
+          <div class="badge-green rounded-lg p-2">
+            <div class="text-lg font-bold text-emerald-400">28</div>
+            <div class="text-xs text-emerald-300">Bullish</div>
+          </div>
+          <div class="badge-yellow rounded-lg p-2">
+            <div class="text-lg font-bold text-yellow-400">6</div>
+            <div class="text-xs text-yellow-300">Neutral</div>
+          </div>
+          <div class="badge-red rounded-lg p-2">
+            <div class="text-lg font-bold text-red-400">4</div>
+            <div class="text-xs text-red-300">Bearish</div>
+          </div>
+        </div>
+        <div class="mt-4 p-3 bg-indigo-900/30 border border-indigo-700/40 rounded-lg">
+          <div class="text-xs text-indigo-300 font-semibold mb-1">ML Features Generated</div>
+          <div class="grid grid-cols-3 gap-1 text-xs text-slate-400">
+            <span>sentiment_score: <span class="text-emerald-400">+0.62</span></span>
+            <span>sentiment_volume: <span class="text-blue-400">3.64</span></span>
+            <span>sentiment_momentum: <span class="text-yellow-400">+0.08</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB 2: MACRO INDICATORS ── -->
+  <div id="tab-macro" class="section">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+      <div class="card p-4">
+        <div class="text-slate-400 text-xs mb-1">VIX (Fear Index)</div>
+        <div class="metric-val text-yellow-400">18.4</div>
+        <div class="badge-yellow text-xs px-2 py-0.5 rounded-full inline-block mt-2">Moderate</div>
+      </div>
+      <div class="card p-4">
+        <div class="text-slate-400 text-xs mb-1">DXY (Dollar Index)</div>
+        <div class="metric-val text-blue-400">104.2</div>
+        <div class="badge-blue text-xs px-2 py-0.5 rounded-full inline-block mt-2">Neutral</div>
+      </div>
+      <div class="card p-4">
+        <div class="text-slate-400 text-xs mb-1">Gold (XAU/USD)</div>
+        <div class="metric-val text-yellow-300">$2,341</div>
+        <div class="badge-green text-xs px-2 py-0.5 rounded-full inline-block mt-2">↑ +0.8%</div>
+      </div>
+      <div class="card p-4">
+        <div class="text-slate-400 text-xs mb-1">Nifty 50</div>
+        <div class="metric-val text-emerald-400">22,147</div>
+        <div class="badge-green text-xs px-2 py-0.5 rounded-full inline-block mt-2">↑ +0.4%</div>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+      <div class="card p-4">
+        <div class="text-slate-400 text-xs mb-1">10Y–2Y Yield Spread</div>
+        <div class="metric-val text-emerald-400">+0.42%</div>
+        <div class="badge-green text-xs px-2 py-0.5 rounded-full inline-block mt-2">Normal Curve</div>
+      </div>
+      <div class="card p-4">
+        <div class="text-slate-400 text-xs mb-1">Fed Funds Rate</div>
+        <div class="metric-val text-red-400">5.33%</div>
+        <div class="badge-red text-xs px-2 py-0.5 rounded-full inline-block mt-2">Restrictive</div>
+      </div>
+      <div class="card p-4">
+        <div class="text-slate-400 text-xs mb-1">Nifty Bank</div>
+        <div class="metric-val text-blue-400">47,832</div>
+        <div class="badge-green text-xs px-2 py-0.5 rounded-full inline-block mt-2">↑ +0.6%</div>
+      </div>
+      <div class="card p-4">
+        <div class="text-slate-400 text-xs mb-1">Advance / Decline</div>
+        <div class="metric-val text-emerald-400">0.68</div>
+        <div class="badge-green text-xs px-2 py-0.5 rounded-full inline-block mt-2">Breadth OK</div>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="card p-5">
+        <div class="text-sm font-semibold mb-4">Macro Regime Summary</div>
+        <div class="space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-slate-400">VIX Regime</span>
+            <span class="badge-yellow text-xs px-3 py-1 rounded-full">moderate_fear</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-slate-400">Yield Curve</span>
+            <span class="badge-green text-xs px-3 py-1 rounded-full">normal (not inverted)</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-slate-400">Market Breadth</span>
+            <span class="badge-green text-xs px-3 py-1 rounded-full">68% advances</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-slate-400">DXY Trend</span>
+            <span class="badge-yellow text-xs px-3 py-1 rounded-full">mild USD strength</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-slate-400">Cache TTL</span>
+            <span class="badge-blue text-xs px-3 py-1 rounded-full">1 day · expires 23h 12m</span>
+          </div>
+        </div>
+        <div class="mt-4 p-3 bg-indigo-900/30 border border-indigo-700/40 rounded-lg">
+          <div class="text-xs text-indigo-300 font-semibold mb-1">ML Features Generated</div>
+          <div class="grid grid-cols-2 gap-1 text-xs text-slate-400">
+            <span>vix_level: <span class="text-yellow-400">18.4</span></span>
+            <span>dxy_level: <span class="text-blue-400">104.2</span></span>
+            <span>yield_curve_spread: <span class="text-emerald-400">+0.42</span></span>
+            <span>market_breadth: <span class="text-emerald-400">0.68</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="card p-5">
+        <div class="text-sm font-semibold mb-4">Indicator Trend (30 days)</div>
+        <canvas id="macroChart" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB 3: AI EXPLAINER ── -->
+  <div id="tab-explainer" class="section">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <div class="card p-4 col-span-2">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="badge-green text-sm px-4 py-1.5 rounded-full font-bold">🟢 BUY SIGNAL</span>
+          <span class="text-slate-400 text-sm">RELIANCE · Confidence: <span class="text-emerald-400 font-semibold">78.4%</span></span>
+          <span class="text-slate-400 text-sm">Price: <span class="text-white font-semibold">₹2,847</span></span>
+        </div>
+        <div class="bg-slate-800/60 rounded-xl p-4 text-sm text-slate-300 leading-relaxed border border-slate-700/50">
+          <span class="text-indigo-400 font-semibold">AI Summary (Groq/Llama3): </span>
+          This BUY signal for RELIANCE is primarily driven by RSI_14 being oversold at 34, indicating strong mean-reversion potential, combined with a bullish MACD crossover confirming upward momentum. The stock is trading 3.2% below its 20-day moving average, creating an attractive entry point. Volume Z-score of +1.8 suggests institutional accumulation. News sentiment is strongly bullish at +0.62 with 74% of headlines positive. While VIX at 18.4 indicates moderate market fear, the yield curve remains normal and market breadth is healthy at 68% advances, supporting a risk-on environment.
+        </div>
+      </div>
+      <div class="card p-4">
+        <div class="text-sm font-semibold mb-3">Trade Setup</div>
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between"><span class="text-slate-400">Entry</span><span class="text-white font-semibold">₹2,847</span></div>
+          <div class="flex justify-between"><span class="text-slate-400">Stop Loss</span><span class="text-red-400 font-semibold">₹2,761 (-3.0%)</span></div>
+          <div class="flex justify-between"><span class="text-slate-400">Target</span><span class="text-emerald-400 font-semibold">₹3,020 (+6.1%)</span></div>
+          <div class="flex justify-between"><span class="text-slate-400">R:R Ratio</span><span class="text-blue-400 font-semibold">2.03 : 1</span></div>
+          <div class="flex justify-between"><span class="text-slate-400">Position Size</span><span class="text-yellow-400 font-semibold">17 shares</span></div>
+          <div class="flex justify-between"><span class="text-slate-400">Risk ₹</span><span class="text-red-400 font-semibold">₹1,462</span></div>
+        </div>
+        <div class="mt-3 p-2 bg-red-900/20 border border-red-800/40 rounded-lg text-xs text-red-300">
+          ⚠️ Risk Warning: VIX elevated at 18.4 — consider 80% position size
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="card p-5">
+        <div class="text-sm font-semibold mb-4 text-emerald-400">↑ Bullish SHAP Drivers</div>
+        <div class="space-y-3">
+          <div>
+            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">RSI_14 = 34 (oversold)</span><span class="text-emerald-400">+0.342</span></div>
+            <div class="progress"><div class="progress-fill bg-emerald-500" style="width:88%"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">MACD bullish crossover</span><span class="text-emerald-400">+0.281</span></div>
+            <div class="progress"><div class="progress-fill bg-emerald-500" style="width:72%"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">volume_zscore = +1.8 (accumulation)</span><span class="text-emerald-400">+0.198</span></div>
+            <div class="progress"><div class="progress-fill bg-emerald-500" style="width:51%"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">price_vs_sma20 = -3.2% (dip)</span><span class="text-emerald-400">+0.154</span></div>
+            <div class="progress"><div class="progress-fill bg-emerald-500" style="width:40%"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">sentiment_score = +0.62</span><span class="text-emerald-400">+0.112</span></div>
+            <div class="progress"><div class="progress-fill bg-emerald-500" style="width:29%"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card p-5">
+        <div class="text-sm font-semibold mb-4 text-red-400">↓ Bearish SHAP Headwinds</div>
+        <div class="space-y-3">
+          <div>
+            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">vix_close = 18.4 (elevated)</span><span class="text-red-400">-0.124</span></div>
+            <div class="progress"><div class="progress-fill bg-red-500" style="width:40%"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">fed_funds_rate = 5.33%</span><span class="text-red-400">-0.089</span></div>
+            <div class="progress"><div class="progress-fill bg-red-500" style="width:29%"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">volatility_20 = 0.018 (high)</span><span class="text-red-400">-0.061</span></div>
+            <div class="progress"><div class="progress-fill bg-red-500" style="width:20%"></div></div>
+          </div>
+        </div>
+        <div class="mt-6 p-3 bg-slate-800/60 rounded-xl border border-slate-700/50">
+          <div class="text-xs text-slate-400 font-semibold mb-2">Actionable Advice</div>
+          <div class="text-xs text-slate-300 leading-relaxed">Place limit BUY order at <span class="text-emerald-400 font-semibold">₹2,847</span>. Set stop-loss at <span class="text-red-400 font-semibold">₹2,761</span> (2×ATR). Target <span class="text-blue-400 font-semibold">₹3,020</span>. Reduce to 80% size given elevated VIX.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB 4: CI/CD PIPELINE ── -->
+  <div id="tab-pipeline" class="section">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+      <div class="card p-4 text-center">
+        <div class="text-2xl mb-2">✅</div>
+        <div class="text-xs text-slate-400">Last Nightly Scan</div>
+        <div class="text-sm font-semibold text-emerald-400">Passed</div>
+        <div class="text-xs text-slate-500">Today 9:00 AM IST</div>
+      </div>
+      <div class="card p-4 text-center">
+        <div class="text-2xl mb-2">✅</div>
+        <div class="text-xs text-slate-400">Last Auto-Close</div>
+        <div class="text-sm font-semibold text-emerald-400">Passed</div>
+        <div class="text-xs text-slate-500">Today 3:45 PM IST</div>
+      </div>
+      <div class="card p-4 text-center">
+        <div class="text-2xl mb-2">✅</div>
+        <div class="text-xs text-slate-400">Weekly Backtest</div>
+        <div class="text-sm font-semibold text-emerald-400">Passed</div>
+        <div class="text-xs text-slate-500">Sunday 10:00 AM IST</div>
+      </div>
+      <div class="card p-4 text-center">
+        <div class="text-2xl mb-2">✅</div>
+        <div class="text-xs text-slate-400">CI Tests</div>
+        <div class="text-sm font-semibold text-emerald-400">12/12 passed</div>
+        <div class="text-xs text-slate-500">on push to main</div>
+      </div>
+    </div>
+
+    <div class="card p-5 mb-4">
+      <div class="text-sm font-semibold mb-4">Pipeline Schedule</div>
+      <table>
+        <thead><tr><th>Job</th><th>Schedule (IST)</th><th>UTC Cron</th><th>Command</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="font-medium">🌅 Nightly Scan</td>
+            <td class="text-slate-300">Mon–Fri 9:00 AM</td>
+            <td class="text-slate-500 font-mono text-xs">30 3 * * 1-5</td>
+            <td class="text-slate-400 font-mono text-xs">python -m src.daily_briefing --capital 50000</td>
+            <td><span class="badge-green text-xs px-2 py-0.5 rounded-full">● Active</span></td>
+          </tr>
+          <tr>
+            <td class="font-medium">🔔 Auto-Close</td>
+            <td class="text-slate-300">Mon–Fri 3:45 PM</td>
+            <td class="text-slate-500 font-mono text-xs">15 10 * * 1-5</td>
+            <td class="text-slate-400 font-mono text-xs">python -m src.auto_close</td>
+            <td><span class="badge-green text-xs px-2 py-0.5 rounded-full">● Active</span></td>
+          </tr>
+          <tr>
+            <td class="font-medium">📈 Weekly Backtest</td>
+            <td class="text-slate-300">Sunday 10:00 AM</td>
+            <td class="text-slate-500 font-mono text-xs">30 4 * * 0</td>
+            <td class="text-slate-400 font-mono text-xs">python -m src.pipeline --ticker RELIANCE --years 5</td>
+            <td><span class="badge-green text-xs px-2 py-0.5 rounded-full">● Active</span></td>
+          </tr>
+          <tr>
+            <td class="font-medium">🧪 CI Tests</td>
+            <td class="text-slate-300">On push to main</td>
+            <td class="text-slate-500 font-mono text-xs">event: push</td>
+            <td class="text-slate-400 font-mono text-xs">pytest tests/ + import validation</td>
+            <td><span class="badge-green text-xs px-2 py-0.5 rounded-full">● Active</span></td>
+          </tr>
+          <tr>
+            <td class="font-medium">🔍 Drift Check</td>
+            <td class="text-slate-300">Mon–Fri (after scan)</td>
+            <td class="text-slate-500 font-mono text-xs">30 3 * * 1-5</td>
+            <td class="text-slate-400 font-mono text-xs">python -m src.drift_detector --ticker RELIANCE</td>
+            <td><span class="badge-green text-xs px-2 py-0.5 rounded-full">● Active</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card p-5">
+      <div class="text-sm font-semibold mb-3">Secrets Configured</div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="bg-slate-800/60 rounded-lg p-3 text-center">
+          <div class="text-lg">🔑</div>
+          <div class="text-xs font-semibold text-slate-300 mt-1">TELEGRAM_TOKEN</div>
+          <div class="text-xs text-emerald-400 mt-1">● Set</div>
+        </div>
+        <div class="bg-slate-800/60 rounded-lg p-3 text-center">
+          <div class="text-lg">🔑</div>
+          <div class="text-xs font-semibold text-slate-300 mt-1">TELEGRAM_CHAT_ID</div>
+          <div class="text-xs text-emerald-400 mt-1">● Set</div>
+        </div>
+        <div class="bg-slate-800/60 rounded-lg p-3 text-center">
+          <div class="text-lg">🔑</div>
+          <div class="text-xs font-semibold text-slate-300 mt-1">GROQ_API_KEY</div>
+          <div class="text-xs text-emerald-400 mt-1">● Set</div>
+        </div>
+        <div class="bg-slate-800/60 rounded-lg p-3 text-center">
+          <div class="text-lg">🔑</div>
+          <div class="text-xs font-semibold text-slate-300 mt-1">FRED_API_KEY</div>
+          <div class="text-xs text-emerald-400 mt-1">● Set</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB 5: MLFLOW ── -->
+  <div id="tab-mlflow" class="section">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+      <div class="card p-4">
+        <div class="text-slate-400 text-xs mb-1">Total Runs</div>
+        <div class="metric-val text-white">24</div>
+      </div>
+      <div class="card p-4">
+        <div class="text-slate-400 text-xs mb-1">Best Sharpe</div>
+        <div class="metric-val text-emerald-400">1.84</div>
+      </div>
+      <div class="card p-4">
+        <div class="text-slate-400 text-xs mb-1">Best Win Rate</div>
+        <div class="metric-val text-blue-400">61.2%</div>
+      </div>
+      <div class="card p-4">
+        <div class="text-slate-400 text-xs mb-1">Best Profit Factor</div>
+        <div class="metric-val text-purple-400">2.31</div>
+      </div>
+    </div>
+
+    <div class="card p-5 mb-4">
+      <div class="flex items-center justify-between mb-4">
+        <div class="text-sm font-semibold">Experiment Runs — RELIANCE (ranked by Sharpe)</div>
+        <span class="badge-blue text-xs px-3 py-1 rounded-full">mlflow ui → localhost:5000</span>
+      </div>
+      <table>
+        <thead><tr><th>#</th><th>Run ID</th><th>Model</th><th>Sharpe</th><th>Win Rate</th><th>Profit Factor</th><th>Trades</th><th>Max DD</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="text-yellow-400 font-bold">1</td>
+            <td class="font-mono text-xs text-slate-400">a3f9d12e</td>
+            <td><span class="badge-purple text-xs px-2 py-0.5 rounded-full">ensemble</span></td>
+            <td class="text-emerald-400 font-semibold">1.84</td>
+            <td class="text-emerald-400">61.2%</td>
+            <td class="text-emerald-400">2.31</td>
+            <td>142</td>
+            <td class="text-red-400">-8.4%</td>
+            <td><span class="badge-green text-xs px-2 py-0.5 rounded-full">FINISHED</span></td>
+          </tr>
+          <tr>
+            <td class="text-slate-400">2</td>
+            <td class="font-mono text-xs text-slate-400">b7c2e891</td>
+            <td><span class="badge-blue text-xs px-2 py-0.5 rounded-full">ensemble</span></td>
+            <td class="text-slate-300">1.61</td>
+            <td>58.4%</td>
+            <td>2.04</td>
+            <td>118</td>
+            <td class="text-red-400">-10.2%</td>
+            <td><span class="badge-green text-xs px-2 py-0.5 rounded-full">FINISHED</span></td>
+          </tr>
+          <tr>
+            <td class="text-slate-400">3</td>
+            <td class="font-mono text-xs text-slate-400">f2a1c334</td>
+            <td><span class="badge-blue text-xs px-2 py-0.5 rounded-full">ensemble</span></td>
+            <td class="text-slate-300">1.43</td>
+            <td>56.1%</td>
+            <td>1.88</td>
+            <td>167</td>
+            <td class="text-red-400">-12.1%</td>
+            <td><span class="badge-green text-xs px-2 py-0.5 rounded-full">FINISHED</span></td>
+          </tr>
+          <tr>
+            <td class="text-slate-400">4</td>
+            <td class="font-mono text-xs text-slate-400">d8e4b021</td>
+            <td><span class="badge-yellow text-xs px-2 py-0.5 rounded-full">tree-only</span></td>
+            <td class="text-slate-300">1.12</td>
+            <td>54.3%</td>
+            <td>1.64</td>
+            <td>203</td>
+            <td class="text-red-400">-15.8%</td>
+            <td><span class="badge-green text-xs px-2 py-0.5 rounded-full">FINISHED</span></td>
+          </tr>
+          <tr>
+            <td class="text-slate-400">5</td>
+            <td class="font-mono text-xs text-slate-400">e1f7a299</td>
+            <td><span class="badge-yellow text-xs px-2 py-0.5 rounded-full">tree-only</span></td>
+            <td class="text-slate-300">0.94</td>
+            <td>51.8%</td>
+            <td>1.41</td>
+            <td>189</td>
+            <td class="text-red-400">-18.3%</td>
+            <td><span class="badge-green text-xs px-2 py-0.5 rounded-full">FINISHED</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card p-5">
+      <div class="text-sm font-semibold mb-3 text-yellow-400">⭐ Recommended Config (Best Run: a3f9d12e)</div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+        <div class="bg-slate-800/60 rounded-lg p-3"><div class="text-slate-400 mb-1">confidence_threshold</div><div class="text-white font-mono font-semibold">0.62</div></div>
+        <div class="bg-slate-800/60 rounded-lg p-3"><div class="text-slate-400 mb-1">years of history</div><div class="text-white font-mono font-semibold">5</div></div>
+        <div class="bg-slate-800/60 rounded-lg p-3"><div class="text-slate-400 mb-1">n_estimators</div><div class="text-white font-mono font-semibold">500</div></div>
+        <div class="bg-slate-800/60 rounded-lg p-3"><div class="text-slate-400 mb-1">use_lstm</div><div class="text-white font-mono font-semibold">False</div></div>
+        <div class="bg-slate-800/60 rounded-lg p-3"><div class="text-slate-400 mb-1">dataset_hash</div><div class="text-white font-mono font-semibold">a3f9d12e</div></div>
+        <div class="bg-slate-800/60 rounded-lg p-3"><div class="text-slate-400 mb-1">dataset_rows</div><div class="text-white font-mono font-semibold">1,247</div></div>
+        <div class="bg-slate-800/60 rounded-lg p-3"><div class="text-slate-400 mb-1">atr_multiplier</div><div class="text-white font-mono font-semibold">2.0</div></div>
+        <div class="bg-slate-800/60 rounded-lg p-3"><div class="text-slate-400 mb-1">Reproduce cmd</div><div class="text-indigo-400 font-mono">pipeline --years 5</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB 6: DRIFT DETECTION ── -->
+  <div id="tab-drift" class="section">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <div class="card p-4">
+        <div class="text-slate-400 text-xs mb-1">Data Drift Severity</div>
+        <div class="metric-val text-yellow-400">Warning</div>
+        <div class="text-xs text-slate-500 mt-1">3/52 features drifted</div>
+        <div class="progress mt-3"><div class="progress-fill bg-yellow-500" style="width:14%"></div></div>
+        <div class="text-xs text-slate-500 mt-1">5.8% drift ratio</div>
+      </div>
+      <div class="card p-4">
+        <div class="text-slate-400 text-xs mb-1">Rolling 30-Trade Win Rate</div>
+        <div class="metric-val text-emerald-400">56.7%</div>
+        <div class="text-xs text-slate-500 mt-1">Floor: 50% · <span class="text-emerald-400">OK</span></div>
+        <div class="progress mt-3"><div class="progress-fill bg-emerald-500" style="width:56.7%"></div></div>
+      </div>
+      <div class="card p-4">
+        <div class="text-slate-400 text-xs mb-1">Consecutive Losses</div>
+        <div class="metric-val text-emerald-400">2</div>
+        <div class="text-xs text-slate-500 mt-1">Alert at 5 · <span class="text-emerald-400">OK</span></div>
+        <div class="progress mt-3"><div class="progress-fill bg-emerald-500" style="width:40%"></div></div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="card p-5">
+        <div class="text-sm font-semibold mb-4">Feature Drift Report (KS Test + PSI)</div>
+        <table>
+          <thead><tr><th>Feature</th><th>KS Stat</th><th>KS p-value</th><th>PSI</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="font-mono text-xs">volume_zscore</td>
+              <td>0.182</td>
+              <td class="text-red-400">0.012 ⚠️</td>
+              <td class="text-yellow-400">0.14</td>
+              <td><span class="badge-yellow text-xs px-2 py-0.5 rounded-full">Warning</span></td>
+            </tr>
+            <tr>
+              <td class="font-mono text-xs">rsi_14</td>
+              <td>0.161</td>
+              <td class="text-red-400">0.031 ⚠️</td>
+              <td class="text-yellow-400">0.11</td>
+              <td><span class="badge-yellow text-xs px-2 py-0.5 rounded-full">Warning</span></td>
+            </tr>
+            <tr>
+              <td class="font-mono text-xs">volatility_20</td>
+              <td>0.148</td>
+              <td class="text-red-400">0.044 ⚠️</td>
+              <td class="text-green-400">0.08</td>
+              <td><span class="badge-yellow text-xs px-2 py-0.5 rounded-full">Drifted</span></td>
+            </tr>
+            <tr>
+              <td class="font-mono text-xs">macd</td>
+              <td>0.092</td>
+              <td class="text-emerald-400">0.218</td>
+              <td class="text-emerald-400">0.04</td>
+              <td><span class="badge-green text-xs px-2 py-0.5 rounded-full">OK</span></td>
+            </tr>
+            <tr>
+              <td class="font-mono text-xs">roc_20</td>
+              <td>0.081</td>
+              <td class="text-emerald-400">0.341</td>
+              <td class="text-emerald-400">0.03</td>
+              <td><span class="badge-green text-xs px-2 py-0.5 rounded-full">OK</span></td>
+            </tr>
+            <tr>
+              <td class="font-mono text-xs">sentiment_score</td>
+              <td>0.071</td>
+              <td class="text-emerald-400">0.482</td>
+              <td class="text-emerald-400">0.02</td>
+              <td><span class="badge-green text-xs px-2 py-0.5 rounded-full">OK</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card p-5">
+        <div class="text-sm font-semibold mb-4">Performance Drift — Rolling Win Rate</div>
+        <canvas id="driftChart" height="180"></canvas>
+        <div class="mt-4 p-3 bg-emerald-900/20 border border-emerald-700/40 rounded-lg">
+          <div class="text-xs text-emerald-300 font-semibold mb-1">✅ Recommendation</div>
+          <div class="text-xs text-slate-300">Monitor closely — minor volume/volatility drift detected. Model performance remains above floor. No retraining needed yet. Next check: tomorrow 9:00 AM IST.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB 7: FEATURES ── -->
+  <div id="tab-features" class="section">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+      <div class="card p-3 text-center"><div class="text-2xl font-bold text-indigo-400">10</div><div class="text-xs text-slate-400">Momentum</div></div>
+      <div class="card p-3 text-center"><div class="text-2xl font-bold text-blue-400">7</div><div class="text-xs text-slate-400">Volatility</div></div>
+      <div class="card p-3 text-center"><div class="text-2xl font-bold text-emerald-400">6</div><div class="text-xs text-slate-400">Volume</div></div>
+      <div class="card p-3 text-center"><div class="text-2xl font-bold text-yellow-400">14</div><div class="text-xs text-slate-400">Trend / MA</div></div>
+      <div class="card p-3 text-center"><div class="text-2xl font-bold text-purple-400">5</div><div class="text-xs text-slate-400">Market Context</div></div>
+      <div class="card p-3 text-center"><div class="text-2xl font-bold text-pink-400">5</div><div class="text-xs text-slate-400">Calendar</div></div>
+      <div class="card p-3 text-center"><div class="text-2xl font-bold text-orange-400">3</div><div class="text-xs text-slate-400">Sentiment (opt)</div></div>
+      <div class="card p-3 text-center"><div class="text-2xl font-bold text-teal-400">4</div><div class="text-xs text-slate-400">Macro (opt)</div></div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="card p-5">
+        <div class="text-sm font-semibold mb-3">All 52 Features</div>
+        <div class="grid grid-cols-2 gap-1 text-xs">
+          <div class="text-indigo-400 font-semibold col-span-2 mt-2 mb-1">Momentum</div>
+          <span class="text-slate-300 font-mono">rsi_14</span><span class="text-slate-300 font-mono">rsi_7</span>
+          <span class="text-slate-300 font-mono">rsi_21 ✨</span><span class="text-slate-300 font-mono">macd</span>
+          <span class="text-slate-300 font-mono">macd_signal</span><span class="text-slate-300 font-mono">macd_hist</span>
+          <span class="text-slate-300 font-mono">roc_5</span><span class="text-slate-300 font-mono">roc_10</span>
+          <span class="text-slate-300 font-mono">roc_20 ✨</span><span class="text-slate-300 font-mono">williams_r ✨</span>
+
+          <div class="text-blue-400 font-semibold col-span-2 mt-2 mb-1">Volatility</div>
+          <span class="text-slate-300 font-mono">atr_14</span><span class="text-slate-300 font-mono">atr_pct</span>
+          <span class="text-slate-300 font-mono">volatility_5</span><span class="text-slate-300 font-mono">volatility_10 ✨</span>
+          <span class="text-slate-300 font-mono">volatility_20</span><span class="text-slate-300 font-mono">bb_width</span>
+          <span class="text-slate-300 font-mono">bb_pct_b</span><span></span>
+
+          <div class="text-emerald-400 font-semibold col-span-2 mt-2 mb-1">Volume</div>
+          <span class="text-slate-300 font-mono">obv</span><span class="text-slate-300 font-mono">volume_ratio</span>
+          <span class="text-slate-300 font-mono">volume_zscore ✨</span><span class="text-slate-300 font-mono">mfi_14 ✨</span>
+          <span class="text-slate-300 font-mono">cmf ✨</span><span class="text-slate-300 font-mono">volume_sma20</span>
+        </div>
+      </div>
+      <div class="card p-5">
+        <div class="text-sm font-semibold mb-3">&nbsp;</div>
+        <div class="grid grid-cols-2 gap-1 text-xs">
+          <div class="text-yellow-400 font-semibold col-span-2 mt-2 mb-1">Trend / Moving Averages</div>
+          <span class="text-slate-300 font-mono">sma_5/10/20/50</span><span class="text-slate-300 font-mono">ema_5/10/20/50</span>
+          <span class="text-slate-300 font-mono">sma_200 ✨</span><span class="text-slate-300 font-mono">price_vs_sma20</span>
+          <span class="text-slate-300 font-mono">price_vs_sma50</span><span class="text-slate-300 font-mono">price_vs_sma200 ✨</span>
+          <span class="text-slate-300 font-mono">golden_cross ✨</span><span class="text-slate-300 font-mono">sma200_slope ✨</span>
+
+          <div class="text-purple-400 font-semibold col-span-2 mt-2 mb-1">Market Context</div>
+          <span class="text-slate-300 font-mono">spy_return</span><span class="text-slate-300 font-mono">spy_above_sma50</span>
+          <span class="text-slate-300 font-mono">vix_close</span><span class="text-slate-300 font-mono">vix_regime</span>
+          <span class="text-slate-300 font-mono">nifty_rel_strength ✨</span><span></span>
+
+          <div class="text-pink-400 font-semibold col-span-2 mt-2 mb-1">Calendar</div>
+          <span class="text-slate-300 font-mono">day_of_week</span><span class="text-slate-300 font-mono">month</span>
+          <span class="text-slate-300 font-mono">week_of_year</span><span class="text-slate-300 font-mono">days_to_expiry ✨</span>
+          <span class="text-slate-300 font-mono">holiday_proximity ✨</span><span></span>
+
+          <div class="text-orange-400 font-semibold col-span-2 mt-2 mb-1">Sentiment + Macro (opt-in flags)</div>
+          <span class="text-slate-300 font-mono">sentiment_score</span><span class="text-slate-300 font-mono">sentiment_volume</span>
+          <span class="text-slate-300 font-mono">sentiment_momentum</span><span class="text-slate-300 font-mono">macro_vix</span>
+          <span class="text-slate-300 font-mono">macro_dxy</span><span class="text-slate-300 font-mono">yield_curve_spread</span>
+          <span class="text-slate-300 font-mono">market_breadth</span><span></span>
+        </div>
+        <div class="mt-3 text-xs text-slate-500">✨ = newly added in this upgrade</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  function showTab(name) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  // Sentiment donut
+  new Chart(document.getElementById('sentimentChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Bullish', 'Neutral', 'Bearish'],
+      datasets: [{ data: [28, 6, 4], backgroundColor: ['#34d399','#fbbf24','#f87171'], borderWidth: 0, hoverOffset: 4 }]
+    },
+    options: { plugins: { legend: { display: false } }, cutout: '65%' }
+  });
+
+  // Macro trend chart
+  const days = Array.from({length:30},(_,i)=>`D-${30-i}`);
+  new Chart(document.getElementById('macroChart'), {
+    type: 'line',
+    data: {
+      labels: days,
+      datasets: [
+        { label:'VIX', data: days.map((_,i)=>15+Math.sin(i/3)*4+Math.random()), borderColor:'#fbbf24', borderWidth:2, pointRadius:0, tension:.4 },
+        { label:'DXY', data: days.map((_,i)=>103+Math.sin(i/4)*1.5+Math.random()*0.5), borderColor:'#60a5fa', borderWidth:2, pointRadius:0, tension:.4, yAxisID:'y1' }
+      ]
+    },
+    options: {
+      plugins:{ legend:{ labels:{ color:'#94a3b8', font:{size:11} } } },
+      scales:{
+        x:{ ticks:{ color:'#4b5563', maxTicksLimit:6, font:{size:10} }, grid:{ color:'#1f2937' } },
+        y:{ ticks:{ color:'#94a3b8', font:{size:10} }, grid:{ color:'#1f2937' }, title:{display:true,text:'VIX',color:'#fbbf24',font:{size:10}} },
+        y1:{ position:'right', ticks:{ color:'#94a3b8', font:{size:10} }, grid:{ drawOnChartArea:false }, title:{display:true,text:'DXY',color:'#60a5fa',font:{size:10}} }
+      }
+    }
+  });
+
+  // Drift rolling win rate
+  new Chart(document.getElementById('driftChart'), {
+    type: 'line',
+    data: {
+      labels: Array.from({length:20},(_,i)=>`T-${20-i}`),
+      datasets: [
+        { label:'Rolling Win Rate', data:[0.54,0.56,0.53,0.58,0.61,0.59,0.57,0.60,0.63,0.61,0.58,0.56,0.54,0.57,0.59,0.56,0.55,0.57,0.58,0.567], borderColor:'#34d399', backgroundColor:'rgba(52,211,153,0.1)', borderWidth:2, pointRadius:2, tension:.4, fill:true },
+        { label:'Floor (50%)', data:Array(20).fill(0.50), borderColor:'#f87171', borderWidth:1.5, pointRadius:0, borderDash:[4,4] }
+      ]
+    },
+    options: {
+      plugins:{ legend:{ labels:{ color:'#94a3b8', font:{size:11} } } },
+      scales:{
+        x:{ ticks:{ color:'#4b5563', maxTicksLimit:8, font:{size:10} }, grid:{ color:'#1f2937' } },
+        y:{ min:0.40, max:0.75, ticks:{ color:'#94a3b8', font:{size:10}, callback: v=>(v*100).toFixed(0)+'%' }, grid:{ color:'#1f2937' } }
+      }
+    }
+  });
+</script>
+</body>
+</html>

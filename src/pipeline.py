@@ -10,6 +10,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from pathlib import Path
+from typing import Optional
 
 from src.data_provider import load_bars
 from src.feature_engineering import add_features
@@ -55,6 +56,92 @@ def load_data(ticker: str, years: int) -> pd.DataFrame:
 def get_feature_cols(df: pd.DataFrame) -> list[str]:
     available_market = [c for c in MARKET_COLS if c in df.columns]
     return [c for c in FEATURE_COLS + available_market if c in df.columns]
+
+
+def monte_carlo_backtest(
+    trade_returns: np.ndarray,
+    capital: float = 100_000,
+    n_simulations: int = 1000,
+    out_dir: Optional[Path] = None,
+) -> dict:
+    """
+    Monte Carlo simulation: resample trade returns to estimate distribution
+    of possible outcomes. Shows best/worst/median final equity.
+
+    Returns plain-English stats beginner can understand.
+    """
+    if len(trade_returns) < 5:
+        return {"error": "Not enough trades for Monte Carlo (need ≥5)"}
+
+    np.random.seed(42)
+    final_equities = []
+    max_drawdowns  = []
+
+    for _ in range(n_simulations):
+        sample = np.random.choice(trade_returns, size=len(trade_returns), replace=True)
+        equity = capital * np.cumprod(1 + sample)
+        peak   = np.maximum.accumulate(equity)
+        dd     = ((equity - peak) / peak).min()
+        final_equities.append(equity[-1])
+        max_drawdowns.append(dd * 100)
+
+    final_equities = np.array(final_equities)
+    max_drawdowns  = np.array(max_drawdowns)
+
+    p5, p25, p50, p75, p95 = np.percentile(final_equities, [5, 25, 50, 75, 95])
+    prob_profit = (final_equities > capital).mean() * 100
+    avg_max_dd  = max_drawdowns.mean()
+
+    result = {
+        "n_simulations":      n_simulations,
+        "starting_capital":   capital,
+        "worst_case_5pct":    round(p5, 2),
+        "bad_case_25pct":     round(p25, 2),
+        "median_outcome":     round(p50, 2),
+        "good_case_75pct":    round(p75, 2),
+        "best_case_95pct":    round(p95, 2),
+        "probability_profit": round(prob_profit, 1),
+        "avg_max_drawdown_pct": round(avg_max_dd, 2),
+        "plain_english": (
+            f"Running {n_simulations} simulated versions of this strategy:\n"
+            f"  • Chance of ending profitable: {prob_profit:.0f}%\n"
+            f"  • Most likely final value (median): ₹{p50:,.0f}\n"
+            f"  • Worst 5% of outcomes: ₹{p5:,.0f}\n"
+            f"  • Best 5% of outcomes:  ₹{p95:,.0f}\n"
+            f"  • Average max drawdown you'd experience: {avg_max_dd:.1f}%"
+        ),
+    }
+
+    # Save chart
+    if out_dir:
+        fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+        axes[0].hist(final_equities, bins=60, color="steelblue", alpha=0.8, edgecolor="white")
+        axes[0].axvline(capital, color="red",    linestyle="--", linewidth=1.5, label=f"Start ₹{capital:,.0f}")
+        axes[0].axvline(p50,    color="green",   linestyle="-",  linewidth=2,   label=f"Median ₹{p50:,.0f}")
+        axes[0].axvline(p5,     color="orange",  linestyle=":",  linewidth=1.5, label=f"5th pct ₹{p5:,.0f}")
+        axes[0].set_title(f"Monte Carlo — Final Equity Distribution ({n_simulations:,} runs)")
+        axes[0].set_xlabel("Final Portfolio Value (₹)")
+        axes[0].set_ylabel("Frequency")
+        axes[0].legend(fontsize=8)
+        axes[0].grid(alpha=0.3)
+
+        axes[1].hist(max_drawdowns, bins=40, color="tomato", alpha=0.8, edgecolor="white")
+        axes[1].axvline(avg_max_dd, color="black", linestyle="--", linewidth=2,
+                        label=f"Avg DD {avg_max_dd:.1f}%")
+        axes[1].set_title("Distribution of Max Drawdowns")
+        axes[1].set_xlabel("Max Drawdown (%)")
+        axes[1].set_ylabel("Frequency")
+        axes[1].legend(fontsize=8)
+        axes[1].grid(alpha=0.3)
+
+        plt.tight_layout()
+        mc_path = out_dir / "monte_carlo.png"
+        plt.savefig(mc_path, dpi=150)
+        plt.close()
+        result["chart_saved"] = str(mc_path)
+
+    return result
 
 
 def walk_forward_split(df: pd.DataFrame, test_frac: float = 0.2):
@@ -217,6 +304,15 @@ def run(ticker: str = "AAPL", years: int = 5, capital: float = 100_000,
             "total_trades": summary["total_trades"],
             "accuracy": ensemble_acc,
         })
+
+        # ── Monte Carlo simulation ────────────────────────────────────────────
+        trade_rets = (trade_log["pnl"] / capital).values
+        mc = monte_carlo_backtest(trade_rets, capital=capital, n_simulations=1000, out_dir=out_dir)
+        if "error" not in mc:
+            print(f"\n  Monte Carlo ({mc['n_simulations']:,} simulations):")
+            print(f"    {mc['plain_english']}")
+            if "chart_saved" in mc:
+                print(f"  Monte Carlo chart → {mc['chart_saved']}")
 
         print(f"\n  Tree Feature Importance (top 10):")
         top10 = tree.feature_importance().head(10)
