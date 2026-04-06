@@ -77,14 +77,15 @@ A **complete, production-ready trading system** that combines classical time-ser
 
 ---
 
+
 ## 🚀 Quick Start
 
 ### 1. Clone & Install
 
+```bash
 git clone https://github.com/taaqib-masood/stock-market-forecasting-risk-analytics.git
 cd stock-market-forecasting-risk-analytics
 pip install -r requirements.txt
-
 
 ### 2. Configure Environment
 
@@ -118,7 +119,7 @@ python -m src.dashboard --port 5000
 
 ### 1. Intelligent Signal Generation
 
-```python
+python
 # How signals are generated
 1. Fetch live data for 20+ stocks
 2. Calculate 25+ technical features
@@ -129,7 +130,7 @@ python -m src.dashboard --port 5000
 
 ### 2. Institutional Risk Management
 
-```python
+python
 # Risk rules applied to every signal
 - Max loss per trade: 2% of capital
 - Stop loss: 2 × ATR (dynamic, not fixed %)
