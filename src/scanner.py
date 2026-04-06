@@ -6,6 +6,8 @@ Run standalone:
     python -m src.scanner
 """
 
+import contextlib
+import io
 import warnings
 import numpy as np
 import pandas as pd
@@ -244,14 +246,38 @@ def scan(
     workers: int = 8,
     use_sector_rotation: bool = True,
     use_backtest_filter: bool = True,
-) -> list[dict]:
+    use_gap_risk: bool = True,
+    use_regime_gate: bool = True,
+    vix: float = 15.0,
+) -> dict:
     """
     Full scan pipeline:
+      0. Regime gate      → block new BUYs in CRASH/TRENDING_DOWN regimes
       1. Sector rotation  → only scan top 2 sectors
       2. Multi-timeframe  → daily + weekly must agree
       3. Backtest filter  → historical win rate >= 52%
-      4. Rank by score    → return top N
+      4. Gap risk filter  → block HIGH gap risk, reduce MEDIUM
+      5. Rank by score    → return top N
+
+    Returns dict with keys: cards, blocked, regime, sectors
     """
+    regime_info = {}
+
+    # Stage 0: Regime gate
+    if use_regime_gate:
+        try:
+            from src.regime_detector import detect
+            regime_info = detect().__dict__
+            regime_name = regime_info.get("name", "UNKNOWN")
+            print(f"  Market regime: {regime_name}")
+            if regime_name in ("CRASH", "TRENDING_DOWN"):
+                print(f"  Regime gate: blocking BUY signals in {regime_name}")
+                return {"cards": [], "blocked": [], "regime": regime_info, "sectors": []}
+            # Adjust VIX from regime info
+            vix = float(regime_info.get("vix", vix))
+        except Exception as e:
+            print(f"  Regime detect skipped: {e}")
+
     if tickers is None:
         if use_sector_rotation:
             from src.sector_rotation import rank_sectors, stocks_in_sectors
@@ -261,6 +287,9 @@ def scan(
                   f"({len(tickers)} stocks)")
         else:
             tickers = DEFAULT_SCAN
+            top_sectors = []
+    else:
+        top_sectors = []
 
     # Stage 1: score + multi-timeframe
     results = []
@@ -272,7 +301,7 @@ def scan(
                 results.append(card)
 
     if not results:
-        return []
+        return {"cards": [], "blocked": [], "regime": regime_info, "sectors": top_sectors}
 
     # Stage 2: backtest filter
     if use_backtest_filter:
@@ -283,15 +312,40 @@ def scan(
                   f"{', '.join(c['ticker'] for c in failed)}")
         results = passed
 
+    # Stage 3: Gap risk filter
+    all_blocked = []
+    if use_gap_risk and results:
+        from src.gap_risk import filter_cards as gap_filter
+        results, gap_blocked = gap_filter(results, vix=vix, block_high=True)
+        if gap_blocked:
+            print(f"  Gap risk blocked: "
+                  f"{', '.join(c['ticker'] for c in gap_blocked)}")
+        all_blocked.extend(gap_blocked)
+
     results.sort(key=lambda x: x["score"], reverse=True)
-    return results[:top_n]
+    return {
+        "cards":   results[:top_n],
+        "blocked": all_blocked,
+        "regime":  regime_info,
+        "sectors": top_sectors,
+    }
 
 
 if __name__ == "__main__":
-    print("Scanning NSE top 30... (takes ~20s)\n")
-    cards = scan(capital=100_000, top_n=5)
+    print("Scanning NSE... (takes ~30s)\n")
+    result = scan(capital=50_000, top_n=5)
+    cards   = result["cards"]
+    blocked = result["blocked"]
+    regime  = result.get("regime", {})
+    if regime:
+        print(f"Regime: {regime.get('name')} | VIX: {regime.get('vix')} | "
+              f"Max positions: {regime.get('max_positions')}\n")
     for i, c in enumerate(cards, 1):
+        gap = c.get("gap_risk", {})
         print(f"#{i} {c['ticker']:<15} Score:{c['score']:>5}  "
               f"Entry:{c['entry']:>8.2f}  Stop:{c['stop']:>8.2f}  "
               f"Target:{c['target']:>8.2f}  R:R:{c['rr']}  "
-              f"Shares:{c['shares']}  Risk:₹{c['risk_rs']}")
+              f"Shares:{c['shares']}  Risk:₹{c['risk_rs']}  "
+              f"Gap:{gap.get('verdict','?')}")
+    if blocked:
+        print(f"\nBlocked ({len(blocked)}): {', '.join(c['ticker'] for c in blocked)}")

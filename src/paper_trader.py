@@ -387,7 +387,8 @@ def auto_scan_and_place(state: dict, top_n: int = 2) -> list:
     """Scan NSE, pick top signals, paper-buy them if cash allows."""
     from src.scanner import scan as nse_scan
     print(f"\n{C}  Scanning NSE... (takes ~20s){RESET}")
-    cards = nse_scan(capital=state["cash"], top_n=top_n)
+    scan_result = nse_scan(capital=state["cash"], top_n=top_n)
+    cards = scan_result.get("cards", []) if isinstance(scan_result, dict) else scan_result
 
     if not cards:
         print(f"  {Y}No high-conviction setups right now. Market may be bearish.{RESET}\n")

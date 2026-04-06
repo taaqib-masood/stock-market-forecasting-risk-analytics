@@ -139,11 +139,18 @@ def run(capital: float = 50_000, paper_auto_place: bool = False):
 
     # ── Scan ──────────────────────────────────────────────────────────────────
     print(f"  {C}Scanning NSE...{RESET}")
-    raw_cards = scan(capital=capital, top_n=5)
+    scan_result = scan(capital=capital, top_n=5)
+    raw_cards   = scan_result.get("cards", [])
+    scan_blocked = scan_result.get("blocked", [])
+
+    if scan_blocked:
+        print(f"  {Y}Gap/regime blocked: "
+              f"{', '.join(c['ticker'] for c in scan_blocked)}{RESET}")
 
     # ── Earnings guard ────────────────────────────────────────────────────────
     print(f"  Checking earnings calendar...")
     safe_cards, blocked = filter_cards(raw_cards, days=5)
+    blocked = blocked + scan_blocked   # combine all blocked
 
     if blocked:
         print(f"\n  {Y}⛔ Earnings-blocked ({len(blocked)}): "
