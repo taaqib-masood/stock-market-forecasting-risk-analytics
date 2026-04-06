@@ -115,10 +115,7 @@ python -m src.dashboard --port 5000
 
 ---
 
-## 📈 Features Deep Dive
-
-### 1. Intelligent Signal Generation
-
+1. Intelligent Signal Generation
 python
 # How signals are generated
 1. Fetch live data for 20+ stocks
@@ -126,10 +123,9 @@ python
 3. Run through ensemble (ARIMA + XGBoost + LSTM)
 4. Meta-Learner outputs confidence score
 5. Only show signals with ≥70% confidence
-```
 
-### 2. Institutional Risk Management
-
+   
+2. Institutional Risk Management
 python
 # Risk rules applied to every signal
 - Max loss per trade: 2% of capital
@@ -139,7 +135,6 @@ python
 - Correlation: Skip if >0.7 with existing positions
 - Daily limit: Max 3 trades per day
 - Earnings: Block 5 days before/after
-```
 
 ### 3. Execution Options
 
