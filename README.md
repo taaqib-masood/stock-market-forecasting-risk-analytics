@@ -69,6 +69,9 @@ text
 
 ---
 
+
+---
+
 ## 🚀 Quick Start
 
 ### Installation
@@ -83,8 +86,9 @@ pip install -r requirements.txt
 # Configure environment
 cp .env.example .env
 # Edit .env with your API keys
-Run Daily Briefing
-bash
+
+###
+
 # Morning scan (also runs automatically at 9 AM)
 python -m src.daily_briefing --capital 50000
 
@@ -99,158 +103,3 @@ python -m src.paper_trader
 
 # Launch web dashboard
 python -m src.dashboard --port 5000
-📈 Features
-1. Intelligent Signal Generation
-Ensemble model combines ARIMA, XGBoost, and LSTM
-
-Confidence threshold (≥70%) filters low-quality signals
-
-Multi-timeframe confirmation (daily + weekly)
-
-Sector rotation filter (only top 2 sectors)
-
-2. Institutional Risk Management
-2% max risk per trade (configurable)
-
-ATR-based stop loss (adapts to volatility)
-
-VIX gates (no trades when VIX > 35)
-
-Correlation filter (no correlated positions)
-
-Daily trade limit (max 3 trades)
-
-Earnings blackout (blocks trades near earnings)
-
-3. Live Execution
-Zerodha GTT orders (Indian market)
-
-Alpaca webhook (US market)
-
-Telegram alerts (real-time to your phone)
-
-Auto close at 3:45 PM (square off EOD)
-
-4. Monitoring & Analytics
-Web dashboard (localhost:5000)
-
-Paper trading (test before live)
-
-Trade journal (track every decision)
-
-Performance metrics (Sharpe, Sortino, Calmar)
-
-📊 Performance Metrics
-Metric	Target	Current
-Win Rate	>55%	58-63%
-Profit Factor	>1.5	1.6-2.2
-Sharpe Ratio	>1.5	1.4-1.9
-Max Drawdown	<15%	8-12%
-Avg Trade Duration	3-7 days	4-6 days
-Results vary by market regime and stock selection
-
-🛠️ Tech Stack
-yaml
-Language: Python 3.9+
-Data: yfinance, NSE API, Alpaca
-Models: statsmodels, xgboost, tensorflow
-Risk: Custom risk manager with 10+ rules
-Dashboard: Flask + HTML/CSS
-Notifications: Telegram Bot API
-Brokers: Zerodha (India), Alpaca (US)
-📁 Project Structure
-text
-stock-market-forecasting-risk-analytics/
-├── src/
-│   ├── ensemble.py          # Meta-learner (ARIMA + XGBoost + LSTM)
-│   ├── risk_manager.py      # 10+ risk rules
-│   ├── earnings_guard.py    # Blocks earnings/board meetings
-│   ├── gtt_generator.py     # Zerodha GTT orders
-│   ├── auto_close.py        # Square off at 3:45 PM
-│   ├── daily_briefing.py    # Morning scan + Telegram
-│   ├── dashboard.py         # Web UI
-│   ├── paper_trader.py      # Paper trading simulator
-│   └── notify.py            # Telegram alerts
-├── data/                    # Historical data (auto-downloaded)
-├── notebooks/               # Jupyter analysis
-├── .env                     # API keys (never commit)
-├── requirements.txt         # Dependencies
-└── README.md               # This file
-🔧 Configuration
-Environment Variables (.env)
-bash
-# Telegram Alerts
-TELEGRAM_TOKEN=your_bot_token
-TELEGRAM_CHAT_ID=your_chat_id
-
-# Trading Parameters
-TRADING_CAPITAL=50000
-RISK_PER_TRADE=2
-MAX_DAILY_TRADES=3
-
-# Alpaca (US markets)
-APCA_API_KEY_ID=your_key
-APCA_API_SECRET_KEY=your_secret
-
-# Earnings Guard
-EARNINGS_BLACKOUT_DAYS=5
-📱 Telegram Commands
-Once configured, you'll receive:
-
-9:00 AM – Daily briefing with trade signals
-
-Signal triggers – Real-time BUY/SELL alerts
-
-3:45 PM – Auto-close summary with P&L
-
-🧪 Testing
-bash
-# Test Telegram connection
-python -c "from src.notify import _send; _send('Test')"
-
-# Run paper trading for 30 days
-python -m src.paper_trader --paper --days 30
-
-# Backtest a specific stock
-python -m src.pipeline --ticker RELIANCE --years 5
-⚠️ Important Disclaimers
-Past performance does not guarantee future results
-
-This system is for educational purposes only
-
-Always paper trade before using real money
-
-Start with small capital (₹10,000-₹50,000)
-
-Never risk more than 2% of your capital on a single trade
-
-🎯 Roadmap
-Real-time data pipeline
-
-Ensemble model (ARIMA + XGBoost + LSTM)
-
-Risk management system
-
-Telegram notifications
-
-Web dashboard
-
-Zerodha GTT integration
-
-Options flow integration
-
-News sentiment (FinBERT)
-
-Mobile app (React Native)
-
-🤝 Contributing
-Contributions welcome! Please read the contributing guidelines before submitting PRs.
-
-📄 License
-MIT License - see LICENSE file for details.
-
-👨‍💻 Author
-Taaqib Masood
-B.Tech Computer Science | Data Analytics & AI
-GitHub | LinkedIn
-
