@@ -152,6 +152,64 @@
       </div>
     </section>
 
+    <!-- TECHNICAL -->
+    <section data-panel="technical" class="tab-panel flex-col gap-10">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-wrap items-center justify-between gap-6">
+        <div class="flex flex-col gap-2">
+          <div class="flex items-center gap-3">
+            <span class="text-xs font-bold tracking-widest uppercase px-3 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200">Strong Buy</span>
+            <span class="text-sm text-muted">Confidence 8/10 · 7 of 9 indicators agree</span>
+          </div>
+          <h2 class="text-3xl font-bold tracking-tight">RELIANCE <span class="text-muted font-medium text-2xl">₹2,940</span></h2>
+        </div>
+        <div class="flex gap-8">
+          <div><p class="text-xs text-muted font-medium mb-1">Buy Near</p><p class="text-lg font-semibold">₹2,925</p></div>
+          <div><p class="text-xs text-muted font-medium mb-1">Stop Loss</p><p class="text-lg font-semibold text-red-500">₹2,800</p></div>
+          <div><p class="text-xs text-muted font-medium mb-1">Target</p><p class="text-lg font-semibold text-green-600">₹3,200</p></div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-4">
+          <div class="flex justify-between items-start"><p class="text-sm font-medium text-muted">RSI · Momentum</p><span class="text-2xl font-semibold">58.4</span></div>
+          <div>
+            <div class="h-2 rounded-pill bg-surface-highest relative overflow-hidden"><div class="absolute inset-y-0 left-0 bg-green-500 rounded-pill" style="width:58.4%"></div></div>
+            <div class="flex justify-between text-[11px] text-muted mt-2"><span>0 · Oversold</span><span>Overbought · 100</span></div>
+          </div>
+          <p class="text-xs text-muted">14-day · Healthy zone (30–70)</p>
+        </div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-4">
+          <p class="text-sm font-medium text-muted">MACD · Trend Momentum</p>
+          <div class="flex gap-6">
+            <div><p class="text-xs text-muted mb-1">MACD</p><p class="text-lg font-semibold text-green-600">+12.4</p></div>
+            <div><p class="text-xs text-muted mb-1">Signal</p><p class="text-lg font-semibold">+9.1</p></div>
+            <div><p class="text-xs text-muted mb-1">Hist</p><p class="text-lg font-semibold text-green-600">+3.3</p></div>
+          </div>
+          <span class="text-xs font-semibold text-green-600">Bullish crossover ✓</span>
+        </div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-4">
+          <p class="text-sm font-medium text-muted">Bollinger Bands</p>
+          <div class="flex gap-6">
+            <div><p class="text-xs text-muted mb-1">Upper</p><p class="text-base font-semibold">₹3,180</p></div>
+            <div><p class="text-xs text-muted mb-1">Price</p><p class="text-base font-semibold">₹2,940</p></div>
+            <div><p class="text-xs text-muted mb-1">Lower</p><p class="text-base font-semibold">₹2,700</p></div>
+          </div>
+          <p class="text-xs text-muted">Position: 44% · Width: 15.9%</p>
+        </div>
+      </div>
+
+      <div class="bg-surface-lowest border border-outline-variant rounded-card overflow-hidden">
+        <div class="px-8 py-5 border-b border-outline-variant"><h3 class="font-semibold text-lg tracking-tight">Support &amp; Resistance Levels</h3></div>
+        <div class="flex flex-col">
+          <div class="px-8 py-4 border-b border-outline-variant flex items-center justify-between"><span class="text-sm font-medium text-muted w-28">Resistance 2</span><span class="text-base font-semibold">₹3,200</span><span class="text-xs font-semibold px-3 py-1 rounded-pill bg-red-50 text-red-500 border border-red-200">Strong</span></div>
+          <div class="px-8 py-4 border-b border-outline-variant flex items-center justify-between"><span class="text-sm font-medium text-muted w-28">Resistance 1</span><span class="text-base font-semibold">₹3,050</span><span class="text-xs font-semibold px-3 py-1 rounded-pill bg-surface-highest text-on-surface border border-outline-variant">Moderate</span></div>
+          <div class="px-8 py-4 border-b border-outline-variant flex items-center justify-between bg-surface-low"><span class="text-sm font-bold w-28">Current Price</span><span class="text-lg font-bold">₹2,940</span><span class="text-xs font-semibold px-3 py-1 rounded-pill bg-primary text-white">Live</span></div>
+          <div class="px-8 py-4 border-b border-outline-variant flex items-center justify-between"><span class="text-sm font-medium text-muted w-28">Support 1</span><span class="text-base font-semibold">₹2,820</span><span class="text-xs font-semibold px-3 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200">Strong</span></div>
+          <div class="px-8 py-4 flex items-center justify-between"><span class="text-sm font-medium text-muted w-28">Support 2</span><span class="text-base font-semibold">₹2,650</span><span class="text-xs font-semibold px-3 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200">Very Strong</span></div>
+        </div>
+      </div>
+    </section>
+
     <!-- Other tabs (porting in progress) -->
     <section data-panel="placeholder" class="tab-panel flex-col gap-6">
       <div class="bg-surface-lowest border border-outline-variant rounded-card p-12 flex flex-col items-center text-center gap-3">
@@ -196,16 +254,18 @@ const sent = [0.30,0.28,0.34,0.31,0.26,0.29,0.38,0.45,0.52,0.58,0.55,0.50,0.54,0
   });
 })();
 
-// ---- Nav switching ----
-const panels = { sentiment: document.querySelector('[data-panel="sentiment"]'), _ph: document.querySelector('[data-panel="placeholder"]') };
+// ---- Nav switching (generic: any [data-panel] shows; else placeholder) ----
+const phPanel = document.querySelector('[data-panel="placeholder"]');
 document.getElementById('nav').addEventListener('click', e=>{
   const btn = e.target.closest('.nav-item'); if(!btn) return;
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   const tab = btn.dataset.tab;
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-  if(tab==='sentiment'){ panels.sentiment.classList.add('active'); }
-  else { document.getElementById('phTitle').textContent = btn.querySelector('span:last-child').textContent; panels._ph.classList.add('active'); }
+  const panel = document.querySelector('[data-panel="'+tab+'"]');
+  if(panel){ panel.classList.add('active'); }
+  else { document.getElementById('phTitle').textContent = btn.querySelector('span:last-child').textContent; phPanel.classList.add('active'); }
+  window.scrollTo(0,0);
 });
 </script>
 </body>
