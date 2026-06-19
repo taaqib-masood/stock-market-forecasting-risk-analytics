@@ -7,9 +7,9 @@
 ## Goal
 
 Replace the current dark / space-navy / indigo-gradient look of `demo.html` with the
-warm-minimalist **Boro UI** aesthetic (light theme only). Use Google Stitch to generate
-every tab in the Boro design language, then port the generated markup back into a working,
-chart-driven dashboard.
+**Boro Portfolio** institutional-analytics aesthetic (light theme only). Use Google Stitch
+to generate every tab in the Boro Portfolio design language, then port the generated markup
+back into a working, chart-driven dashboard.
 
 The dashboard is a single static HTML file (no backend, no build step): Tailwind via CDN,
 Chart.js via CDN, Inter font, CSS-variable theming.
@@ -17,16 +17,22 @@ Chart.js via CDN, Inter font, CSS-variable theming.
 ## Source design system
 
 - **Stitch project:** `Remix of Buro Fintech App` — `projects/8092376236283519910`
-- **Design system:** `Boro UI` (attached to the project; resolve exact `assets/<id>` via
-  `list_design_systems` at implementation time).
-- **Aesthetic tokens (Boro UI):**
-  - Background: warm off-white `#FCF8F8` (cards `#FFFFFF`)
-  - Primary: near-black `#080909` with white text
-  - Accent: blue `#075CF2` (interaction / progress); green/red/orange for financial status only
-  - Type: **Inter** throughout; hero numbers large with tight tracking (-0.02em to -0.04em)
-  - Shape: high radius — buttons full/pill, cards 24px
-  - Depth: **no drop shadows**; hairline `#E7E8EA` borders + tonal layering
-  - Layout: 24px horizontal margins, 8px vertical rhythm, generous whitespace
+- **Design system:** `Boro Portfolio` — `assets/59f0dfadbf494ce7a086096f05e92391` (version 2).
+  Chosen over the project's `Boro UI` theme because Boro Portfolio is purpose-built for a
+  "high-density investment analytics platform (Bloomberg Terminal × Notion), Light Mode" —
+  the exact shape of this app. Boro UI is a consumer-payments aesthetic that fights dense tables.
+- **Aesthetic tokens (Boro Portfolio):**
+  - Background (Level 0 canvas): cool near-white `#f7f9fd`
+  - Surfaces (Level 1 cards/sidebar): `#ffffff` with 1px `#c0c7cd` (outline-variant) borders
+  - Primary: slate blue `#487d9a` (interactive/brand); darker `#2d6480` for emphasis
+  - Status: green / amber / red `#ba1a1a` strictly for performance + risk indicators
+  - UI type: **Geist** (headline-lg 30px/600 down to body-sm 12px)
+  - Data type: **JetBrains Mono** for ALL numbers, tickers, tabular figures (data-lg 18px → data-sm 12px)
+  - Labels: `label-caps` — Geist 11px/700, 0.05em tracking, uppercase, for table headers + metadata
+  - Shape: disciplined "soft-square" — global radius `0.25rem` (4px); chips slightly higher; **no pills**
+  - Depth: tonal layers + 1px outlines, **no heavy shadows**; hover = border/tint shift, no lift
+  - Layout: fixed 240px left sidebar + 12-col content grid; compact 8px table rows; 4px/8px spacing
+  - Charts: 1.5px line stroke, slate blue main series, muted grey gridlines
 
 ## Scope
 
@@ -43,7 +49,8 @@ Sentiment (default), Technical, Macro, Screener, Moat, AI Explainer, Monte Carlo
 ## Stitch generation plan
 
 - One `generate_screen_from_text` call per tab (13 total).
-- Params: `designSystem = assets/<Boro UI id>`, `deviceType = DESKTOP`, `modelId = GEMINI_3_1_PRO`.
+- Params: `designSystem = assets/59f0dfadbf494ce7a086096f05e92391`, `deviceType = DESKTOP`,
+  `modelId = GEMINI_3_1_PRO`.
 - Each prompt describes that tab's actual content in Boro terms. Examples:
   - Monte Carlo: "Monte Carlo simulation results — fan/cone chart, percentile stat cards, VaR table"
   - Technical: "Technical analysis — price chart frame, indicator cards (RSI/MACD), signal table"
@@ -56,10 +63,12 @@ Sentiment (default), Technical, Macro, Screener, Moat, AI Explainer, Monte Carlo
 Stitch emits **static HTML + CSS only — no JS**. Porting steps:
 
 1. **Build the shared shell once** (from the first generated screen):
-   - Boro CSS token layer: rewrite `:root` to Boro colors/radius/spacing; keep Inter.
-   - 13-tab pill nav in Boro style.
-   - Reusable component classes: `card`, `stat` (hero number), hairline `table`, `chip`,
-     `chart-frame`.
+   - Boro Portfolio CSS token layer: rewrite `:root` to Boro Portfolio colors/radius/spacing;
+     load Geist (UI) + JetBrains Mono (data) fonts; replace Inter.
+   - Fixed 240px left sidebar holding the 13 tabs (replaces the current top pill nav);
+     collapses to a top bar under 768px.
+   - Reusable component classes: `card` (Level 1 + 1px border), `stat` (JetBrains Mono figure +
+     `label-caps` caption), compact hairline `table`, status `badge`, `chart-frame`.
 2. **Per tab:** extract the Boro visual structure (layout, cards, type scale, tables, chart
    *frames*) from the generated screen, then **re-attach the existing Chart.js instances and
    data-binding JS** from `demo.html` into those frames.
@@ -76,8 +85,9 @@ Stitch emits **static HTML + CSS only — no JS**. Porting steps:
 
 - Open `V-1.0/demo-boro.html` in a browser.
 - Walk all 13 tabs; confirm every chart and table populates with data.
-- Confirm visual tokens match Boro (off-white bg, near-black primary, blue accent, pill
-  buttons, hairline borders, no shadows, Inter).
+- Confirm visual tokens match Boro Portfolio (cool near-white `#f7f9fd` bg, slate blue
+  `#487d9a` accent, Geist UI text, JetBrains Mono numbers, 4px soft-square corners, 1px
+  hairline borders, no heavy shadows, 240px sidebar nav).
 - No automated tests — static file, no build/network step.
 
 ## Out of scope
