@@ -1043,6 +1043,7 @@
      Loaded via <script src> so it works over file:// too; absent ⇒ embedded fallback slice. -->
 <script src="halal_data.js"></script>
 <script>
+if(window.Chart){Chart.defaults.font.family="Geist, system-ui, sans-serif";Chart.defaults.font.size=11;Chart.defaults.color="#41484d";Chart.defaults.borderColor="#e6e8eb";Chart.defaults.elements.line.borderWidth=1.5;}
 /* ── INFO CARD DATA ──────────────────────────────────────────────────────── */
 const INFO = {
   nifty50:       { icon:'📈', cat:'Market Index', title:'Nifty 50', desc:'India\'s flagship stock market index — tracks the top 50 largest companies listed on NSE. When Nifty rises, most stocks tend to follow. Think of it as the "temperature" of the Indian economy.', rule:'<strong>Above 22,000:</strong> Healthy bull market — good to invest. <strong>Below 18,000:</strong> Correction territory — be selective.' },
@@ -1326,7 +1327,7 @@ function toggleTheme() {
 }
 function updateChartTheme(chart) {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  const gridColor = isDark ? 'rgba(255,255,255,.05)' : 'rgba(0,0,0,.06)';
+  const gridColor = isDark ? 'rgba(25,28,30,.07)' : 'rgba(0,0,0,.06)';
   const tickColor = isDark ? '#475569' : '#94a3b8';
   chart.options.scales.x.grid.color = gridColor;
   chart.options.scales.y.grid.color = gridColor;
@@ -1352,17 +1353,17 @@ function drawFIIChart() {
       labels: days,
       datasets: [
         { label: 'FII', data: [-1240, 820, -630, -1480, 340, -2100, -842],
-          backgroundColor: 'rgba(248,113,113,.75)', borderRadius: 5, borderSkipped: false },
+          backgroundColor: 'rgba(186,26,26,.72)', borderRadius: 3, borderSkipped: false },
         { label: 'DII', data: [980, 1240, 1560, 2100, 640, 2840, 1230],
-          backgroundColor: 'rgba(52,211,153,.75)', borderRadius: 5, borderSkipped: false },
+          backgroundColor: 'rgba(26,127,55,.72)', borderRadius: 3, borderSkipped: false },
       ]
     },
     options: {
       responsive: true,
-      plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } }, tooltip: { callbacks: { label: c => c.dataset.label + ': ₹' + Math.abs(c.parsed.y) + ' Cr' } } },
+      plugins: { legend: { labels: { color: '#41484d', font: { size: 11 } } }, tooltip: { callbacks: { label: c => c.dataset.label + ': ₹' + Math.abs(c.parsed.y) + ' Cr' } } },
       scales: {
-        x: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#475569', font: { size: 11 } } },
-        y: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#475569', font: { size: 11 }, callback: v => '₹' + v + ' Cr' } }
+        x: { grid: { color: 'rgba(25,28,30,.07)' }, ticks: { color: '#475569', font: { size: 11 } } },
+        y: { grid: { color: 'rgba(25,28,30,.07)' }, ticks: { color: '#475569', font: { size: 11 }, callback: v => '₹' + v + ' Cr' } }
       }
     }
   });
@@ -1472,7 +1473,7 @@ function calcZakat() {
 
 /* ── CHARTS ──────────────────────────────────────────────────────────────── */
 const chartDefaults = {
-  gridColor: 'rgba(255,255,255,.05)', tickColor: '#475569',
+  gridColor: 'rgba(25,28,30,.07)', tickColor: '#475569',
 };
 let sentChart, mcChart;
 
@@ -1485,9 +1486,9 @@ function drawSentimentChart() {
       labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
       datasets: [{
         label: 'Sentiment', data: [0.21,0.35,0.28,0.52,0.44,0.58,0.62],
-        borderColor:'#34d399', backgroundColor:'rgba(52,211,153,.1)',
-        tension:0.45, fill:true, pointRadius:5, pointBackgroundColor:'#34d399',
-        pointBorderColor:'#0a2e1d', pointBorderWidth:2,
+        borderColor:'#487d9a', backgroundColor:'rgba(72,125,154,.12)',
+        tension:0.4, fill:true, pointRadius:4, pointBackgroundColor:'#487d9a',
+        pointBorderColor:'#ffffff', pointBorderWidth:2,
       }]
     },
     options: {
