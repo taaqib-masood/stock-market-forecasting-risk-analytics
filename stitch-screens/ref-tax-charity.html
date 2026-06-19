@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Silk Invest - Obligations</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#8a8c9a",
+                        "on-secondary-fixed": "#1a1b26",
+                        "error-container": "#fee2e2",
+                        "surface-container": "#e2e4ea",
+                        "on-tertiary-container": "#3b1f63",
+                        "secondary-container": "#d8dae6",
+                        "on-primary-fixed-variant": "#4338ca",
+                        "primary-container": "#818cf8",
+                        "on-surface": "#2e3040",
+                        "primary": "#6366f1",
+                        "background": "#e8eaf0",
+                        "tertiary-container": "#a78bfa",
+                        "surface-bright": "#edeef4",
+                        "on-tertiary-fixed-variant": "#5b21b6",
+                        "error": "#dc2626",
+                        "primary-fixed-dim": "#a5b4fc",
+                        "secondary-fixed-dim": "#b8baca",
+                        "surface-container-low": "#e5e7ed",
+                        "surface-container-high": "#dcdee4",
+                        "surface-tint": "#6366f1",
+                        "on-secondary-fixed-variant": "#404252",
+                        "inverse-surface": "#2e3040",
+                        "on-tertiary-fixed": "#2e1065",
+                        "tertiary-fixed": "#ede9fe",
+                        "inverse-on-surface": "#e8eaf0",
+                        "on-background": "#2e3040",
+                        "surface-container-highest": "#d6d8de",
+                        "on-surface-variant": "#585a68",
+                        "on-error": "#ffffff",
+                        "surface-container-lowest": "#f0f2f8",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed": "#d8dae6",
+                        "tertiary": "#7c3aed",
+                        "on-secondary-container": "#585a68",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#991b1b",
+                        "inverse-primary": "#a5b4fc",
+                        "on-secondary": "#ffffff",
+                        "surface": "#e8eaf0",
+                        "tertiary-fixed-dim": "#c4b5fd",
+                        "surface-variant": "#dcdee4",
+                        "outline-variant": "#d0d2dc",
+                        "surface-dim": "#d4d6dc",
+                        "primary-fixed": "#e0e2ff",
+                        "on-primary-fixed": "#1e1b4b",
+                        "secondary": "#6c6e7e",
+                        "on-primary-container": "#e0e2ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "display": ["Plus Jakarta Sans"],
+                        "body": ["Plus Jakarta Sans"],
+                        "label": ["Plus Jakarta Sans"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #e8eaf0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .neomorph-raised {
+            box-shadow: 6px 6px 12px rgba(0,0,0,0.08), -6px -6px 12px rgba(255,255,255,0.6);
+        }
+        .neomorph-inset {
+            box-shadow: inset 4px 4px 8px rgba(0,0,0,0.06), inset -4px -4px 8px rgba(255,255,255,0.5);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- SideNavBar (Shared Component) -->
+<nav class="fixed left-0 top-0 h-full p-4 flex flex-col gap-4 w-64 bg-background z-20">
+<div class="mb-8 px-4 flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl neomorph-raised flex items-center justify-center bg-background">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">diamond</span>
+</div>
+<div>
+<h1 class="text-xl font-semibold text-on-surface font-headline leading-tight">Silk Invest</h1>
+<p class="text-xs text-on-surface-variant font-medium">Premium Analytics</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 flex-grow">
+<!-- Dashboard -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary transition-all duration-300 font-medium font-body tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<!-- Screening -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary transition-all duration-300 font-medium font-body tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+                Screening
+            </a>
+<!-- Portfolio -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary transition-all duration-300 font-medium font-body tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="pie_chart">pie_chart</span>
+                Portfolio
+            </a>
+<!-- Protection -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary transition-all duration-300 font-medium font-body tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="security">security</span>
+                Protection
+            </a>
+<!-- Obligations (ACTIVE) -->
+<a class="flex items-center gap-3 px-4 py-3 text-primary neomorph-inset rounded-xl bg-background font-medium font-body tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+                Obligations
+            </a>
+<!-- Alerts -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary transition-all duration-300 font-medium font-body tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+                Alerts
+            </a>
+</div>
+<div class="mt-auto px-2">
+<div class="p-4 rounded-2xl neomorph-raised bg-background flex items-center gap-3">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="A professional studio portrait of a sophisticated wealth manager in a light-filled modern office. The image has soft lighting and a clean, high-key aesthetic consistent with premium financial service branding. The color palette is composed of soft greys and subtle blue accents, matching a minimalist UI design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjs9vcyFyaKSC_yC1GOg0RmA4dk0lyqC1O4XF32dspm-GHw1xuOd4fD3D5aFoSf0WAR9EX2DkcuXZtyxapsjZSPI2LxpLlzCoIgarGZE9hiG-f6wwko9eCeSJrI7mtVkv9xWVPXpp4_jmeqlacEPGxysiZhYF7Vm-W0cT9qWwWwyiFf1yKxH3H8TuAoQUJfMlx4mULh_2GEsN-KR2hLZTybaR_k1IUu5l8GPUkbPmcx59wjUCDbwtF1P42JVI0i3k6qyKjed98SFs"/>
+<div class="overflow-hidden">
+<p class="text-sm font-semibold truncate">Arjun Mehta</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest">Pro Member</p>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen flex flex-col">
+<!-- TopNavBar (Shared Component) -->
+<header class="w-full h-16 flex justify-between items-center px-8 bg-background z-10 shadow-[0px_4px_10px_rgba(0,0,0,0.03)]">
+<div class="flex items-center gap-4 w-96">
+<div class="w-full flex items-center gap-3 px-4 py-2 rounded-xl neomorph-inset bg-background">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-full font-medium placeholder:text-on-surface-variant" placeholder="Search analytics..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="w-10 h-10 rounded-full neomorph-raised flex items-center justify-center text-on-surface-variant hover:text-primary transition-all active:scale-95">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="w-10 h-10 rounded-full neomorph-raised flex items-center justify-center text-on-surface-variant hover:text-primary transition-all active:scale-95">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+</header>
+<!-- Canvas -->
+<section class="p-8 flex-grow">
+<div class="mb-8">
+<h2 class="text-2xl font-semibold text-on-surface font-headline">Tax &amp; Charity Obligations</h2>
+<p class="text-on-surface-variant">Manage your statutory tax duties and ethical purification requirements.</p>
+</div>
+<!-- Tactile Summary Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+<!-- Annual Tax Obligation -->
+<div class="p-8 rounded-[2rem] neomorph-raised bg-background relative overflow-hidden">
+<div class="flex justify-between items-start mb-6">
+<div class="w-12 h-12 rounded-2xl neomorph-inset flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">account_balance</span>
+</div>
+<span class="text-[10px] font-bold py-1 px-3 rounded-full bg-primary-container/20 text-primary uppercase tracking-tighter">FY 2023-24</span>
+</div>
+<p class="text-on-surface-variant font-medium mb-1">Annual Tax Obligation</p>
+<h3 class="text-4xl font-bold text-on-surface font-headline tracking-tight">₹1,24,500.00</h3>
+<div class="mt-8 flex items-center gap-4">
+<button class="px-6 py-3 rounded-xl neomorph-raised bg-background text-primary font-bold text-sm active:neomorph-inset transition-all duration-200">
+                            View Breakup
+                        </button>
+<button class="px-6 py-3 rounded-xl neomorph-raised bg-background text-on-surface-variant font-bold text-sm opacity-60">
+                            Download Form 16
+                        </button>
+</div>
+</div>
+<!-- Income Purification -->
+<div class="p-8 rounded-[2rem] neomorph-raised bg-background border border-white/40">
+<div class="flex justify-between items-start mb-6">
+<div class="w-12 h-12 rounded-2xl neomorph-inset flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary">volunteer_activism</span>
+</div>
+<span class="text-[10px] font-bold py-1 px-3 rounded-full bg-tertiary-container/20 text-tertiary uppercase tracking-tighter">Pending</span>
+</div>
+<p class="text-on-surface-variant font-medium mb-1">Income Purification</p>
+<div class="flex items-baseline gap-2">
+<h3 class="text-4xl font-bold text-on-surface font-headline tracking-tight">₹18,342.15</h3>
+<span class="text-xs text-on-surface-variant font-medium">(Zakat &amp; Shariah)</span>
+</div>
+<div class="mt-8 flex items-center gap-4">
+<button class="px-8 py-3 rounded-xl neomorph-raised bg-primary text-white font-bold text-sm shadow-[0_4px_15px_rgba(99,102,241,0.4)] active:scale-95 transition-all">
+                            Donate Now
+                        </button>
+<button class="p-3 rounded-xl neomorph-raised bg-background text-on-surface-variant active:neomorph-inset">
+<span class="material-symbols-outlined text-base">history</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Purification Ledger Table -->
+<div class="neomorph-raised bg-background rounded-[2rem] overflow-hidden">
+<div class="px-8 py-6 flex justify-between items-center">
+<h4 class="text-lg font-bold font-headline">Purification Ledger</h4>
+<div class="flex gap-2">
+<button class="p-2 rounded-lg neomorph-raised bg-background text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+</button>
+<button class="p-2 rounded-lg neomorph-raised bg-background text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">download</span>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto px-8 pb-8">
+<table class="w-full text-left">
+<thead>
+<tr class="text-on-surface-variant text-xs font-bold uppercase tracking-widest border-b border-surface-container">
+<th class="pb-4 pt-2 font-semibold">Holding Entity</th>
+<th class="pb-4 pt-2 font-semibold">Dividends Received</th>
+<th class="pb-4 pt-2 font-semibold text-center">Impure %</th>
+<th class="pb-4 pt-2 font-semibold text-right">Purification Amt.</th>
+<th class="pb-4 pt-2 font-semibold text-right">Status</th>
+</tr>
+</thead>
+<tbody class="text-sm font-medium">
+<tr class="border-b border-surface-container/50 hover:bg-surface-bright/30 transition-colors">
+<td class="py-5 flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg neomorph-inset bg-white flex items-center justify-center text-[10px] font-bold text-primary">RE</div>
+                                    Reliance Industries
+                                </td>
+<td class="py-5">₹42,500.00</td>
+<td class="py-5 text-center">
+<span class="px-2 py-1 rounded-md neomorph-inset text-[10px]">1.25%</span>
+</td>
+<td class="py-5 text-right font-semibold">₹531.25</td>
+<td class="py-5 text-right">
+<span class="text-green-500 flex items-center justify-end gap-1 text-xs">
+<span class="material-symbols-outlined text-sm">check_circle</span> Settled
+                                    </span>
+</td>
+</tr>
+<tr class="border-b border-surface-container/50 hover:bg-surface-bright/30 transition-colors">
+<td class="py-5 flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg neomorph-inset bg-white flex items-center justify-center text-[10px] font-bold text-blue-600">TC</div>
+                                    TCS Ltd.
+                                </td>
+<td class="py-5">₹68,200.00</td>
+<td class="py-5 text-center">
+<span class="px-2 py-1 rounded-md neomorph-inset text-[10px]">0.45%</span>
+</td>
+<td class="py-5 text-right font-semibold">₹306.90</td>
+<td class="py-5 text-right">
+<span class="text-primary flex items-center justify-end gap-1 text-xs">
+<span class="material-symbols-outlined text-sm">pending</span> Pending
+                                    </span>
+</td>
+</tr>
+<tr class="border-b border-surface-container/50 hover:bg-surface-bright/30 transition-colors">
+<td class="py-5 flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg neomorph-inset bg-white flex items-center justify-center text-[10px] font-bold text-red-600">HF</div>
+                                    HDFC Bank
+                                </td>
+<td class="py-5">₹1,12,000.00</td>
+<td class="py-5 text-center">
+<span class="px-2 py-1 rounded-md neomorph-inset text-[10px]">3.10%</span>
+</td>
+<td class="py-5 text-right font-semibold">₹3,472.00</td>
+<td class="py-5 text-right">
+<span class="text-primary flex items-center justify-end gap-1 text-xs">
+<span class="material-symbols-outlined text-sm">pending</span> Pending
+                                    </span>
+</td>
+</tr>
+<tr class="hover:bg-surface-bright/30 transition-colors">
+<td class="py-5 flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg neomorph-inset bg-white flex items-center justify-center text-[10px] font-bold text-indigo-700">IN</div>
+                                    Infosys Technologies
+                                </td>
+<td class="py-5">₹25,800.00</td>
+<td class="py-5 text-center">
+<span class="px-2 py-1 rounded-md neomorph-inset text-[10px]">0.80%</span>
+</td>
+<td class="py-5 text-right font-semibold">₹206.40</td>
+<td class="py-5 text-right">
+<span class="text-green-500 flex items-center justify-end gap-1 text-xs">
+<span class="material-symbols-outlined text-sm">check_circle</span> Settled
+                                    </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-8 py-6 bg-surface-container-low flex justify-between items-center border-t border-white/20">
+<p class="text-xs text-on-surface-variant font-medium">Calculations based on FY24 Dividend Declared Dates</p>
+<div class="flex items-center gap-4">
+<span class="text-sm font-bold">Total Pending: ₹3,778.90</span>
+<button class="px-4 py-2 rounded-lg neomorph-raised bg-background text-primary text-xs font-bold active:neomorph-inset transition-all">
+                            Purify All
+                        </button>
+</div>
+</div>
+</div>
+<!-- Detailed Visuals (Bento Style) -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+<div class="lg:col-span-2 p-6 rounded-[2rem] neomorph-raised bg-background h-64 overflow-hidden relative">
+<div class="flex justify-between items-center mb-4 relative z-10">
+<h5 class="font-bold">Obligation Trends</h5>
+<select class="bg-transparent border-none text-xs font-bold text-primary focus:ring-0">
+<option>Last 12 Months</option>
+<option>Previous Financial Year</option>
+</select>
+</div>
+<!-- Abstract Visualization Area -->
+<div class="absolute inset-0 top-16 px-6">
+<div class="w-full h-full flex items-end justify-between gap-2 pb-6">
+<div class="flex-1 neomorph-inset rounded-t-xl bg-primary-container/20" style="height: 40%"></div>
+<div class="flex-1 neomorph-inset rounded-t-xl bg-primary-container/20" style="height: 55%"></div>
+<div class="flex-1 neomorph-inset rounded-t-xl bg-primary-container/20" style="height: 35%"></div>
+<div class="flex-1 neomorph-inset rounded-t-xl bg-primary-container/20" style="height: 70%"></div>
+<div class="flex-1 neomorph-inset rounded-t-xl bg-primary" style="height: 85%"></div>
+<div class="flex-1 neomorph-inset rounded-t-xl bg-primary-container/20" style="height: 60%"></div>
+<div class="flex-1 neomorph-inset rounded-t-xl bg-primary-container/20" style="height: 45%"></div>
+<div class="flex-1 neomorph-inset rounded-t-xl bg-primary-container/20" style="height: 50%"></div>
+<div class="flex-1 neomorph-inset rounded-t-xl bg-tertiary" style="height: 95%"></div>
+<div class="flex-1 neomorph-inset rounded-t-xl bg-primary-container/20" style="height: 65%"></div>
+<div class="flex-1 neomorph-inset rounded-t-xl bg-primary-container/20" style="height: 75%"></div>
+<div class="flex-1 neomorph-inset rounded-t-xl bg-primary-container/20" style="height: 55%"></div>
+</div>
+</div>
+</div>
+<div class="p-6 rounded-[2rem] neomorph-raised bg-background flex flex-col justify-between">
+<div>
+<h5 class="font-bold mb-4">Tax Advisory</h5>
+<p class="text-sm text-on-surface-variant leading-relaxed">Based on your portfolio, you can save an additional <span class="text-primary font-bold">₹12,400</span> by utilizing ELSS under Section 80C.</p>
+</div>
+<div class="mt-6">
+<div class="flex justify-between items-end mb-2">
+<span class="text-xs font-bold uppercase text-on-surface-variant">ELSS Limit</span>
+<span class="text-xs font-bold">₹1,15,000 / ₹1,50,000</span>
+</div>
+<div class="h-3 w-full neomorph-inset rounded-full bg-background overflow-hidden">
+<div class="h-full bg-primary rounded-full transition-all duration-1000" style="width: 76.6%"></div>
+</div>
+</div>
+<button class="mt-6 w-full py-3 rounded-xl neomorph-raised bg-background text-on-surface font-bold text-sm hover:text-primary transition-colors">
+                        Get Advisory Report
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<script>
+        // Micro-interaction for buttons
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.classList.add('scale-95');
+            });
+            button.addEventListener('mouseup', () => {
+                button.classList.remove('scale-95');
+            });
+            button.addEventListener('mouseleave', () => {
+                button.classList.remove('scale-95');
+            });
+        });
+
+        // Simulating some dynamic behavior for neomorphic active state
+        const navItems = document.querySelectorAll('nav a');
+        navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                navItems.forEach(nav => {
+                    nav.classList.remove('neomorph-inset', 'text-primary', 'rounded-xl');
+                    nav.classList.add('text-on-surface-variant');
+                });
+                item.classList.add('neomorph-inset', 'text-primary', 'rounded-xl');
+                item.classList.remove('text-on-surface-variant');
+            });
+        });
+    </script>
+</body></html>

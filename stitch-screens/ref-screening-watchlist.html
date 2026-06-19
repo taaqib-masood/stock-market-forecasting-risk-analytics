@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Silk Invest — Screening &amp; Watchlist</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "outline": "#8a8c9a",
+                        "on-secondary-fixed": "#1a1b26",
+                        "error-container": "#fee2e2",
+                        "surface-container": "#e2e4ea",
+                        "on-tertiary-container": "#3b1f63",
+                        "secondary-container": "#d8dae6",
+                        "on-primary-fixed-variant": "#4338ca",
+                        "primary-container": "#818cf8",
+                        "on-surface": "#2e3040",
+                        "primary": "#6366f1",
+                        "background": "#e8eaf0",
+                        "tertiary-container": "#a78bfa",
+                        "surface-bright": "#edeef4",
+                        "on-tertiary-fixed-variant": "#5b21b6",
+                        "error": "#dc2626",
+                        "primary-fixed-dim": "#a5b4fc",
+                        "secondary-fixed-dim": "#b8baca",
+                        "surface-container-low": "#e5e7ed",
+                        "surface-container-high": "#dcdee4",
+                        "surface-tint": "#6366f1",
+                        "on-secondary-fixed-variant": "#404252",
+                        "inverse-surface": "#2e3040",
+                        "on-tertiary-fixed": "#2e1065",
+                        "tertiary-fixed": "#ede9fe",
+                        "inverse-on-surface": "#e8eaf0",
+                        "on-background": "#2e3040",
+                        "surface-container-highest": "#d6d8de",
+                        "on-surface-variant": "#585a68",
+                        "on-error": "#ffffff",
+                        "surface-container-lowest": "#f0f2f8",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed": "#d8dae6",
+                        "tertiary": "#7c3aed",
+                        "on-secondary-container": "#585a68",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#991b1b",
+                        "inverse-primary": "#a5b4fc",
+                        "on-secondary": "#ffffff",
+                        "surface": "#e8eaf0",
+                        "tertiary-fixed-dim": "#c4b5fd",
+                        "surface-variant": "#dcdee4",
+                        "outline-variant": "#d0d2dc",
+                        "surface-dim": "#d4d6dc",
+                        "primary-fixed": "#e0e2ff",
+                        "on-primary-fixed": "#1e1b4b",
+                        "secondary": "#6c6e7e",
+                        "on-primary-container": "#e0e2ff"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Plus Jakarta Sans"],
+                        "display": ["Plus Jakarta Sans"],
+                        "body": ["Plus Jakarta Sans"],
+                        "label": ["Plus Jakarta Sans"],
+                        "mono": ["JetBrains Mono"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #e8eaf0;
+            color: #2e3040;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .neomorph-raised {
+            box-shadow: 6px 6px 12px rgba(0,0,0,0.08), -6px -6px 12px rgba(255,255,255,0.6);
+        }
+        .neomorph-inset {
+            box-shadow: inset 4px 4px 8px rgba(0,0,0,0.06), inset -4px -4px 8px rgba(255,255,255,0.5);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="flex min-h-screen">
+<!-- SideNavBar (Shared Component) -->
+<aside class="fixed left-0 top-0 h-full p-4 flex flex-col gap-4 bg-background w-64 shadow-[6px_6px_12px_rgba(0,0,0,0.08),-6px_-6px_12px_rgba(255,255,255,0.6)] z-50">
+<div class="flex items-center gap-3 px-4 py-6">
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white neomorph-raised">
+<span class="material-symbols-outlined">diamond</span>
+</div>
+<div>
+<h1 class="text-xl font-semibold text-on-surface font-headline leading-tight">Silk Invest</h1>
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold opacity-70">Premium Analytics</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2 flex-grow overflow-y-auto">
+<!-- Dashboard -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:shadow-[6px_6px_12px_rgba(0,0,0,0.04)] transition-all duration-300 font-medium tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<!-- Screening (Active) -->
+<a class="flex items-center gap-3 px-4 py-3 text-primary shadow-[inset_4px_4px_8px_rgba(0,0,0,0.06),inset_-4px_-4px_8px_rgba(255,255,255,0.5)] rounded-xl bg-background font-medium tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="analytics" style="font-variation-settings: 'FILL' 1;">analytics</span>
+                Screening
+            </a>
+<!-- Portfolio -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:shadow-[6px_6px_12px_rgba(0,0,0,0.04)] transition-all duration-300 font-medium tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="pie_chart">pie_chart</span>
+                Portfolio
+            </a>
+<!-- Protection -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:shadow-[6px_6px_12px_rgba(0,0,0,0.04)] transition-all duration-300 font-medium tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="security">security</span>
+                Protection
+            </a>
+<!-- Obligations -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:shadow-[6px_6px_12px_rgba(0,0,0,0.04)] transition-all duration-300 font-medium tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+                Obligations
+            </a>
+<!-- Alerts -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:shadow-[6px_6px_12px_rgba(0,0,0,0.04)] transition-all duration-300 font-medium tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+                Alerts
+            </a>
+</nav>
+<div class="mt-auto p-4 rounded-2xl neomorph-inset bg-background flex flex-col gap-3">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full border-2 border-white shadow-sm" data-alt="A sophisticated close-up portrait of a professional wealth manager with a soft, minimalist aesthetic. The lighting is diffused and even, set against a cool gray background that perfectly matches the Silk neomorphic design system. The mood is calm, trustworthy, and technologically forward." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEmx3u9EfPVYLE8dcx_Y1iu2wGaSTwcCzl5ErjfBmqbfnyj1GPBART6q7Yzwv68l3Q7kOlis06XqfnexrGvZhMEek204GqnvbdA38skdEb5prudvp5UhVNpDlb_At7u9-92acIziMC67Syhg_5du3D8BDcp2lN8wFDOUI6OsjFA3ujQ_v6OXkhi5SYaN7rIQMfzhvRKMF8edZ7w20MkJ5NZd7TGgqYpGtTK03EvfAzSQkUGh6eN4aXZqs_R2k7--Mr8hdxobuDUBY"/>
+<div>
+<p class="text-xs font-bold text-on-surface">Alex Thompson</p>
+<p class="text-[10px] text-on-surface-variant">Pro Plan</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="ml-64 flex-grow min-h-screen relative flex flex-col">
+<!-- TopNavBar (Shared Component) -->
+<header class="flex justify-between items-center px-8 w-full h-16 bg-background shadow-[0px_4px_10px_rgba(0,0,0,0.03)] z-40 sticky top-0">
+<div class="flex-grow max-w-xl">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant opacity-50 group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full bg-background neomorph-inset border-none rounded-xl py-2 pl-12 pr-4 text-sm focus:ring-0 placeholder:text-on-surface-variant/40 font-body transition-all" placeholder="Check any stock" type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6 ml-8">
+<button class="w-10 h-10 rounded-xl neomorph-raised flex items-center justify-center text-on-surface-variant hover:text-primary active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="w-10 h-10 rounded-xl neomorph-raised flex items-center justify-center text-on-surface-variant hover:text-primary active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+</header>
+<!-- Content Area -->
+<div class="p-8 space-y-10">
+<!-- Page Header -->
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h2 class="text-3xl font-semibold text-on-surface font-headline tracking-tight">Stock Screening</h2>
+<p class="text-on-surface-variant mt-1">Real-time compliance and fundamental verification.</p>
+</div>
+<div class="flex gap-4">
+<button class="px-6 py-2.5 bg-background neomorph-raised rounded-xl text-sm font-semibold text-primary active:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.05)] active:scale-[0.98] transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                        New Watchlist
+                    </button>
+<button class="px-6 py-2.5 bg-primary rounded-xl text-sm font-semibold text-white shadow-lg active:scale-95 transition-all">
+                        Export Report
+                    </button>
+</div>
+</section>
+<!-- Featured Result Card (Reliance) -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<div class="lg:col-span-12 neomorph-raised rounded-3xl p-8 bg-background relative overflow-hidden">
+<div class="absolute top-0 right-0 w-64 h-64 opacity-5 pointer-events-none">
+<span class="material-symbols-outlined text-[200px]" style="font-variation-settings: 'wght' 100;">verified_user</span>
+</div>
+<div class="flex flex-col md:flex-row justify-between items-start gap-8">
+<div class="flex-grow">
+<div class="flex items-center gap-4 mb-4">
+<span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded-lg uppercase tracking-wider">Passed</span>
+<span class="text-on-surface-variant text-sm font-mono tracking-tighter">RELIANCE.NS</span>
+</div>
+<h3 class="text-4xl font-semibold text-on-surface font-headline">RELIANCE INDUSTRIES LTD</h3>
+<p class="mt-2 text-on-surface-variant max-w-lg">Indian multinational conglomerate, headquartered in Mumbai. Its businesses include energy, petrochemicals, natural gas, retail, telecommunications, mass media, and textiles.</p>
+</div>
+<div class="grid grid-cols-2 gap-4 w-full md:w-auto">
+<div class="neomorph-inset p-5 rounded-2xl min-w-[160px]">
+<p class="text-xs text-on-surface-variant font-medium mb-1">Debt-to-Assets</p>
+<div class="flex items-baseline gap-1">
+<span class="text-3xl font-mono font-semibold text-on-surface">6</span>
+<span class="text-sm font-mono text-on-surface-variant">%</span>
+</div>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full mt-3 overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 6%"></div>
+</div>
+</div>
+<div class="neomorph-inset p-5 rounded-2xl min-w-[160px]">
+<p class="text-xs text-on-surface-variant font-medium mb-1">Interest Income</p>
+<div class="flex items-baseline gap-1">
+<span class="text-3xl font-mono font-semibold text-on-surface">2</span>
+<span class="text-sm font-mono text-on-surface-variant">%</span>
+</div>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full mt-3 overflow-hidden">
+<div class="bg-tertiary h-full rounded-full" style="width: 2%"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-8 pt-8 border-t border-white/20 flex flex-wrap gap-8">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-sm text-on-surface font-medium">Interest-Bearing Debt &lt; 30%</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-sm text-on-surface font-medium">Interest-Bearing Securities &lt; 30%</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-sm text-on-surface font-medium">Interest Income &lt; 5%</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Watchlist Table Section -->
+<section class="space-y-6">
+<div class="flex items-center justify-between">
+<h4 class="text-xl font-semibold text-on-surface">Global Watchlist</h4>
+<div class="flex gap-2">
+<button class="w-8 h-8 rounded-lg neomorph-inset flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+</button>
+<button class="w-8 h-8 rounded-lg neomorph-raised flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">download</span>
+</button>
+</div>
+</div>
+<div class="neomorph-raised rounded-3xl overflow-hidden bg-background">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low/50">
+<th class="px-6 py-5 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Ticker</th>
+<th class="px-6 py-5 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Tier</th>
+<th class="px-6 py-5 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Sector</th>
+<th class="px-6 py-5 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Debt/Asset %</th>
+<th class="px-6 py-5 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Interest %</th>
+<th class="px-6 py-5 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Last Verified</th>
+<th class="px-6 py-5 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest text-center">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/20">
+<tr class="hover:bg-white/10 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="font-mono font-bold text-on-surface">AAPL.US</span>
+<span class="text-xs text-on-surface-variant">Apple Inc.</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded-full uppercase">Tier 1</span>
+</td>
+<td class="px-6 py-5 text-sm text-on-surface font-medium">Technology</td>
+<td class="px-6 py-5 font-mono text-sm">12.4%</td>
+<td class="px-6 py-5 font-mono text-sm">1.8%</td>
+<td class="px-6 py-5 text-xs text-on-surface-variant">24m ago</td>
+<td class="px-6 py-5 text-center">
+<button class="opacity-0 group-hover:opacity-100 transition-opacity p-2 rounded-lg neomorph-raised text-primary">
+<span class="material-symbols-outlined text-[18px]">trending_up</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-white/10 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="font-mono font-bold text-on-surface">MSFT.US</span>
+<span class="text-xs text-on-surface-variant">Microsoft Corp.</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="px-3 py-1 bg-tertiary/10 text-tertiary text-[10px] font-bold rounded-full uppercase">Tier 1</span>
+</td>
+<td class="px-6 py-5 text-sm text-on-surface font-medium">Technology</td>
+<td class="px-6 py-5 font-mono text-sm">8.2%</td>
+<td class="px-6 py-5 font-mono text-sm">0.9%</td>
+<td class="px-6 py-5 text-xs text-on-surface-variant">1h ago</td>
+<td class="px-6 py-5 text-center">
+<button class="opacity-0 group-hover:opacity-100 transition-opacity p-2 rounded-lg neomorph-raised text-primary">
+<span class="material-symbols-outlined text-[18px]">trending_up</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-white/10 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="font-mono font-bold text-on-surface">TSLA.US</span>
+<span class="text-xs text-on-surface-variant">Tesla, Inc.</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="px-3 py-1 bg-amber-100 text-amber-700 text-[10px] font-bold rounded-full uppercase">Tier 2</span>
+</td>
+<td class="px-6 py-5 text-sm text-on-surface font-medium">Consumer Cyclical</td>
+<td class="px-6 py-5 font-mono text-sm">18.1%</td>
+<td class="px-6 py-5 font-mono text-sm">3.4%</td>
+<td class="px-6 py-5 text-xs text-on-surface-variant">4h ago</td>
+<td class="px-6 py-5 text-center">
+<button class="opacity-0 group-hover:opacity-100 transition-opacity p-2 rounded-lg neomorph-raised text-primary">
+<span class="material-symbols-outlined text-[18px]">trending_up</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-white/10 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="font-mono font-bold text-on-surface">AMZN.US</span>
+<span class="text-xs text-on-surface-variant">Amazon.com Inc.</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded-full uppercase">Tier 1</span>
+</td>
+<td class="px-6 py-5 text-sm text-on-surface font-medium">Consumer Cyclical</td>
+<td class="px-6 py-5 font-mono text-sm">15.3%</td>
+<td class="px-6 py-5 font-mono text-sm">2.1%</td>
+<td class="px-6 py-5 text-xs text-on-surface-variant">Yesterday</td>
+<td class="px-6 py-5 text-center">
+<button class="opacity-0 group-hover:opacity-100 transition-opacity p-2 rounded-lg neomorph-raised text-primary">
+<span class="material-symbols-outlined text-[18px]">trending_up</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-white/10 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="font-mono font-bold text-on-surface">META.US</span>
+<span class="text-xs text-on-surface-variant">Meta Platforms</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded-full uppercase">Tier 1</span>
+</td>
+<td class="px-6 py-5 text-sm text-on-surface font-medium">Comm Services</td>
+<td class="px-6 py-5 font-mono text-sm">11.7%</td>
+<td class="px-6 py-5 font-mono text-sm">1.5%</td>
+<td class="px-6 py-5 text-xs text-on-surface-variant">12m ago</td>
+<td class="px-6 py-5 text-center">
+<button class="opacity-0 group-hover:opacity-100 transition-opacity p-2 rounded-lg neomorph-raised text-primary">
+<span class="material-symbols-outlined text-[18px]">trending_up</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-6 py-4 flex items-center justify-between bg-surface-container-low/30">
+<p class="text-xs text-on-surface-variant">Showing 5 of 128 stocks</p>
+<div class="flex gap-2">
+<button class="px-3 py-1.5 rounded-lg neomorph-raised text-xs font-semibold text-on-surface-variant disabled:opacity-30" disabled="">Prev</button>
+<button class="px-3 py-1.5 rounded-lg neomorph-raised text-xs font-semibold text-on-surface active:shadow-inner">Next</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Atmospheric Background Element -->
+<div class="fixed bottom-0 right-0 w-96 h-96 -mr-32 -mb-32 pointer-events-none opacity-20">
+
+</div>
+</main>
+<script>
+        // Micro-interactions for neomorphic elements
+        document.querySelectorAll('.neomorph-raised').forEach(el => {
+            el.addEventListener('mousedown', () => {
+                el.classList.remove('neomorph-raised');
+                el.classList.add('neomorph-inset');
+            });
+            el.addEventListener('mouseup', () => {
+                el.classList.add('neomorph-raised');
+                el.classList.remove('neomorph-inset');
+            });
+            el.addEventListener('mouseleave', () => {
+                el.classList.add('neomorph-raised');
+                el.classList.remove('neomorph-inset');
+            });
+        });
+
+        // Search bar interaction
+        const searchInput = document.querySelector('input');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('scale-[1.01]');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('scale-[1.01]');
+        });
+    </script>
+</body></html>
