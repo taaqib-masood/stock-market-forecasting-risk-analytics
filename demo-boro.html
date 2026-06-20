@@ -520,6 +520,24 @@
       <div class="bg-surface-lowest border border-outline-variant rounded-card p-6"><div class="flex flex-wrap gap-2" id="wlPills"></div></div>
     </section>
 
+    <!-- ZAKAT -->
+    <section data-panel="zakat" class="tab-panel flex-col gap-8">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-1">
+        <h2 class="text-2xl font-semibold tracking-tight">🌙 Zakat Calculator <span class="text-muted font-medium text-lg">— Stock Portfolio</span></h2>
+        <p class="text-sm text-muted">Calculate your annual Zakat obligation on equity investments · AAOIFI method</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-5">
+          <h3 class="font-semibold tracking-tight">Your Holdings</h3>
+          <div class="flex flex-col gap-2"><label class="text-xs font-semibold uppercase tracking-widest text-muted">Portfolio Value (₹)</label><input id="z_portfolio" type="number" value="500000" oninput="calcZakat()" class="bg-surface border border-outline-variant rounded-pill px-5 py-3 text-base font-medium focus:border-primary outline-none transition-colors"></div>
+          <div class="flex flex-col gap-2"><label class="text-xs font-semibold uppercase tracking-widest text-muted">Cost Basis (₹)</label><input id="z_cost" type="number" value="420000" oninput="calcZakat()" class="bg-surface border border-outline-variant rounded-pill px-5 py-3 text-base font-medium focus:border-primary outline-none transition-colors"></div>
+          <div class="flex flex-col gap-2"><label class="text-xs font-semibold uppercase tracking-widest text-muted">Cash &amp; Savings (₹)</label><input id="z_cash" type="number" value="120000" oninput="calcZakat()" class="bg-surface border border-outline-variant rounded-pill px-5 py-3 text-base font-medium focus:border-primary outline-none transition-colors"></div>
+          <div class="flex flex-col gap-2"><label class="text-xs font-semibold uppercase tracking-widest text-muted">Gold Value (₹)</label><input id="z_gold" type="number" value="80000" oninput="calcZakat()" class="bg-surface border border-outline-variant rounded-pill px-5 py-3 text-base font-medium focus:border-primary outline-none transition-colors"></div>
+        </div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-8"><div id="zakatResult"></div></div>
+      </div>
+    </section>
+
     <!-- Other tabs (porting in progress) -->
     <section data-panel="placeholder" class="tab-panel flex-col gap-6">
       <div class="bg-surface-lowest border border-outline-variant rounded-card p-12 flex flex-col items-center text-center gap-3">
@@ -581,6 +599,27 @@ document.getElementById('confList').innerHTML = CONF.map(([m,p],i)=>{
     <div class="h-2 rounded-pill bg-surface-highest overflow-hidden"><div class="h-full ${final?'bg-primary':'bg-secondary'} rounded-pill" style="width:${p}%"></div></div>
   </div>`;}).join('');
 
+// ---- Zakat calculator ----
+function calcZakat(){
+  const g=id=>parseFloat(document.getElementById(id).value)||0;
+  const portfolio=g('z_portfolio'), cost=g('z_cost'), cash=g('z_cash'), gold=g('z_gold');
+  const NISAB=45000, RATE=0.025;
+  const total=portfolio+cash+gold, zakat=total*RATE;
+  const gain=portfolio-cost, gainZakat=Math.max(gain,0)*RATE, met=total>=NISAB;
+  const inr=v=>'₹'+Math.round(v).toLocaleString('en-IN');
+  document.getElementById('zakatResult').innerHTML=`
+    <div class="rounded-card p-5 mb-5 border ${met?'bg-green-50 border-green-200':'bg-red-50 border-red-200'}">
+      <p class="text-xs text-muted mb-1">Nisab Check (Silver ~₹45,000)</p>
+      <p class="text-lg font-bold ${met?'text-green-600':'text-red-500'}">${met?'✅ Zakat Applicable':'❌ Below Nisab'}</p>
+      <p class="text-xs text-muted mt-1">Total zakatable wealth: ${inr(total)}</p>
+    </div>
+    <div class="flex flex-col gap-4">
+      <div class="flex justify-between items-baseline border-b border-outline-variant pb-3"><span class="text-sm text-muted">Total Zakat Due (2.5%)</span><span class="text-3xl font-bold tracking-tight">${inr(zakat)}</span></div>
+      <div class="flex justify-between items-baseline"><span class="text-sm text-muted">Zakat on gains only</span><span class="text-lg font-semibold">${inr(gainZakat)}</span></div>
+      <p class="text-xs text-muted mt-2 leading-relaxed">Unrealised gain: ${inr(gain)}. AAOIFI: zakat is due on the full market value of tradeable shares held under one year, not just gains.</p>
+    </div>`;
+}
+
 // ---- Watchlist ----
 const WATCHLIST = {
   'RELIANCE':'Energy','TCS':'IT','INFY':'IT','WIPRO':'IT','HCLTECH':'IT','TECHM':'IT','LTIM':'IT','PERSISTENT':'IT','COFORGE':'IT','MPHASIS':'IT',
@@ -617,6 +656,7 @@ document.getElementById('wlFilters').addEventListener('click', e=>{
   renderWL();
 });
 renderWL();
+calcZakat();
 
 // ---- 52 Features groups ----
 const FEATS = {
