@@ -503,6 +503,23 @@
       </div>
     </section>
 
+    <!-- WATCHLIST -->
+    <section data-panel="watchlist" class="tab-panel flex-col gap-8">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-1">
+        <h2 class="text-2xl font-semibold tracking-tight">📋 Halal Watchlist — <span id="wlCount">86</span> Stocks</h2>
+        <p class="text-sm text-muted">All screened for Shariah compliance · NSE India · filter by sector</p>
+      </div>
+
+      <div class="grid grid-cols-3 gap-6">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 text-center"><div class="text-3xl font-bold tracking-tight text-green-600">78</div><div class="text-sm text-muted mt-1">Default Scan</div><div class="text-xs text-muted/70">Nifty50 + Next50</div></div>
+        <div class="bg-surface-lowest border-2 border-secondary rounded-card p-6 text-center"><div class="text-3xl font-bold tracking-tight text-secondary">165</div><div class="text-sm text-muted mt-1">Extended Scan</div><div class="text-xs text-muted/70">+ MidCap + Thematic</div></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 text-center"><div class="text-3xl font-bold tracking-tight">195</div><div class="text-sm text-muted mt-1">Deep Scan</div><div class="text-xs text-muted/70">Full halal universe</div></div>
+      </div>
+
+      <div class="flex flex-wrap gap-2" id="wlFilters"></div>
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-6"><div class="flex flex-wrap gap-2" id="wlPills"></div></div>
+    </section>
+
     <!-- Other tabs (porting in progress) -->
     <section data-panel="placeholder" class="tab-panel flex-col gap-6">
       <div class="bg-surface-lowest border border-outline-variant rounded-card p-12 flex flex-col items-center text-center gap-3">
@@ -563,6 +580,43 @@ document.getElementById('confList').innerHTML = CONF.map(([m,p],i)=>{
     <div class="flex justify-between text-sm"><span class="${final?'font-semibold':'text-muted'}">${m}</span><span class="font-semibold">${p}%</span></div>
     <div class="h-2 rounded-pill bg-surface-highest overflow-hidden"><div class="h-full ${final?'bg-primary':'bg-secondary'} rounded-pill" style="width:${p}%"></div></div>
   </div>`;}).join('');
+
+// ---- Watchlist ----
+const WATCHLIST = {
+  'RELIANCE':'Energy','TCS':'IT','INFY':'IT','WIPRO':'IT','HCLTECH':'IT','TECHM':'IT','LTIM':'IT','PERSISTENT':'IT','COFORGE':'IT','MPHASIS':'IT',
+  'NIITTECH':'IT','TATAELXSI':'IT','CYIENT':'IT','HAPPSTMNDS':'IT','BIRLASOFT':'IT',
+  'DRREDDY':'Pharma','SUNPHARMA':'Pharma','CIPLA':'Pharma','DIVISLAB':'Pharma','BIOCON':'Pharma','AUROPHARMA':'Pharma','LUPIN':'Pharma','ALKEM':'Pharma',
+  'TORNTPHARM':'Pharma','IPCALAB':'Pharma','NATCOPHARMA':'Pharma','METROPOLIS':'Pharma',
+  'MARUTI':'Auto','TATAMOTORS':'Auto','BAJAJ-AUTO':'Auto','EICHERMOT':'Auto','ASHOKLEY':'Auto','TIINDIA':'Auto','MOTHERSON':'Auto','BOSCHLTD':'Auto',
+  'ONGC':'Energy','NTPC':'Energy','POWERGRID':'Energy','PETRONET':'Energy',
+  'ADANIGREEN':'GreenEnergy','TATAPOWER':'GreenEnergy','SJVN':'GreenEnergy','NHPC':'GreenEnergy','CESC':'GreenEnergy','TORNTPOWER':'GreenEnergy',
+  'HINDUNILVR':'FMCG','ITC':'FMCG','NESTLEIND':'FMCG','BRITANNIA':'FMCG','DABUR':'FMCG','MARICO':'FMCG','EMAMILTD':'FMCG','GODREJCP':'FMCG',
+  'LARSEN':'Infra','ABB':'Infra','THERMAX':'Infra','CUMMINSIND':'Infra','KEC':'Infra','KALPATPOWR':'Infra','APLAPOLLO':'Infra','MINDAIND':'Infra',
+  'NMDC':'Energy','MOIL':'Energy','VEDANT':'FMCG','BLUEDART':'Infra','CLEAN':'GreenEnergy','DEEPAKNTR':'Pharma','ZYDUSLIFE':'Pharma',
+  'PIIND':'Pharma','SUVENPHAR':'Pharma','GRANULES':'Pharma','LALPATHLAB':'Pharma','HDFCLIFE':'FMCG','SBILIFE':'FMCG','BAJAJFINSV':'FMCG',
+  'ULTRACEMCO':'Infra','AMBUJACEM':'Infra','ACC':'Infra','RAMCOCEM':'Infra','SHREECEM':'Infra','JKCEMENT':'Infra','DALMIACERA':'Infra',
+  'TITAN':'FMCG','TRENT':'FMCG','ABFRL':'FMCG','PAGEIND':'FMCG',
+};
+const WL_SIGNALS = ['🟢','🟢','🟢','🟡','🟡','🔴','🟢','🟡','🟢','🟢'];
+const WL_SECTORS = ['All', ...[...new Set(Object.values(WATCHLIST))].sort()];
+let wlFilter = 'All';
+function renderWL(){
+  document.getElementById('wlCount').textContent = Object.keys(WATCHLIST).length;
+  document.getElementById('wlPills').innerHTML = Object.entries(WATCHLIST).map(([t,sec],i)=>{
+    const sig = WL_SIGNALS[i % WL_SIGNALS.length];
+    const hide = wlFilter!=='All' && sec!==wlFilter;
+    return `<span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-pill border border-outline-variant bg-surface text-xs cursor-pointer hover:border-primary transition-colors" style="display:${hide?'none':'inline-flex'}">${sig} <strong>${t}</strong> <span class="text-muted text-[10px]">${sec}</span></span>`;
+  }).join('');
+}
+document.getElementById('wlFilters').innerHTML = WL_SECTORS.map(s=>`<button data-sec="${s}" class="wl-filter text-xs font-medium px-4 py-2 rounded-pill border ${s==='All'?'bg-primary text-white border-primary':'bg-surface-lowest text-muted border-outline-variant'} transition-colors">${s}</button>`).join('');
+document.getElementById('wlFilters').addEventListener('click', e=>{
+  const b=e.target.closest('.wl-filter'); if(!b) return;
+  wlFilter=b.dataset.sec;
+  document.querySelectorAll('.wl-filter').forEach(x=>{ const on=x.dataset.sec===wlFilter;
+    x.className='wl-filter text-xs font-medium px-4 py-2 rounded-pill border transition-colors '+(on?'bg-primary text-white border-primary':'bg-surface-lowest text-muted border-outline-variant'); });
+  renderWL();
+});
+renderWL();
 
 // ---- 52 Features groups ----
 const FEATS = {
