@@ -173,6 +173,9 @@
       <!-- Paper Portfolio (live from window.DASH.portfolio) -->
       <div id="portfolioPanel" class="flex flex-col gap-4"></div>
 
+      <!-- Alerts & GTT feed (mirrors Telegram + Kite) -->
+      <div id="alertsPanel" class="flex flex-col gap-4"></div>
+
       <!-- Stats -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2">
@@ -479,6 +482,16 @@
       <div class="bg-surface-lowest border border-outline-variant rounded-card p-8">
         <h3 class="font-semibold text-lg tracking-tight mb-6">Outcome Distribution</h3>
         <div class="w-full h-72"><canvas id="mcChart"></canvas></div>
+      </div>
+
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8">
+        <div class="flex items-center justify-between mb-1 flex-wrap gap-2">
+          <h3 class="font-semibold text-lg tracking-tight">Backtest Equity Curve<button class="info-btn" onclick="showInfo('montecarlo')">i</button></h3>
+          <span id="eqMeta" class="text-xs text-muted"></span>
+        </div>
+        <p class="text-sm text-muted mb-6">Latest run from <code class="text-xs" id="eqSource">results/</code> — beats re-opening the MLflow UI.</p>
+        <div class="w-full h-72"><canvas id="eqChart"></canvas></div>
+        <p id="eqEmpty" class="hidden text-sm text-muted">No backtest runs yet — run <code class="text-xs">python -m src.pipeline --ticker RELIANCE</code>, then regenerate dashboard_data.js.</p>
       </div>
     </section>
 
@@ -939,7 +952,28 @@ function drawFII(){
                y:{ grid:{ color:'#e7e8ea' }, ticks:{ color:'#70757d', font:{size:11}, callback:v=>'₹'+v } } } }
   });
 }
-const lazyCharts = { montecarlo: drawMC, fiidii: drawFII, halal: initHalal, riskguard: renderRiskGuard };
+// ---- B4: backtest equity curve (window.DASH.equity) ----
+function drawEquity(){
+  if(drawn.eq) return;
+  const eq = DASH.equity || {}; const curve = eq.curve || [];
+  const canvas = document.getElementById('eqChart'); if(!canvas) return;
+  if(!curve.length){ document.getElementById('eqEmpty').classList.remove('hidden'); canvas.style.display='none'; return; }
+  drawn.eq = true;
+  document.getElementById('eqSource').textContent = eq.source || 'results/';
+  document.getElementById('eqMeta').textContent = (eq.ticker||'') + ' · ' + curve.length + ' trades · ' +
+    (curve[curve.length-1]>=curve[0]?'+':'') + Math.round((curve[curve.length-1]/curve[0]-1)*100) + '%';
+  const up = curve[curve.length-1] >= curve[0];
+  new Chart(canvas,{ type:'line',
+    data:{ labels: curve.map((_,i)=>i+1), datasets:[{ data:curve,
+      borderColor: up?'#16a34a':'#ef4444', backgroundColor: up?'rgba(34,197,94,.08)':'rgba(239,68,68,.08)',
+      borderWidth:2, fill:true, tension:.25, pointRadius:0 }] },
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{ callbacks:{ title:c=>'Trade '+c[0].label, label:c=>'₹'+c.parsed.y.toLocaleString('en-IN') } } },
+      scales:{ x:{ grid:{display:false}, ticks:{ color:'#70757d', font:{size:10}, maxTicksLimit:10 } },
+               y:{ grid:{ color:'#e7e8ea' }, ticks:{ color:'#70757d', font:{size:10}, callback:v=>'₹'+(v/1000)+'K' } } } }
+  });
+}
+const lazyCharts = { montecarlo: ()=>{ drawMC(); drawEquity(); }, fiidii: drawFII, halal: initHalal, riskguard: renderRiskGuard };
 
 // ---- Nav switching (generic: any [data-panel] shows; else placeholder) ----
 const phPanel = document.querySelector('[data-panel="placeholder"]');
@@ -1143,6 +1177,47 @@ function renderPortfolio(){
     </div>`;
 }
 renderPortfolio();
+
+// ---- B5: Alerts & GTT feed (mirrors what Telegram + Kite received) ----
+function renderAlerts(){
+  const box = document.getElementById('alertsPanel'); if(!box) return;
+  const sig = DASH.signals || {}; const cards = sig.cards || [];
+  const trades = ((DASH.portfolio||{}).trades || []).slice().reverse();
+  const items = [];
+  cards.forEach(c => items.push({ icon:'📲', cls:'bg-accent-soft text-secondary',
+    title:`GTT staged · ${c.ticker}`,
+    detail:`Buy ${c.shares} @ ${inr(c.entry)} → OCO stop-leg ${inr(c.stop_trigger)} / target-leg ${inr(c.target_trigger)}`,
+    tag:'Telegram + Kite' }));
+  trades.forEach(t => items.push({ icon: t.pnl>=0?'✅':'🛑',
+    cls: t.pnl>=0?'bg-green-50 text-green-600':'bg-red-50 text-red-500',
+    title:`${t.reason==='target'?'Target hit':'Stopped out'} · ${t.ticker}`,
+    detail:`Exit ${inr(t.exit)} · realised ${(t.pnl>=0?'+':'')}${inr(t.pnl)}`,
+    tag:t.closed_at }));
+  const blocked = sig.blocked || [];
+  if(blocked.length) items.push({ icon:'⛔', cls:'bg-surface-highest text-muted',
+    title:`Blocked by filters`, detail:`${blocked.join(', ')} — failed backtest / gap-risk / earnings guard`, tag:'pre-trade' });
+
+  if(!items.length){
+    box.innerHTML = `<div class="bg-surface-lowest border border-outline-variant rounded-card p-8"><h2 class="text-2xl font-semibold tracking-tight">Alerts & GTT</h2><p class="text-sm text-muted mt-2">No alerts yet today. When the scan fires, staged GTT orders and Telegram notifications appear here.</p></div>`;
+    return;
+  }
+  box.innerHTML = `
+    <div class="flex items-center justify-between flex-wrap gap-2">
+      <h2 class="text-2xl font-semibold tracking-tight">Alerts & GTT</h2>
+      <span class="text-xs text-muted">mirrors Telegram + Zerodha Kite</span>
+    </div>
+    <div class="bg-surface-lowest border border-outline-variant rounded-card divide-y divide-outline-variant">
+      ${items.map(it=>`<div class="flex items-center gap-4 px-6 py-4">
+        <span class="w-9 h-9 rounded-pill flex items-center justify-center text-sm flex-none ${it.cls}">${it.icon}</span>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-semibold tracking-tight">${it.title}</p>
+          <p class="text-xs text-muted truncate">${it.detail}</p>
+        </div>
+        <span class="text-[11px] font-medium text-muted whitespace-nowrap">${it.tag}</span>
+      </div>`).join('')}
+    </div>`;
+}
+renderAlerts();
 </script>
 
 <!-- Info (ⓘ) modal overlay — Boro-skinned -->
