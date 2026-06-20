@@ -403,6 +403,27 @@
       </div>
     </section>
 
+    <!-- DRIFT -->
+    <section data-panel="drift" class="tab-panel flex-col gap-10">
+      <div class="bg-green-50 border border-green-200 rounded-card p-8 flex items-start gap-4">
+        <span class="material-symbols-outlined text-3xl text-green-600">check_circle</span>
+        <div>
+          <h2 class="text-2xl font-semibold tracking-tight text-green-600 mb-1">No Drift Detected</h2>
+          <p class="text-sm text-on-surface">Model is accurate. 30-day win rate 67% (floor 50%). PSI 0.04 — very stable.</p>
+        </div>
+      </div>
+
+      <div class="bg-surface-lowest border border-outline-variant rounded-card overflow-hidden">
+        <div class="px-8 py-5 border-b border-outline-variant"><h3 class="font-semibold text-lg tracking-tight">Feature Drift Report <span class="text-muted font-normal text-sm">(KS Test)</span></h3></div>
+        <table class="w-full text-sm">
+          <thead><tr class="text-[11px] uppercase tracking-widest text-muted">
+            <th class="text-left font-bold px-8 py-3">Feature</th><th class="text-right font-bold px-4 py-3">KS Stat</th><th class="text-right font-bold px-4 py-3">P-Value</th><th class="text-right font-bold px-4 py-3">PSI</th><th class="text-right font-bold px-8 py-3">Status</th>
+          </tr></thead>
+          <tbody id="driftBody"></tbody>
+        </table>
+      </div>
+    </section>
+
     <!-- Other tabs (porting in progress) -->
     <section data-panel="placeholder" class="tab-panel flex-col gap-6">
       <div class="bg-surface-lowest border border-outline-variant rounded-card p-12 flex flex-col items-center text-center gap-3">
@@ -463,6 +484,18 @@ document.getElementById('confList').innerHTML = CONF.map(([m,p],i)=>{
     <div class="flex justify-between text-sm"><span class="${final?'font-semibold':'text-muted'}">${m}</span><span class="font-semibold">${p}%</span></div>
     <div class="h-2 rounded-pill bg-surface-highest overflow-hidden"><div class="h-full ${final?'bg-primary':'bg-secondary'} rounded-pill" style="width:${p}%"></div></div>
   </div>`;}).join('');
+
+// ---- Drift KS-test table ----
+const DRIFT = [["RSI 14",0.08,0.24,0.02,"Stable"],["MACD",0.09,0.18,0.03,"Stable"],["Volume Ratio",0.16,0.04,0.12,"Slight"],["VIX Close",0.12,0.09,0.08,"Slight"],["BB Width",0.07,0.31,0.01,"Stable"]];
+document.getElementById('driftBody').innerHTML = DRIFT.map(([f,ks,p,psi,st])=>{
+  const ok=st==='Stable'; const cls=ok?'bg-green-50 text-green-600 border-green-200':'bg-surface-highest text-on-surface border-outline-variant';
+  return `<tr class="border-t border-outline-variant">
+    <td class="px-8 py-3 font-medium">${f}</td>
+    <td class="text-right px-4 py-3">${ks.toFixed(2)}</td>
+    <td class="text-right px-4 py-3">${p.toFixed(2)}</td>
+    <td class="text-right px-4 py-3">${psi.toFixed(2)}</td>
+    <td class="text-right px-8 py-3"><span class="text-xs font-semibold px-3 py-1 rounded-pill border ${cls}">${ok?'✓ ':'⚠ '}${st}</span></td>
+  </tr>`;}).join('');
 
 // ---- Lazy charts (canvases hidden at load → draw on first show) ----
 const drawn = {};
