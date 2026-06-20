@@ -140,6 +140,8 @@
 
     <!-- SENTIMENT (home) -->
     <section data-panel="sentiment" class="tab-panel active flex-col gap-10">
+      <!-- Tier-change alert banner (🟢→🔴 since last screen) -->
+      <div id="tierBanner"></div>
       <!-- Hero -->
       <div id="heroCard" onmousemove="trackMouse(event,this)" class="bg-primary rounded-card p-8 text-white relative overflow-hidden flex flex-col md:flex-row items-center justify-between">
         <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
@@ -681,6 +683,8 @@
         <h2 class="text-2xl font-semibold tracking-tight">🕌 Halal Screen — AAOIFI Shariah Compliance</h2>
         <p class="text-sm text-muted">Real fundamentals · 84 NSE stocks screened · debt/assets &lt; 33% · interest income &lt; 5%</p>
       </div>
+      <div id="tierBannerHalal"></div>
+      <div id="screenHealth"></div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
         <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-4">
           <h3 class="font-semibold tracking-tight">Is this stock halal?</h3>
@@ -887,6 +891,21 @@ function classifyHalal(d, i){
   const reasons = [ (dt===0?"✓ ":(dt===1?"⚠ ":"✗ "))+dTxt, (it===0?"✓ ":(it===1?"⚠ ":"✗ "))+iTxt ];
   return { tier, verdict:["HALAL","DOUBTFUL — screen + purify","NOT HALAL"][sev], reasons };
 }
+// Citation posture: every verdict cites a named standard + source + verified-on date.
+// Turns the data-freshness weakness into an honesty signal (council #1 / #7).
+function citationHTML(rec){
+  const asof = rec.asof, src = rec.src;
+  const fmt = asof ? new Date(asof).toLocaleDateString('en-IN',{month:'short',year:'numeric'}) : null;
+  const stale = rec.stale;
+  const chip = stale
+    ? `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-pill bg-amber-50 text-amber-700 border border-amber-200 font-semibold">⚠ stale${fmt?' · '+fmt:''}</span>`
+    : `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-pill bg-surface text-muted border border-outline-variant font-semibold">✓ verified${fmt?' · '+fmt:''}</span>`;
+  return `<div class="mt-3 pt-3 border-t border-outline-variant flex items-center gap-2 flex-wrap text-[11px]">
+    ${chip}
+    <span class="text-muted">Standard: <strong class="text-on-surface-variant">AAOIFI ratios</strong> · source: ${src||'—'}</span>
+    <button class="info-btn" onclick="showInfo('halal_screen')">i</button>
+  </div>`;
+}
 function halalCardHTML(t, rec){
   const c = classifyHalal(rec.d, rec.i);
   const bg = c.tier==='🟢'?'bg-green-50 border-green-200':(c.tier==='🟡'?'bg-surface-highest border-outline-variant':'bg-red-50 border-red-200');
@@ -896,8 +915,53 @@ function halalCardHTML(t, rec){
     <ul class="flex flex-col gap-1.5 text-sm text-on-surface">${c.reasons.map(r=>`<li>${r}</li>`).join('')}</ul>
     ${rec.pur?`<p class="text-xs text-muted mt-3">Dividend purification: <strong>${rec.pur}%</strong> of dividends to charity.</p>`:''}
     ${timelineHTML(t)}
+    ${citationHTML(rec)}
   </div>`;
 }
+// ---- Tier-change alert banner (🟢→🔴 since last quarterly screen) ----
+const HALAL_ALERTS = (window.HALAL_DASH && window.HALAL_DASH.alerts) || [];
+function renderTierBanner(){
+  let html;
+  if(!HALAL_ALERTS.length){
+    html = `<div class="flex items-center gap-3 bg-green-50 border border-green-200 rounded-card px-6 py-4">
+      <span class="text-green-600 text-lg">✓</span>
+      <p class="text-sm font-medium text-green-700">All holdings still Shariah-compliant — no tier changes since the last quarterly screen.</p></div>`;
+  } else {
+    const worse = HALAL_ALERTS.filter(a=>a.worsened).length;
+    const rows = HALAL_ALERTS.map(a=>`<div class="flex items-center justify-between text-sm py-1">
+      <span class="font-semibold">${a.from}→${a.to} ${a.ticker}</span>
+      <span class="text-xs ${a.worsened?'text-red-600':'text-green-600'}">${a.to==='🔴'?'now NON-TRADEABLE — exit / avoid':(a.worsened?'compliance worsened':'improved')}</span></div>`).join('');
+    html = `<div class="bg-red-50 border border-red-200 rounded-card p-6 flex flex-col gap-2">
+      <div class="flex items-center gap-2"><span class="text-lg">⚠️</span><h3 class="font-semibold tracking-tight text-red-700">${worse} holding${worse!==1?'s':''} changed Shariah tier since last screen</h3><button class="info-btn" onclick="showInfo('tier_alerts')">i</button></div>
+      <div class="flex flex-col gap-1">${rows}</div>
+      <p class="text-xs text-red-600/80 mt-1">In production this fires a Telegram push the moment a holding crosses the AAOIFI line.</p></div>`;
+  }
+  ['tierBanner','tierBannerHalal'].forEach(id=>{ const el=document.getElementById(id); if(el) el.innerHTML=html; });
+}
+
+// ---- Screening health ("who screens the screener" — make freshness visible) ----
+const HALAL_HEALTH = (window.HALAL_DASH && window.HALAL_DASH.health) || {};
+function renderScreenHealth(){
+  const el=document.getElementById('screenHealth'); if(!el) return;
+  const h=HALAL_HEALTH, asof=(window.HALAL_DASH&&window.HALAL_DASH.asof)||'';
+  const fmt = asof? new Date(asof).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) : '—';
+  let next='—'; if(asof){ const d=new Date(asof); d.setMonth(d.getMonth()+3); next=d.toLocaleDateString('en-IN',{month:'short',year:'numeric'}); }
+  el.innerHTML = `<div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-4">
+    <div class="flex items-center justify-between flex-wrap gap-2">
+      <h3 class="font-semibold tracking-tight">Who screens the screener?<button class="info-btn" onclick="showInfo('halal_screen')">i</button></h3>
+      <span class="text-xs text-muted">a Shariah verdict is a recurring obligation — re-screened every quarter</span>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-2xl font-bold tracking-tight">${h.screened||0}</p><p class="text-xs text-muted">stocks screened</p></div>
+      <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-2xl font-bold tracking-tight ${h.stale?'text-amber-600':'text-green-600'}">${h.fresh_pct||0}%</p><p class="text-xs text-muted">fresh · ${h.stale||0} stale</p></div>
+      <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-xl font-bold tracking-tight">${fmt}</p><p class="text-xs text-muted">last verified</p></div>
+      <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-xl font-bold tracking-tight">${next}</p><p class="text-xs text-muted">next refresh due</p></div>
+    </div>
+    <p class="text-xs text-muted">Re-screen: <code class="text-[10px]">scripts/refresh_fundamentals.py</code> → <code class="text-[10px]">src.tier_monitor</code> → Telegram. Wiring this into the nightly CI job removes the solo-dev single-point-of-failure.</p>
+  </div>`;
+}
+renderTierBanner(); renderScreenHealth();
+
 function renderHalalLookup(){
   const q = (document.getElementById('halalSearch').value||"").trim().toUpperCase();
   const box = document.getElementById('halalResult');
