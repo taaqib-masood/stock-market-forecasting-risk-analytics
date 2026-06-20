@@ -350,6 +350,38 @@
       </div>
     </section>
 
+    <!-- AI EXPLAINER -->
+    <section data-panel="explainer" class="tab-panel flex-col gap-10">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-4">
+        <div class="flex items-center gap-3 flex-wrap">
+          <h2 class="text-2xl font-semibold tracking-tight">AI Decision Explainer</h2>
+          <span class="text-xs font-semibold px-3 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200">Signal: BUY</span>
+          <span class="text-xs font-semibold px-3 py-1 rounded-pill bg-surface-highest text-on-surface border border-outline-variant">Confidence 79%</span>
+          <span class="text-xs font-semibold px-3 py-1 rounded-pill bg-surface-highest text-on-surface border border-outline-variant">₹2,940</span>
+        </div>
+        <p class="text-sm text-on-surface leading-relaxed border-l-2 border-outline-variant pl-4 italic">"RELIANCE shows a strong BUY driven by bullish MACD crossover, RSI in healthy zone (58), and positive news sentiment (+0.62). Trading below 52-week high with strong support at ₹2,820. Macro is favourable — VIX low (14.2), yield curve normal, expansion phase. Risk/Reward 2.8:1 meets minimum threshold of 2.0. Recommended position: 4% of portfolio."</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-5">
+          <h3 class="font-semibold tracking-tight">Why this decision? <span class="text-muted font-normal text-sm">(SHAP)</span></h3>
+          <div class="flex flex-col gap-3" id="shapList"></div>
+        </div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-5">
+          <h3 class="font-semibold tracking-tight">Model Confidence</h3>
+          <div class="flex flex-col gap-4" id="confList"></div>
+        </div>
+      </div>
+
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-3">
+        <h3 class="font-semibold tracking-tight">⚠️ Risk Warnings</h3>
+        <ul class="flex flex-col gap-2 text-sm text-on-surface">
+          <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-muted"></span>Global macro uncertainty / USD/INR</li>
+          <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-muted"></span>Earnings date approaching — vol may rise</li>
+        </ul>
+      </div>
+    </section>
+
     <!-- Other tabs (porting in progress) -->
     <section data-panel="placeholder" class="tab-panel flex-col gap-6">
       <div class="bg-surface-lowest border border-outline-variant rounded-card p-12 flex flex-col items-center text-center gap-3">
@@ -393,6 +425,23 @@ const sent = [0.30,0.28,0.34,0.31,0.26,0.29,0.38,0.45,0.52,0.58,0.55,0.50,0.54,0
       scales:{ x:{ display:false }, y:{ display:false, min:0, max:1 } } }
   });
 })();
+
+// ---- AI Explainer: SHAP + model confidence ----
+const SHAP = [["RSI 14",0.41,82],["MACD Histogram",0.35,70],["Sentiment",0.31,62],["VIX Regime",0.27,55],["BB %B",-0.13,25],["Volume Z-Score",-0.09,18]];
+document.getElementById('shapList').innerHTML = SHAP.map(([f,v,w])=>{
+  const pos=v>=0; const col=pos?'bg-green-500':'bg-red-500'; const tc=pos?'text-green-600':'text-red-500';
+  return `<div class="flex items-center gap-3">
+    <span class="w-28 text-sm text-muted flex-shrink-0">${f}</span>
+    <div class="flex-1 h-2 rounded-pill bg-surface-highest overflow-hidden"><div class="h-full ${col} rounded-pill" style="width:${w}%"></div></div>
+    <span class="w-12 text-right text-sm font-semibold ${tc}">${pos?'+':''}${v.toFixed(2)}</span>
+  </div>`;}).join('');
+const CONF = [["ARIMA (Time-Series)",65],["LightGBM (ML Model)",81],["Meta-Ensemble (Final)",79]];
+document.getElementById('confList').innerHTML = CONF.map(([m,p],i)=>{
+  const final=i===CONF.length-1;
+  return `<div class="flex flex-col gap-1">
+    <div class="flex justify-between text-sm"><span class="${final?'font-semibold':'text-muted'}">${m}</span><span class="font-semibold">${p}%</span></div>
+    <div class="h-2 rounded-pill bg-surface-highest overflow-hidden"><div class="h-full ${final?'bg-primary':'bg-secondary'} rounded-pill" style="width:${p}%"></div></div>
+  </div>`;}).join('');
 
 // ---- Nav switching (generic: any [data-panel] shows; else placeholder) ----
 const phPanel = document.querySelector('[data-panel="placeholder"]');
