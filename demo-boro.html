@@ -8,6 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="halal_data.js"></script>
 <script src="info_data.js"></script>
+<script src="dashboard_data.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -154,6 +155,18 @@
           </div>
           <span class="text-green-400 font-bold tracking-widest uppercase text-sm">Strong Buy</span>
         </div>
+      </div>
+
+      <!-- Today's Signals (live from dashboard_data.js → window.DASH) -->
+      <div class="flex flex-col gap-4">
+        <div class="flex items-center justify-between flex-wrap gap-3">
+          <div class="flex items-center gap-3">
+            <h2 class="text-2xl font-semibold tracking-tight">Today's Signals</h2>
+            <span id="sigSample" class="hidden text-[11px] font-semibold px-2.5 py-1 rounded-pill bg-surface-highest text-muted border border-outline-variant">Sample · run export_dashboard.py</span>
+          </div>
+          <div id="sigRegime" class="text-xs font-medium text-muted"></div>
+        </div>
+        <div id="sigCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
       </div>
 
       <!-- Stats -->
@@ -973,6 +986,57 @@ function toggleAccordion(bodyId, headerEl){
   const open = body.classList.toggle('open');
   if(icon) icon.classList.toggle('open', open);
 }
+
+// ---- Today's Signals: render live trade cards from window.DASH ----
+const DASH = window.DASH || {};
+const inr = n => '₹' + Number(n).toLocaleString('en-IN');
+function signalCardHTML(c){
+  const pass = Object.values(c.criteria||{}).filter(Boolean).length;
+  const tot  = Object.keys(c.criteria||{}).length || 7;
+  const scoreColor = c.score>=80?'text-green-600 bg-green-50 border-green-200'
+    : c.score>=65?'text-secondary bg-accent-soft border-secondary/30'
+    : 'text-on-surface bg-surface-highest border-outline-variant';
+  return `<button onclick="signalWhy('${c.ticker}')" class="text-left bg-surface-lowest border border-outline-variant rounded-card p-5 flex flex-col gap-4 hover:border-primary transition-colors">
+    <div class="flex items-start justify-between">
+      <div>
+        <div class="flex items-center gap-2"><span class="text-lg font-bold tracking-tight">${c.ticker}</span><span class="text-xs font-semibold px-2 py-0.5 rounded-pill bg-green-50 text-green-600 border border-green-200">BUY</span></div>
+        <p class="text-xs text-muted mt-1">${pass}/${tot} criteria · RSI ${c.rsi} · Vol ${c.vol_surge}×</p>
+      </div>
+      <span class="text-xs font-bold px-2.5 py-1 rounded-pill border ${scoreColor}">${c.score}</span>
+    </div>
+    <div class="grid grid-cols-3 gap-2 text-center">
+      <div><p class="text-[10px] uppercase tracking-wider text-muted">Entry</p><p class="text-sm font-semibold">${inr(c.entry)}</p></div>
+      <div><p class="text-[10px] uppercase tracking-wider text-muted">Stop</p><p class="text-sm font-semibold text-red-500">${inr(c.stop)}</p></div>
+      <div><p class="text-[10px] uppercase tracking-wider text-muted">Target</p><p class="text-sm font-semibold text-green-600">${inr(c.target)}</p></div>
+    </div>
+    <div class="flex items-center justify-between text-xs text-muted border-t border-outline-variant pt-3">
+      <span>R:R <strong class="text-on-surface">${c.rr}:1</strong></span>
+      <span><strong class="text-on-surface">${c.shares}</strong> sh · ${inr(c.invest)}</span>
+      <span><strong class="text-on-surface">${c.cap_pct}%</strong> cap</span>
+    </div>
+  </button>`;
+}
+function renderSignals(){
+  const sig = DASH.signals || {}; const cards = sig.cards || [];
+  const box = document.getElementById('sigCards'); if(!box) return;
+  document.getElementById('sigSample').classList.toggle('hidden', !DASH.sample);
+  const r = sig.regime || {};
+  document.getElementById('sigRegime').innerHTML = r.name
+    ? `Regime <strong class="text-on-surface">${r.name}</strong> · VIX ${r.vix} · max ${r.max_positions} positions${sig.sectors&&sig.sectors.length?` · favouring ${sig.sectors.join(', ')}`:''}`
+    : '';
+  if(!cards.length){
+    box.className = '';
+    box.innerHTML = `<div class="bg-surface-lowest border border-outline-variant rounded-card p-8 text-center">
+      <p class="text-lg font-semibold tracking-tight">No signals today</p>
+      <p class="text-sm text-muted mt-1">Market is ${r.name||'quiet'} — the gates blocked everything. Cash is a position. Re-run the scan at 9 AM.</p>
+      ${(sig.blocked&&sig.blocked.length)?`<p class="text-xs text-muted mt-3">Blocked by filters: ${sig.blocked.join(', ')}</p>`:''}</div>`;
+    return;
+  }
+  box.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5';
+  box.innerHTML = cards.map(signalCardHTML).join('');
+}
+function signalWhy(ticker){ /* per-signal "why" drawer — wired in B3 */ showInfo('ensemble'); }
+renderSignals();
 </script>
 
 <!-- Info (ⓘ) modal overlay — Boro-skinned -->
