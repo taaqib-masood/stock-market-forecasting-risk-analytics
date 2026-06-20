@@ -460,6 +460,49 @@
       </div>
     </section>
 
+    <!-- INDIA SIGNALS -->
+    <section data-panel="india" class="tab-panel flex-col gap-10">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-2">
+        <h2 class="text-2xl font-semibold tracking-tight">🇮🇳 India-Specific Market Signals</h2>
+        <p class="text-sm text-muted">India VIX · PCR · Delivery Volume · Advance/Decline — NSE proprietary data</p>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">India VIX</p><h3 class="text-2xl font-semibold tracking-tight">13.8</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">Calm ✓</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">Put-Call Ratio</p><h3 class="text-2xl font-semibold tracking-tight">0.92</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-surface-highest text-on-surface border border-outline-variant w-fit">Neutral</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">Delivery Vol %</p><h3 class="text-2xl font-semibold tracking-tight">58%</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">High Conviction</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">Advance/Decline</p><h3 class="text-2xl font-semibold tracking-tight">1.42</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">Breadth Good ✓</span></div>
+      </div>
+
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-6">
+        <h3 class="font-semibold text-lg tracking-tight">📊 Options Data — Max Pain &amp; IV Skew</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="flex flex-col gap-1"><p class="text-sm text-muted">Max Pain (Nifty)</p><h4 class="text-xl font-semibold tracking-tight">₹22,900</h4><p class="text-xs text-muted">53 pts below spot</p></div>
+          <div class="flex flex-col gap-1"><p class="text-sm text-muted">IV Skew</p><h4 class="text-xl font-semibold tracking-tight text-green-600">+2.3%</h4><p class="text-xs text-muted">Calls pricier</p></div>
+          <div class="flex flex-col gap-1"><p class="text-sm text-muted">Expiry</p><h4 class="text-xl font-semibold tracking-tight">This Thursday</h4><p class="text-xs text-muted">3 days · F&amp;O Expiry</p></div>
+        </div>
+        <p class="text-sm text-muted leading-relaxed border-l-2 border-outline-variant pl-4">Spot (22,953) is above max pain (22,900) by 53 pts — market may drift toward max pain by Thursday. Positive IV skew means the options market expects upside (calls in demand). Delivery volume 58% confirms genuine buying, not intraday speculation.</p>
+      </div>
+
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-6">
+        <h3 class="font-semibold text-lg tracking-tight">☪️ NSE Shariah Compliance Check <span class="text-muted font-normal text-sm">(AAOIFI)</span></h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="border border-outline-variant rounded-card p-5 flex flex-col gap-2"><div class="flex items-center gap-2"><span class="text-green-600">✅</span><h4 class="font-semibold tracking-tight text-sm">Nifty50 Shariah</h4></div><p class="text-xs text-muted">Screened by TASIS. Pure-play halal only — excludes banks, insurance, NBFCs, alcohol, tobacco.</p></div>
+          <div class="border border-outline-variant rounded-card p-5 flex flex-col gap-2"><div class="flex items-center gap-2"><span class="text-green-600">✅</span><h4 class="font-semibold tracking-tight text-sm">Nifty Shariah 25</h4></div><p class="text-xs text-muted">Stricter 25-stock subset. Max debt/assets 33%, interest income &lt;5% revenue. Reviewed quarterly.</p></div>
+          <div class="border border-outline-variant rounded-card p-5 flex flex-col gap-2"><div class="flex items-center gap-2"><span class="text-green-600">✅</span><h4 class="font-semibold tracking-tight text-sm">Nifty500 Shariah</h4></div><p class="text-xs text-muted">Broadest halal index — 500 screened NSE stocks. Our watchlist universe basis.</p></div>
+        </div>
+        <div class="bg-secondary/5 border border-secondary/20 rounded-card p-5">
+          <p class="text-xs font-semibold uppercase tracking-widest text-secondary mb-2">AAOIFI Screening Criteria</p>
+          <ul class="text-sm text-muted flex flex-col gap-1">
+            <li>1 · Debt/Assets &lt; 33% — avoids riba-heavy companies</li>
+            <li>2 · Interest income &lt; 5% of revenue — excludes banks/NBFCs</li>
+            <li>3 · Haram revenue &lt; 5% — excludes alcohol, tobacco, weapons, adult content</li>
+            <li>4 · Accounts receivable &lt; 49% of assets — avoids interest-based receivables</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
     <!-- Other tabs (porting in progress) -->
     <section data-panel="placeholder" class="tab-panel flex-col gap-6">
       <div class="bg-surface-lowest border border-outline-variant rounded-card p-12 flex flex-col items-center text-center gap-3">
