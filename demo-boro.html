@@ -303,7 +303,7 @@
       </div>
 
       <div class="bg-surface-lowest border border-outline-variant rounded-card overflow-hidden">
-        <div class="px-8 py-5 border-b border-outline-variant"><h3 class="font-semibold text-lg tracking-tight">Support &amp; Resistance Levels</h3></div>
+        <div class="px-8 py-5 border-b border-outline-variant"><h3 class="font-semibold text-lg tracking-tight">Support &amp; Resistance Levels<button class="info-btn" onclick="showInfo('support_resistance')">i</button></h3></div>
         <div class="flex flex-col">
           <div class="px-8 py-4 border-b border-outline-variant flex items-center justify-between"><span class="text-sm font-medium text-muted w-28">Resistance 2</span><span class="text-base font-semibold">₹3,200</span><span class="text-xs font-semibold px-3 py-1 rounded-pill bg-red-50 text-red-500 border border-red-200">Strong</span></div>
           <div class="px-8 py-4 border-b border-outline-variant flex items-center justify-between"><span class="text-sm font-medium text-muted w-28">Resistance 1</span><span class="text-base font-semibold">₹3,050</span><span class="text-xs font-semibold px-3 py-1 rounded-pill bg-surface-highest text-on-surface border border-outline-variant">Moderate</span></div>
@@ -329,19 +329,19 @@
 
       <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
         <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2">
-          <p class="text-sm font-medium text-muted">Fed Funds Rate</p><h3 class="text-2xl font-semibold tracking-tight">5.33%</h3>
+          <p class="text-sm font-medium text-muted">Fed Funds Rate<button class="info-btn" onclick="showInfo('fed_rate')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">5.33%</h3>
           <span class="text-xs font-semibold px-2 py-1 rounded-pill bg-surface-highest text-on-surface border border-outline-variant w-fit">High</span>
         </div>
         <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2">
-          <p class="text-sm font-medium text-muted">US 10Y Yield</p><h3 class="text-2xl font-semibold tracking-tight">4.28%</h3>
+          <p class="text-sm font-medium text-muted">US 10Y Yield<button class="info-btn" onclick="showInfo('yield10y')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">4.28%</h3>
           <span class="text-xs font-semibold px-2 py-1 rounded-pill bg-surface-highest text-on-surface border border-outline-variant w-fit">Normal</span>
         </div>
         <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2">
-          <p class="text-sm font-medium text-muted">Yield Curve</p><h3 class="text-2xl font-semibold tracking-tight">+0.18%</h3>
+          <p class="text-sm font-medium text-muted">Yield Curve<button class="info-btn" onclick="showInfo('yield_curve')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">+0.18%</h3>
           <span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">Normal ✓</span>
         </div>
         <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2">
-          <p class="text-sm font-medium text-muted">DXY Dollar Index</p><h3 class="text-2xl font-semibold tracking-tight">104.2</h3>
+          <p class="text-sm font-medium text-muted">DXY Dollar Index<button class="info-btn" onclick="showInfo('dxy')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">104.2</h3>
           <span class="text-xs font-semibold px-2 py-1 rounded-pill bg-surface-highest text-on-surface border border-outline-variant w-fit">Slightly High</span>
         </div>
       </div>
@@ -377,12 +377,12 @@
       </div>
 
       <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
-        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">P/E Ratio</p><h3 class="text-2xl font-semibold tracking-tight">23.4</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-surface-highest text-on-surface border border-outline-variant w-fit">Fairly Valued</span></div>
-        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">ROE</p><h3 class="text-2xl font-semibold tracking-tight">18.2%</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">Good ✓</span></div>
-        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">Debt / Equity</p><h3 class="text-2xl font-semibold tracking-tight">0.42</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">Low Debt ✓</span></div>
-        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">Revenue Growth</p><h3 class="text-2xl font-semibold tracking-tight">14.2%</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">Strong ✓</span></div>
-        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">Profit Margin</p><h3 class="text-2xl font-semibold tracking-tight">12.1%</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-surface-highest text-on-surface border border-outline-variant w-fit">Healthy</span></div>
-        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">Risk Rating</p><h3 class="text-2xl font-semibold tracking-tight">4/10</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">Low Risk ✓</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">P/E Ratio<button class="info-btn" onclick="showInfo('pe_ratio')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">23.4</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-surface-highest text-on-surface border border-outline-variant w-fit">Fairly Valued</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">ROE<button class="info-btn" onclick="showInfo('roe')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">18.2%</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">Good ✓</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">Debt / Equity<button class="info-btn" onclick="showInfo('de_ratio')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">0.42</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">Low Debt ✓</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">Revenue Growth<button class="info-btn" onclick="showInfo('rev_growth')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">14.2%</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">Strong ✓</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">Profit Margin<button class="info-btn" onclick="showInfo('profit_margin')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">12.1%</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-surface-highest text-on-surface border border-outline-variant w-fit">Healthy</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">Risk Rating<button class="info-btn" onclick="showInfo('risk_rating')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">4/10</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">Low Risk ✓</span></div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -439,7 +439,7 @@
       </div>
 
       <div class="bg-surface-lowest border border-outline-variant rounded-card overflow-hidden">
-        <div class="px-8 py-5 border-b border-outline-variant"><h3 class="font-semibold text-lg tracking-tight">Peer Comparison</h3></div>
+        <div class="px-8 py-5 border-b border-outline-variant"><h3 class="font-semibold text-lg tracking-tight">Peer Comparison<button class="info-btn" onclick="showInfo('peer_compare')">i</button></h3></div>
         <table class="w-full text-sm">
           <thead><tr class="text-[11px] uppercase tracking-widest text-muted">
             <th class="text-left font-bold px-8 py-3">Stock</th><th class="text-right font-bold px-4 py-3">ROE%</th><th class="text-right font-bold px-4 py-3">Margin%</th><th class="text-right font-bold px-4 py-3">D/E</th><th class="text-right font-bold px-8 py-3">Moat</th>
@@ -522,7 +522,7 @@
       <div class="bg-green-50 border border-green-200 rounded-card p-8 flex items-start gap-4">
         <span class="material-symbols-outlined text-3xl text-green-600">check_circle</span>
         <div>
-          <h2 class="text-2xl font-semibold tracking-tight text-green-600 mb-1">No Drift Detected</h2>
+          <h2 class="text-2xl font-semibold tracking-tight text-green-600 mb-1">No Drift Detected<button class="info-btn" onclick="showInfo('drift')">i</button></h2>
           <p class="text-sm text-on-surface">Model is accurate. 30-day win rate 67% (floor 50%). PSI 0.04 — very stable.</p>
         </div>
       </div>
@@ -573,10 +573,10 @@
       </div>
 
       <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><p class="text-sm font-medium text-muted">Today FII</p><h3 class="text-xl font-semibold tracking-tight text-red-500">-₹842 Cr</h3><span class="text-xs text-muted">Selling</span></div>
-        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><p class="text-sm font-medium text-muted">Today DII</p><h3 class="text-xl font-semibold tracking-tight text-green-600">+₹1,230 Cr</h3><span class="text-xs text-muted">Buying ✓</span></div>
-        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><p class="text-sm font-medium text-muted">Net Flow</p><h3 class="text-xl font-semibold tracking-tight text-green-600">+₹388 Cr</h3><span class="text-xs text-muted">Positive ✓</span></div>
-        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><p class="text-sm font-medium text-muted">FII Streak</p><h3 class="text-xl font-semibold tracking-tight">3 days</h3><span class="text-xs text-muted">Selling streak</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><p class="text-sm font-medium text-muted">Today FII<button class="info-btn" onclick="showInfo('fii')">i</button></p><h3 class="text-xl font-semibold tracking-tight text-red-500">-₹842 Cr</h3><span class="text-xs text-muted">Selling</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><p class="text-sm font-medium text-muted">Today DII<button class="info-btn" onclick="showInfo('dii')">i</button></p><h3 class="text-xl font-semibold tracking-tight text-green-600">+₹1,230 Cr</h3><span class="text-xs text-muted">Buying ✓</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><p class="text-sm font-medium text-muted">Net Flow<button class="info-btn" onclick="showInfo('net_flow')">i</button></p><h3 class="text-xl font-semibold tracking-tight text-green-600">+₹388 Cr</h3><span class="text-xs text-muted">Positive ✓</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><p class="text-sm font-medium text-muted">FII Streak<button class="info-btn" onclick="showInfo('fii_streak')">i</button></p><h3 class="text-xl font-semibold tracking-tight">3 days</h3><span class="text-xs text-muted">Selling streak</span></div>
       </div>
 
       <div class="bg-surface-lowest border border-outline-variant rounded-card p-8">
@@ -601,16 +601,16 @@
 
       <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
         <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">India VIX<button class="info-btn" onclick="showInfo('india_vix')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">13.8</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">Calm ✓</span></div>
-        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">Put-Call Ratio</p><h3 class="text-2xl font-semibold tracking-tight">0.92</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-surface-highest text-on-surface border border-outline-variant w-fit">Neutral</span></div>
-        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">Delivery Vol %</p><h3 class="text-2xl font-semibold tracking-tight">58%</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">High Conviction</span></div>
-        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">Advance/Decline</p><h3 class="text-2xl font-semibold tracking-tight">1.42</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">Breadth Good ✓</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">Put-Call Ratio<button class="info-btn" onclick="showInfo('pcr')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">0.92</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-surface-highest text-on-surface border border-outline-variant w-fit">Neutral</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">Delivery Vol %<button class="info-btn" onclick="showInfo('delivery_vol')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">58%</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">High Conviction</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">Advance/Decline<button class="info-btn" onclick="showInfo('advance_decline')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">1.42</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">Breadth Good ✓</span></div>
       </div>
 
       <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-6">
         <h3 class="font-semibold text-lg tracking-tight">📊 Options Data — Max Pain &amp; IV Skew</h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="flex flex-col gap-1"><p class="text-sm text-muted">Max Pain (Nifty)</p><h4 class="text-xl font-semibold tracking-tight">₹22,900</h4><p class="text-xs text-muted">53 pts below spot</p></div>
-          <div class="flex flex-col gap-1"><p class="text-sm text-muted">IV Skew</p><h4 class="text-xl font-semibold tracking-tight text-green-600">+2.3%</h4><p class="text-xs text-muted">Calls pricier</p></div>
+          <div class="flex flex-col gap-1"><p class="text-sm text-muted">Max Pain (Nifty)<button class="info-btn" onclick="showInfo('max_pain')">i</button></p><h4 class="text-xl font-semibold tracking-tight">₹22,900</h4><p class="text-xs text-muted">53 pts below spot</p></div>
+          <div class="flex flex-col gap-1"><p class="text-sm text-muted">IV Skew<button class="info-btn" onclick="showInfo('iv_skew')">i</button></p><h4 class="text-xl font-semibold tracking-tight text-green-600">+2.3%</h4><p class="text-xs text-muted">Calls pricier</p></div>
           <div class="flex flex-col gap-1"><p class="text-sm text-muted">Expiry</p><h4 class="text-xl font-semibold tracking-tight">This Thursday</h4><p class="text-xs text-muted">3 days · F&amp;O Expiry</p></div>
         </div>
         <p class="text-sm text-muted leading-relaxed border-l-2 border-outline-variant pl-4">Spot (22,953) is above max pain (22,900) by 53 pts — market may drift toward max pain by Thursday. Positive IV skew means the options market expects upside (calls in demand). Delivery volume 58% confirms genuine buying, not intraday speculation.</p>
@@ -660,7 +660,7 @@
     <!-- ZAKAT -->
     <section data-panel="zakat" class="tab-panel flex-col gap-8">
       <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-1">
-        <h2 class="text-2xl font-semibold tracking-tight">🌙 Zakat Calculator <span class="text-muted font-medium text-lg">— Stock Portfolio</span></h2>
+        <h2 class="text-2xl font-semibold tracking-tight">🌙 Zakat Calculator<button class="info-btn" onclick="showInfo('zakat_explained')">i</button> <span class="text-muted font-medium text-lg">— Stock Portfolio</span></h2>
         <p class="text-sm text-muted">Calculate your annual Zakat obligation on equity investments · AAOIFI method</p>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
