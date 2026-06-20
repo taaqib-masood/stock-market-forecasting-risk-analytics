@@ -47,8 +47,9 @@
     backdrop-filter:blur(6px); align-items:center; justify-content:center; padding:24px; }
   .info-overlay.open { display:flex; }
   .info-card { position:relative; background:#fff; border:1px solid #e7e8ea; border-radius:24px;
-    padding:32px; max-width:440px; width:100%; color:#1c1b1b;
+    padding:32px; max-width:440px; width:100%; color:#1c1b1b; max-height:85vh; overflow-y:auto;
     animation:infoPop .22s cubic-bezier(.16,1,.3,1); }
+  .info-card.wide { max-width:520px; }
   @keyframes infoPop { from{ opacity:0; transform:translateY(8px) scale(.98);} to{ opacity:1; transform:none;} }
   .info-card-close { position:absolute; top:20px; right:20px; width:32px; height:32px; border-radius:9999px;
     background:#fcf8f8; border:1px solid #e7e8ea; color:#70757d; cursor:pointer; font-size:14px;
@@ -168,6 +169,9 @@
         </div>
         <div id="sigCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
       </div>
+
+      <!-- Paper Portfolio (live from window.DASH.portfolio) -->
+      <div id="portfolioPanel" class="flex flex-col gap-4"></div>
 
       <!-- Stats -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -1035,8 +1039,110 @@ function renderSignals(){
   box.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5';
   box.innerHTML = cards.map(signalCardHTML).join('');
 }
-function signalWhy(ticker){ /* per-signal "why" drawer — wired in B3 */ showInfo('ensemble'); }
+// ---- B3: per-signal "why" drawer (reuses the info overlay) ----
+const CRITERIA_META = {
+  rsi_healthy:  "RSI between 40–68 — momentum without being over-extended",
+  macd_bullish: "MACD histogram positive — trend turning up",
+  above_sma20:  "Price above its 20-day average — short-term uptrend",
+  above_sma50:  "Price above its 50-day average — medium-term uptrend",
+  volume_surge: "Volume ≥ 1.2× the 20-day average — real participation",
+  bb_position:  "Bollinger %B in 0.40–0.85 — mid-to-upper band, not stretched",
+  momentum:     "Positive 5-day return — recent strength",
+};
+function signalWhy(ticker){
+  const sig = DASH.signals || {};
+  const all = [...(sig.cards||[]), ...(sig.near_misses||[])];
+  const c = all.find(x=>x.ticker===ticker); if(!c) return;
+  const isNear = !(sig.cards||[]).some(x=>x.ticker===ticker);
+  const crit = c.criteria || {};
+  const pass = Object.values(crit).filter(Boolean).length, tot = Object.keys(crit).length||7;
+  const rows = Object.keys(CRITERIA_META).map(k=>{
+    const ok = !!crit[k];
+    return `<li class="flex items-start gap-2 py-1.5 border-b border-outline-variant last:border-0">
+      <span class="${ok?'text-green-600':'text-red-500'} font-bold mt-px">${ok?'✓':'✗'}</span>
+      <span class="text-sm ${ok?'text-on-surface':'text-muted'}">${CRITERIA_META[k]}</span></li>`;
+  }).join('');
+  // Gates: cards in `cards` cleared all of them; near_misses didn't reach threshold
+  const r = sig.regime||{};
+  const gateRows = [
+    ['Regime', `${r.name||'?'} — scan active`, true],
+    ['Sector rotation', `${(sig.sectors||[]).join(' / ')||'top sectors'}`, true],
+    ['Multi-timeframe', 'daily + weekly agree', !isNear],
+    [`Score ≥ ${r.min_score||57}`, `scored ${c.score}`, c.score>=(r.min_score||57)],
+    ['Risk/Reward ≥ 2.0', `${c.rr}:1`, c.rr>=2.0],
+  ].map(([g,v,ok])=>`<div class="flex items-center justify-between text-xs py-1">
+      <span class="text-muted">${g}</span>
+      <span class="flex items-center gap-1.5 ${ok?'text-on-surface':'text-red-500'}">${v} <span class="${ok?'text-green-600':'text-red-500'}">${ok?'✓':'✗'}</span></span></div>`).join('');
+
+  document.getElementById('infoCard').classList.add('wide');
+  document.getElementById('infoIcon').textContent = isNear ? '⚠️' : '📈';
+  document.getElementById('infoCategory').textContent = isNear ? 'Near miss · not actionable' : 'Signal breakdown · BUY';
+  document.getElementById('infoTitle').textContent = `${c.ticker} — score ${c.score}`;
+  document.getElementById('infoDesc').innerHTML =
+    `<p class="text-sm text-muted mb-2">${pass}/${tot} bullish criteria fired:</p>
+     <ul class="mb-4">${rows}</ul>
+     <p class="text-xs font-semibold uppercase tracking-wider text-muted mb-1">Gates</p>
+     <div class="mb-4">${gateRows}</div>
+     <div class="grid grid-cols-3 gap-2 text-center bg-surface rounded-2xl p-3 border border-outline-variant">
+       <div><p class="text-[10px] uppercase text-muted">Entry</p><p class="text-sm font-semibold">${inr(c.entry)}</p></div>
+       <div><p class="text-[10px] uppercase text-muted">Stop</p><p class="text-sm font-semibold text-red-500">${inr(c.stop)}</p></div>
+       <div><p class="text-[10px] uppercase text-muted">Target</p><p class="text-sm font-semibold text-green-600">${inr(c.target)}</p></div>
+     </div>`;
+  const rule = document.getElementById('infoRule');
+  rule.style.display = '';
+  rule.innerHTML = `📌 <strong>GTT OCO:</strong> buy ${c.shares} @ ${inr(c.entry)} (${c.cap_pct}% cap), then set stop-leg trigger ${inr(c.stop_trigger)} / target-leg trigger ${inr(c.target_trigger)}. Risk ${inr(c.risk_rs)} → reward ${inr(c.reward_rs)}.`;
+  document.getElementById('infoOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+// reset the wide class when closing so plain info popups stay narrow
+const _closeInfoCardOrig = closeInfoCard;
+closeInfoCard = function(){ document.getElementById('infoCard').classList.remove('wide'); _closeInfoCardOrig(); };
 renderSignals();
+
+// ---- B2: Paper Portfolio panel (live from window.DASH.portfolio) ----
+function renderPortfolio(){
+  const box = document.getElementById('portfolioPanel'); if(!box) return;
+  const p = DASH.portfolio || {}; const marked = p.marked || {}; const st = p.stats || {};
+  const positions = Object.entries(marked);
+  const pnlCol = (v)=> v>0?'text-green-600':(v<0?'text-red-500':'text-on-surface');
+  const sign = (v)=> (v>0?'+':'') + inr(v);
+  // exposure = invested fraction of total
+  const exposure = p.total_val ? Math.round((p.positions_val/p.total_val)*100) : 0;
+  if(!positions.length){
+    box.innerHTML = `<div class="bg-surface-lowest border border-outline-variant rounded-card p-8">
+      <div class="flex items-center justify-between"><h2 class="text-2xl font-semibold tracking-tight">Paper Portfolio</h2>
+        <span class="text-xs text-muted">${inr(p.cash||0)} cash · fully in cash</span></div>
+      <p class="text-sm text-muted mt-2">No open positions. The auto-trader places paper trades from the top signals — run <code class="text-xs">python -m src.paper_trader --buy</code> or wait for the next scan.</p></div>`;
+    return;
+  }
+  const rows = positions.map(([t,m])=>`<tr class="border-b border-outline-variant last:border-0">
+    <td class="py-3 font-semibold">${t}</td>
+    <td class="py-3 text-right text-muted">${m.shares}</td>
+    <td class="py-3 text-right text-muted">${inr(m.avg_entry)}</td>
+    <td class="py-3 text-right">${inr(m.current_price)}</td>
+    <td class="py-3 text-right font-medium">${inr(m.market_value)}</td>
+    <td class="py-3 text-right font-semibold ${pnlCol(m.unrealised)}">${sign(m.unrealised)} <span class="text-xs font-normal">(${m.unrealised_pct>0?'+':''}${m.unrealised_pct}%)</span></td>
+  </tr>`).join('');
+  box.innerHTML = `
+    <div class="flex items-center justify-between flex-wrap gap-2">
+      <h2 class="text-2xl font-semibold tracking-tight">Paper Portfolio<button class="info-btn" onclick="showInfo('portfolio')">i</button></h2>
+      <span class="text-xs text-muted">${positions.length} open · ${st.win_rate!=null?st.win_rate+'% win rate ('+st.wins+'/'+st.total_trades+')':''}</span>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-5"><p class="text-sm text-muted">Total Value</p><p class="text-2xl font-bold tracking-tight mt-1">${inr(p.total_val)}</p></div>
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-5"><p class="text-sm text-muted">Total P&L</p><p class="text-2xl font-bold tracking-tight mt-1 ${pnlCol(p.total_pnl)}">${sign(p.total_pnl)}<span class="text-sm font-medium ml-1">${p.total_pnl_pct>0?'+':''}${p.total_pnl_pct}%</span></p></div>
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-5"><p class="text-sm text-muted">Cash</p><p class="text-2xl font-bold tracking-tight mt-1">${inr(p.cash)}</p></div>
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-5"><p class="text-sm text-muted">Exposure</p><p class="text-2xl font-bold tracking-tight mt-1">${exposure}%</p>
+        <div class="h-1.5 rounded-pill bg-surface-highest overflow-hidden mt-2"><div class="h-full bg-primary rounded-pill" style="width:${exposure}%"></div></div></div>
+    </div>
+    <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead><tr class="text-xs uppercase tracking-wider text-muted text-right"><th class="text-left font-medium pb-2">Stock</th><th class="font-medium pb-2">Shares</th><th class="font-medium pb-2">Avg Entry</th><th class="font-medium pb-2">Current</th><th class="font-medium pb-2">Value</th><th class="font-medium pb-2">Unrealised</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+}
+renderPortfolio();
 </script>
 
 <!-- Info (ⓘ) modal overlay — Boro-skinned -->
