@@ -424,6 +424,15 @@
       </div>
     </section>
 
+    <!-- 52 FEATURES -->
+    <section data-panel="features" class="tab-panel flex-col gap-10">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex items-center justify-between flex-wrap gap-3">
+        <h2 class="text-2xl font-semibold tracking-tight">52 AI Features</h2>
+        <span class="text-xs font-semibold px-3 py-1 rounded-pill bg-secondary/10 text-secondary border border-secondary/20">Halal Only</span>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="featGroups"></div>
+    </section>
+
     <!-- Other tabs (porting in progress) -->
     <section data-panel="placeholder" class="tab-panel flex-col gap-6">
       <div class="bg-surface-lowest border border-outline-variant rounded-card p-12 flex flex-col items-center text-center gap-3">
@@ -484,6 +493,20 @@ document.getElementById('confList').innerHTML = CONF.map(([m,p],i)=>{
     <div class="flex justify-between text-sm"><span class="${final?'font-semibold':'text-muted'}">${m}</span><span class="font-semibold">${p}%</span></div>
     <div class="h-2 rounded-pill bg-surface-highest overflow-hidden"><div class="h-full ${final?'bg-primary':'bg-secondary'} rounded-pill" style="width:${p}%"></div></div>
   </div>`;}).join('');
+
+// ---- 52 Features groups ----
+const FEATS = {
+  "Momentum": ["RSI 14","RSI 7","RSI 21","MACD","MACD Signal","MACD Histogram","ROC 5","ROC 10","ROC 20","Williams %R"],
+  "Trend": ["Price vs SMA20","Price vs SMA50","Price vs SMA200","SMA5 vs SMA20","Golden Cross","SMA200 Slope"],
+  "Volatility": ["ATR %","Volatility 5d","Volatility 10d","Volatility 20d","BB Width","BB %B"],
+  "Volume": ["Volume Ratio","Volume Z-Score","OBV","MFI 14","CMF 20"],
+  "Calendar": ["Day of Week","Month","Days to Expiry","Holiday Proximity"],
+};
+document.getElementById('featGroups').innerHTML = Object.entries(FEATS).map(([g,fs])=>`
+  <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-4">
+    <div class="flex items-center justify-between"><h3 class="font-semibold tracking-tight">${g}</h3><span class="text-xs text-muted font-medium">${fs.length} features</span></div>
+    <div class="flex flex-wrap gap-2">${fs.map(f=>`<span class="text-xs font-medium px-3 py-1.5 rounded-pill bg-surface text-on-surface border border-outline-variant">${f}</span>`).join('')}</div>
+  </div>`).join('');
 
 // ---- Drift KS-test table ----
 const DRIFT = [["RSI 14",0.08,0.24,0.02,"Stable"],["MACD",0.09,0.18,0.03,"Stable"],["Volume Ratio",0.16,0.04,0.12,"Slight"],["VIX Close",0.12,0.09,0.08,"Slight"],["BB Width",0.07,0.31,0.01,"Stable"]];
