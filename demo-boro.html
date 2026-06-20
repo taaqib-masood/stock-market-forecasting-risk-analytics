@@ -382,6 +382,27 @@
       </div>
     </section>
 
+    <!-- MONTE CARLO -->
+    <section data-panel="montecarlo" class="tab-panel flex-col gap-10">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-2">
+        <h2 class="text-2xl font-semibold tracking-tight">Monte Carlo Simulation <span class="text-muted font-medium text-lg">— 1,000 Runs</span></h2>
+        <p class="text-sm text-muted">Chance of ending profitable: <strong class="text-green-600">78%</strong> · Median outcome: <strong class="text-green-600">+12.4%</strong></p>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><p class="text-xs font-semibold uppercase tracking-widest text-muted">Worst 5%</p><h3 class="text-xl font-semibold tracking-tight">₹86,200</h3><span class="text-sm font-semibold text-red-500">-13.8%</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><p class="text-xs font-semibold uppercase tracking-widest text-muted">Bad Case 25%</p><h3 class="text-xl font-semibold tracking-tight">₹95,800</h3><span class="text-sm font-semibold text-red-500">-4.2%</span></div>
+        <div class="bg-surface-lowest border-2 border-primary rounded-card p-6 flex flex-col gap-1"><p class="text-xs font-semibold uppercase tracking-widest text-primary">Median</p><h3 class="text-xl font-bold tracking-tight">₹1,12,400</h3><span class="text-sm font-semibold text-green-600">+12.4%</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><p class="text-xs font-semibold uppercase tracking-widest text-muted">Good Case 75%</p><h3 class="text-xl font-semibold tracking-tight">₹1,28,600</h3><span class="text-sm font-semibold text-green-600">+28.6%</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><p class="text-xs font-semibold uppercase tracking-widest text-muted">Best 5%</p><h3 class="text-xl font-semibold tracking-tight">₹1,64,200</h3><span class="text-sm font-semibold text-green-600">+64.2%</span></div>
+      </div>
+
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8">
+        <h3 class="font-semibold text-lg tracking-tight mb-6">Outcome Distribution</h3>
+        <div class="w-full h-72"><canvas id="mcChart"></canvas></div>
+      </div>
+    </section>
+
     <!-- Other tabs (porting in progress) -->
     <section data-panel="placeholder" class="tab-panel flex-col gap-6">
       <div class="bg-surface-lowest border border-outline-variant rounded-card p-12 flex flex-col items-center text-center gap-3">
@@ -443,6 +464,23 @@ document.getElementById('confList').innerHTML = CONF.map(([m,p],i)=>{
     <div class="h-2 rounded-pill bg-surface-highest overflow-hidden"><div class="h-full ${final?'bg-primary':'bg-secondary'} rounded-pill" style="width:${p}%"></div></div>
   </div>`;}).join('');
 
+// ---- Lazy charts (canvases hidden at load → draw on first show) ----
+const drawn = {};
+function drawMC(){
+  if(drawn.mc) return; drawn.mc = true;
+  const bins=[76,82,88,94,100,106,112,118,124,130,136,142,148,154,160,166];
+  const counts=[8,18,42,76,110,148,168,152,128,78,44,22,14,8,4,2];
+  const colors=bins.map(b=> b<100 ? 'rgba(239,68,68,.8)' : 'rgba(34,197,94,.8)');
+  new Chart(document.getElementById('mcChart'),{ type:'bar',
+    data:{ labels:bins.map(b=>'₹'+b+'K'), datasets:[{ data:counts, backgroundColor:colors, borderRadius:5, borderSkipped:false }] },
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label:c=>c.parsed.y+' simulations' } } },
+      scales:{ x:{ grid:{display:false}, ticks:{ color:'#70757d', font:{size:10}, maxRotation:0 } },
+               y:{ grid:{ color:'#e7e8ea' }, ticks:{ color:'#70757d', font:{size:10} } } } }
+  });
+}
+const lazyCharts = { montecarlo: drawMC };
+
 // ---- Nav switching (generic: any [data-panel] shows; else placeholder) ----
 const phPanel = document.querySelector('[data-panel="placeholder"]');
 document.getElementById('nav').addEventListener('click', e=>{
@@ -452,7 +490,7 @@ document.getElementById('nav').addEventListener('click', e=>{
   const tab = btn.dataset.tab;
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   const panel = document.querySelector('[data-panel="'+tab+'"]');
-  if(panel){ panel.classList.add('active'); }
+  if(panel){ panel.classList.add('active'); if(lazyCharts[tab]) lazyCharts[tab](); }
   else { document.getElementById('phTitle').textContent = btn.querySelector('span:last-child').textContent; phPanel.classList.add('active'); }
   window.scrollTo(0,0);
 });
