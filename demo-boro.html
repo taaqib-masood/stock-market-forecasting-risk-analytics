@@ -560,6 +560,30 @@
       </div>
     </section>
 
+    <!-- RISK GUARD -->
+    <section data-panel="riskguard" class="tab-panel flex-col gap-8">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-1">
+        <h2 class="text-2xl font-semibold tracking-tight">🛡️ Drawdown Guard — "Why I de-risked"</h2>
+        <p class="text-sm text-muted">The passive overlay scales basket exposure by how far Nifty is below its recent peak — and explains every move.</p>
+      </div>
+
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-6">
+        <div class="flex justify-between items-baseline">
+          <label class="text-sm font-semibold text-muted">Nifty drawdown from peak</label>
+          <span id="ddVal" class="text-2xl font-bold tracking-tight">−4%</span>
+        </div>
+        <input id="ddSlider" type="range" min="0" max="35" value="4" oninput="renderRiskGuard()" class="w-full accent-primary cursor-pointer">
+        <div class="flex justify-between text-[11px] text-muted"><span>0% (peak)</span><span>−8% de-risk</span><span>−20% floor</span><span>−35%</span></div>
+        <div id="ddGuardCard"></div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><h4 class="font-semibold tracking-tight text-sm">🟢 Above −8% — fully invested</h4><p class="text-sm text-muted">Ordinary dips aren't worth timing. Stay 100% in the basket so you never miss the snap-back recoveries that punish market-timers.</p></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><h4 class="font-semibold tracking-tight text-sm">🟡 −8% to −20% — de-risking</h4><p class="text-sm text-muted">Exposure scales down linearly as the drawdown deepens. Each step to cash is a graded response, not a panic switch — avoiding binary-rule whipsaw.</p></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><h4 class="font-semibold tracking-tight text-sm">🔴 Below −20% — 30% floor</h4><p class="text-sm text-muted">Catastrophic-crash mode: cut to the 30% floor as insurance. Never zero — long-only, and calling the exact bottom is a loser's game.</p></div>
+      </div>
+    </section>
+
     <!-- Other tabs (porting in progress) -->
     <section data-panel="placeholder" class="tab-panel flex-col gap-6">
       <div class="bg-surface-lowest border border-outline-variant rounded-card p-12 flex flex-col items-center text-center gap-3">
@@ -620,6 +644,36 @@ document.getElementById('confList').innerHTML = CONF.map(([m,p],i)=>{
     <div class="flex justify-between text-sm"><span class="${final?'font-semibold':'text-muted'}">${m}</span><span class="font-semibold">${p}%</span></div>
     <div class="h-2 rounded-pill bg-surface-highest overflow-hidden"><div class="h-full ${final?'bg-primary':'bg-secondary'} rounded-pill" style="width:${p}%"></div></div>
   </div>`;}).join('');
+
+// ---- Risk Guard (drawdown overlay) ----
+function ddState(dd){
+  if(dd < 8) return { status:"FULLY INVESTED", exp:100, cash:0 };
+  if(dd >= 20) return { status:"MAX DEFENSIVE", exp:30, cash:70 };
+  const exp = Math.round(100 - (dd-8)/12*70);
+  return { status:"DE-RISKING", exp, cash:100-exp };
+}
+function renderRiskGuard(){
+  const dd = parseInt(document.getElementById('ddSlider').value,10);
+  document.getElementById('ddVal').textContent = `−${dd}%`;
+  const s = ddState(dd), cap=50000;
+  const icon = {"FULLY INVESTED":"🟢","DE-RISKING":"🟡","MAX DEFENSIVE":"🔴"}[s.status];
+  const bg = s.status==="FULLY INVESTED"?'bg-green-50 border-green-200':(s.status==="DE-RISKING"?'bg-surface-highest border-outline-variant':'bg-red-50 border-red-200');
+  let reason;
+  if(s.status==="FULLY INVESTED") reason=`Nifty 50 is ${dd}% off its recent peak — shallower than the 8% de-risk line. Holding the basket in full; ordinary dips aren't worth timing.`;
+  else if(s.status==="MAX DEFENSIVE") reason=`Nifty 50 is ${dd}% off its peak — past the 20% catastrophic line. Exposure cut to the 30% floor; ${s.cash}% parked in cash as crash insurance.`;
+  else reason=`Nifty 50 is ${dd}% off its peak — inside the de-risk band (8% to 20%). Trimmed to ${s.exp}% invested, ${s.cash}% in cash, scaling further if the drawdown deepens.`;
+  const invested=Math.round(cap*s.exp/100), cash=cap-invested, inr=v=>'₹'+v.toLocaleString('en-IN');
+  document.getElementById('ddGuardCard').innerHTML = `
+    <div class="rounded-card p-6 border ${bg} flex flex-col gap-4">
+      <div class="flex items-center justify-between"><span class="text-lg font-bold">${icon} ${s.status}</span><span class="text-sm font-semibold">${s.exp}% invested</span></div>
+      <p class="text-sm text-on-surface leading-relaxed">${reason}</p>
+      <div class="flex gap-8 pt-3 border-t border-outline-variant">
+        <div><p class="text-xs text-muted mb-1">Invested</p><p class="text-lg font-semibold">${inr(invested)}</p></div>
+        <div><p class="text-xs text-muted mb-1">Cash</p><p class="text-lg font-semibold">${inr(cash)}</p></div>
+        <div><p class="text-xs text-muted mb-1">Exposure</p><p class="text-lg font-semibold">${s.exp}%</p></div>
+      </div>
+    </div>`;
+}
 
 // ---- Halal Screen (AAOIFI) ----
 const HALAL_DATA = (window.HALAL_DASH && window.HALAL_DASH.data) || {};
@@ -778,7 +832,7 @@ function drawFII(){
                y:{ grid:{ color:'#e7e8ea' }, ticks:{ color:'#70757d', font:{size:11}, callback:v=>'₹'+v } } } }
   });
 }
-const lazyCharts = { montecarlo: drawMC, fiidii: drawFII, halal: initHalal };
+const lazyCharts = { montecarlo: drawMC, fiidii: drawFII, halal: initHalal, riskguard: renderRiskGuard };
 
 // ---- Nav switching (generic: any [data-panel] shows; else placeholder) ----
 const phPanel = document.querySelector('[data-panel="placeholder"]');
