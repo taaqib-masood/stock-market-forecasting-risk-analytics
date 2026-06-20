@@ -76,6 +76,13 @@
   @keyframes featIn { from{ opacity:0; transform:translateY(6px);} to{ opacity:1; transform:none;} }
   .feat-chip { animation:featIn .35s ease backwards; transition:border-color .15s ease, transform .15s ease, box-shadow .15s ease; }
   .feat-chip:hover { transform:translateY(-2px); }
+  /* ── Live pulse dot (sentiment header) ── */
+  .pulse-dot { width:8px; height:8px; border-radius:9999px; background:#16a34a; position:relative; flex:none; }
+  .pulse-dot::after { content:''; position:absolute; inset:0; border-radius:9999px; background:#16a34a; animation:pulseRing 1.8s ease-out infinite; }
+  @keyframes pulseRing { 0%{ transform:scale(1); opacity:.55;} 100%{ transform:scale(3.4); opacity:0;} }
+  .sent-range.on { background:#080909; color:#fff; border-color:#080909; }
+  #sentDist .seg { transition:opacity .15s ease; }
+  #sentDist .seg.dim { opacity:.35; }
 </style>
 </head>
 <body class="bg-surface text-on-surface min-h-screen">
@@ -202,12 +209,23 @@
 
       <!-- News Sentiment -->
       <div class="bg-surface-lowest border border-outline-variant rounded-card overflow-hidden flex flex-col">
-        <div class="p-8 border-b border-outline-variant">
-          <div class="flex justify-between items-center mb-6">
-            <h3 class="font-semibold text-xl tracking-tight">Market Sentiment Pulse</h3>
-            <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-green-500"></span><span class="text-sm font-medium text-muted">Bullish Bias</span></div>
+        <div class="p-8 border-b border-outline-variant flex flex-col gap-6">
+          <div class="flex justify-between items-center">
+            <h3 class="font-semibold text-xl tracking-tight">Market Sentiment Pulse<button class="info-btn" onclick="showInfo('sentiment_score')">i</button></h3>
+            <div class="flex items-center gap-2"><span class="pulse-dot"></span><span class="text-sm font-medium text-muted">Live · Bullish Bias</span></div>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="bg-surface border border-outline-variant rounded-2xl p-4"><p class="text-xs text-muted">Sentiment Score</p><p class="text-2xl font-bold tracking-tight count-up" data-target="86" data-suffix="%">0%</p></div>
+            <div class="bg-surface border border-outline-variant rounded-2xl p-4"><p class="text-xs text-muted">7-day change</p><p class="text-2xl font-bold tracking-tight text-green-600 count-up" data-target="14" data-prefix="+" data-suffix="%">+0%</p></div>
+            <div class="bg-surface border border-outline-variant rounded-2xl p-4"><p class="text-xs text-muted">News today</p><p class="text-2xl font-bold tracking-tight count-up" data-target="47">0</p></div>
+            <div class="bg-surface border border-outline-variant rounded-2xl p-4"><p class="text-xs text-muted">Bull / Bear</p><p class="text-2xl font-bold tracking-tight text-green-600">68<span class="text-base text-muted font-medium">/32</span></p></div>
+          </div>
+          <div class="flex items-center justify-between flex-wrap gap-3">
+            <div class="flex gap-2" id="sentRange"></div>
+            <span id="sentRangeLabel" class="text-xs text-muted"></span>
           </div>
           <div class="w-full h-56"><canvas id="sentChart"></canvas></div>
+          <div id="sentDist" class="flex flex-col gap-3"></div>
         </div>
         <div class="flex flex-col" id="newsList"></div>
       </div>
@@ -721,30 +739,77 @@ const NEWS = [
   ["Bloomberg", "Indian markets remain resilient despite slight global tech sector sell-off.",          "Neutral"],
   ["Mint",      "Energy sector faces headwinds as crude prices show unexpected volatility.",            "Negative"],
   ["CNBC",      "Reliance Jio 5G rollout hits new milestone with 100M active subscribers.",             "Positive"],
+  ["ET Markets","FII inflows turn positive for the third straight session on financials.",             "Positive"],
+  ["Moneycontrol","IT majors cautious on FY guidance amid weak US discretionary spend.",               "Negative"],
+  ["Business Std","RBI holds rates; commentary read as neutral-to-dovish by the street.",              "Neutral"],
+  ["Reuters",   "Auto sales beat estimates as festive demand lifts two-wheeler volumes.",              "Positive"],
+  ["Bloomberg", "Crude above $90 keeps OMC margins under pressure, analysts flag risk.",               "Negative"],
 ];
 const badge = { Positive:"bg-green-50 text-green-600 border-green-200", Neutral:"bg-surface-highest text-on-surface border-outline-variant", Negative:"bg-red-50 text-red-500 border-red-200" };
-document.getElementById('newsList').innerHTML = NEWS.map(([src,head,tag],i)=>`
-  <div class="px-8 py-5 ${i<NEWS.length-1?'border-b border-outline-variant':''} flex gap-4 items-center hover:bg-surface-low transition-colors group cursor-pointer">
-    <span class="text-xs font-bold uppercase tracking-widest w-24 text-muted flex-shrink-0">${src}</span>
-    <p class="text-sm font-medium flex-grow group-hover:text-secondary transition-colors">${head}</p>
-    <span class="text-xs font-semibold px-3 py-1 rounded-pill border flex-shrink-0 ${badge[tag]}">${tag}</span>
-  </div>`).join('');
+let newsFilter = 'All';
+function renderNews(){
+  const list = NEWS.filter(n=>newsFilter==='All'||n[2]===newsFilter);
+  document.getElementById('newsList').innerHTML = list.map(([src,head,tag],i)=>`
+    <div class="px-8 py-5 ${i<list.length-1?'border-b border-outline-variant':''} flex gap-4 items-center hover:bg-surface-low transition-colors group cursor-pointer">
+      <span class="text-xs font-bold uppercase tracking-widest w-24 text-muted flex-shrink-0">${src}</span>
+      <p class="text-sm font-medium flex-grow group-hover:text-secondary transition-colors">${head}</p>
+      <span class="text-xs font-semibold px-3 py-1 rounded-pill border flex-shrink-0 ${badge[tag]}">${tag}</span>
+    </div>`).join('') || `<div class="px-8 py-6 text-sm text-muted">No ${newsFilter.toLowerCase()} headlines right now.</div>`;
+}
 
-// ---- Sentiment chart (live Chart.js) ----
-const sent = [0.30,0.28,0.34,0.31,0.26,0.29,0.38,0.45,0.52,0.58,0.55,0.50,0.54,0.60,0.57,0.53,0.56,0.62,0.66,0.63,0.61,0.64,0.68,0.72,0.70,0.74,0.78,0.82,0.80,0.86];
-(function(){
-  const ctx = document.getElementById('sentChart');
+// ---- Sentiment distribution bar (clickable → filters news) ----
+function renderSentDist(){
+  const counts = { Positive:0, Neutral:0, Negative:0 };
+  NEWS.forEach(n=>counts[n[2]]++);
+  const total = NEWS.length;
+  const col = { Positive:'#16a34a', Neutral:'#70757d', Negative:'#ef4444' };
+  const bar = ['Positive','Neutral','Negative'].map(k=>
+    `<div class="seg ${newsFilter!=='All'&&newsFilter!==k?'dim':''}" onclick="newsFilter=(newsFilter==='${k}'?'All':'${k}');renderNews();renderSentDist();" title="${k}: ${counts[k]} of ${total}" style="width:${counts[k]/total*100}%;background:${col[k]};cursor:pointer"></div>`).join('');
+  const legend = ['Positive','Neutral','Negative'].map(k=>
+    `<button onclick="newsFilter=(newsFilter==='${k}'?'All':'${k}');renderNews();renderSentDist();" class="flex items-center gap-1.5 text-xs ${newsFilter===k?'font-semibold text-on-surface':'text-muted'} hover:text-on-surface transition-colors">
+      <span class="w-2.5 h-2.5 rounded-full" style="background:${col[k]}"></span>${k} ${counts[k]}</button>`).join('');
+  document.getElementById('sentDist').innerHTML =
+    `<div class="flex h-2.5 rounded-pill overflow-hidden bg-surface-highest">${bar}</div>
+     <div class="flex items-center gap-4 flex-wrap">${legend}${newsFilter!=='All'?`<button onclick="newsFilter='All';renderNews();renderSentDist();" class="text-xs text-secondary hover:underline">clear filter</button>`:''}</div>`;
+}
+
+// ---- Sentiment chart (live Chart.js, multi-timeframe + tooltips) ----
+const SENT_90 = Array.from({length:90},(_,i)=>{ const base=0.25+(i/89)*0.6; const noise=Math.sin(i/3)*0.03+((i%5)-2)*0.008; return Math.max(0.05,Math.min(0.98,+(base+noise).toFixed(3))); });
+const SENT_SERIES = { '7D':SENT_90.slice(-7), '30D':SENT_90.slice(-30), '90D':SENT_90 };
+let sentChartObj = null, sentRange = '30D';
+function drawSent(){
+  const ctx = document.getElementById('sentChart'); if(!ctx) return;
+  const data = SENT_SERIES[sentRange];
+  if(sentChartObj) sentChartObj.destroy();
   const g = ctx.getContext('2d').createLinearGradient(0,0,0,224);
   g.addColorStop(0,'rgba(8,9,9,0.10)'); g.addColorStop(1,'rgba(8,9,9,0)');
-  new Chart(ctx, {
-    type:'line',
-    data:{ labels: sent.map((_,i)=>i), datasets:[{ data: sent, borderColor:'#080909', borderWidth:1.5,
-      fill:true, backgroundColor:g, tension:0.45, pointRadius:0 }] },
-    options:{ responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false}, tooltip:{enabled:false} },
+  sentChartObj = new Chart(ctx,{ type:'line',
+    data:{ labels:data.map((_,i)=>'D-'+(data.length-i)), datasets:[{ data, borderColor:'#080909', borderWidth:1.5,
+      fill:true, backgroundColor:g, tension:0.4, pointRadius:0, pointHoverRadius:4, pointHoverBackgroundColor:'#080909' }] },
+    options:{ responsive:true, maintainAspectRatio:false, animation:{ duration:900, easing:'easeOutCubic' },
+      interaction:{ intersect:false, mode:'index' },
+      plugins:{ legend:{display:false}, tooltip:{ enabled:true, displayColors:false,
+        backgroundColor:'#080909', padding:10, cornerRadius:10,
+        callbacks:{ title:items=>items[0].label, label:c=>'Sentiment '+Math.round(c.parsed.y*100)+'%' } } },
       scales:{ x:{ display:false }, y:{ display:false, min:0, max:1 } } }
   });
-})();
+  document.getElementById('sentRangeLabel').textContent = data.length+' sessions · '+Math.round(data[data.length-1]*100)+'% now';
+}
+function renderSentRange(){
+  document.getElementById('sentRange').innerHTML = ['7D','30D','90D'].map(r=>
+    `<button onclick="sentRange='${r}';drawSent();renderSentRange()" class="sent-range text-xs font-medium px-3 py-1.5 rounded-pill border border-outline-variant bg-surface text-muted hover:border-primary transition-colors ${r===sentRange?'on':''}">${r}</button>`).join('');
+}
+// count-up animation for the stat chips
+function runCountUps(scope){
+  (scope||document).querySelectorAll('.count-up').forEach(el=>{
+    if(el.dataset.done) return; el.dataset.done='1';
+    const target=+el.dataset.target, pre=el.dataset.prefix||'', suf=el.dataset.suffix||'';
+    const t0=performance.now(), dur=900;
+    (function tick(now){ const p=Math.min(1,(now-t0)/dur); const v=Math.round(target*(1-Math.pow(1-p,3)));
+      el.textContent=pre+v+suf; if(p<1) requestAnimationFrame(tick); })(t0);
+  });
+}
+renderNews(); renderSentDist(); renderSentRange(); drawSent(); runCountUps();
 
 // ---- AI Explainer: SHAP + model confidence ----
 const SHAP = [["RSI 14",0.41,82],["MACD Histogram",0.35,70],["Sentiment",0.31,62],["VIX Regime",0.27,55],["BB %B",-0.13,25],["Volume Z-Score",-0.09,18]];
