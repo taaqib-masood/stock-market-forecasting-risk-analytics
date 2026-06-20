@@ -433,6 +433,33 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="featGroups"></div>
     </section>
 
+    <!-- FII/DII -->
+    <section data-panel="fiidii" class="tab-panel flex-col gap-10">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-2">
+        <h2 class="text-2xl font-semibold tracking-tight">Institutional Flow <span class="text-muted font-medium text-lg">— Last 7 Days</span></h2>
+        <p class="text-sm text-muted">Net FII: <strong class="text-red-500">-₹2,340 Cr</strong> · Net DII: <strong class="text-green-600">+₹3,870 Cr</strong> · DII absorbing FII selling</p>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><p class="text-sm font-medium text-muted">Today FII</p><h3 class="text-xl font-semibold tracking-tight text-red-500">-₹842 Cr</h3><span class="text-xs text-muted">Selling</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><p class="text-sm font-medium text-muted">Today DII</p><h3 class="text-xl font-semibold tracking-tight text-green-600">+₹1,230 Cr</h3><span class="text-xs text-muted">Buying ✓</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><p class="text-sm font-medium text-muted">Net Flow</p><h3 class="text-xl font-semibold tracking-tight text-green-600">+₹388 Cr</h3><span class="text-xs text-muted">Positive ✓</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><p class="text-sm font-medium text-muted">FII Streak</p><h3 class="text-xl font-semibold tracking-tight">3 days</h3><span class="text-xs text-muted">Selling streak</span></div>
+      </div>
+
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8">
+        <h3 class="font-semibold text-lg tracking-tight mb-6">7-Day FII vs DII Flows <span class="text-muted font-normal text-sm">(₹ Crore)</span></h3>
+        <div class="w-full h-72"><canvas id="fiiChart"></canvas></div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><h4 class="font-semibold tracking-tight text-sm">⚠️ FII Selling &gt; 3 Days</h4><p class="text-sm text-muted">Usually signals caution. If DII absorbs the selling the market holds up; if DII also pulls back, prepare for a correction.</p></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><h4 class="font-semibold tracking-tight text-sm">✅ DII &gt; FII Outflow</h4><p class="text-sm text-muted">Domestic institutions absorbing foreign selling = strong floor. India's structural advantage over other EMs.</p></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><h4 class="font-semibold tracking-tight text-sm">💡 Combined Net Flow</h4><p class="text-sm text-muted">When FII + DII net is positive, money is entering markets. 5+ sustained days = strong uptrend signal.</p></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><h4 class="font-semibold tracking-tight text-sm">📅 F&amp;O Expiry Effect</h4><p class="text-sm text-muted">FII flows turn volatile around NSE F&amp;O expiry (last Thursday). Don't over-react to single-day spikes.</p></div>
+      </div>
+    </section>
+
     <!-- Other tabs (porting in progress) -->
     <section data-panel="placeholder" class="tab-panel flex-col gap-6">
       <div class="bg-surface-lowest border border-outline-variant rounded-card p-12 flex flex-col items-center text-center gap-3">
@@ -535,7 +562,22 @@ function drawMC(){
                y:{ grid:{ color:'#e7e8ea' }, ticks:{ color:'#70757d', font:{size:10} } } } }
   });
 }
-const lazyCharts = { montecarlo: drawMC };
+function drawFII(){
+  if(drawn.fii) return; drawn.fii = true;
+  const days=['Mon','Tue','Wed','Thu','Fri','Mon','Tue'];
+  new Chart(document.getElementById('fiiChart'),{ type:'bar',
+    data:{ labels:days, datasets:[
+      { label:'FII', data:[-1240,820,-630,-1480,340,-2100,-842], backgroundColor:'rgba(239,68,68,.8)', borderRadius:5, borderSkipped:false },
+      { label:'DII', data:[980,1240,1560,2100,640,2840,1230], backgroundColor:'rgba(34,197,94,.8)', borderRadius:5, borderSkipped:false },
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ labels:{ color:'#70757d', font:{size:12}, usePointStyle:true, pointStyle:'circle', padding:16 } },
+                tooltip:{ callbacks:{ label:c=>c.dataset.label+': ₹'+Math.abs(c.parsed.y)+' Cr' } } },
+      scales:{ x:{ grid:{display:false}, ticks:{ color:'#70757d', font:{size:11} } },
+               y:{ grid:{ color:'#e7e8ea' }, ticks:{ color:'#70757d', font:{size:11}, callback:v=>'₹'+v } } } }
+  });
+}
+const lazyCharts = { montecarlo: drawMC, fiidii: drawFII };
 
 // ---- Nav switching (generic: any [data-panel] shows; else placeholder) ----
 const phPanel = document.querySelector('[data-panel="placeholder"]');
