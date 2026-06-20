@@ -114,6 +114,7 @@
     <button data-tab="halal" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">verified</span><span class="text-sm">Halal Screen</span></button>
     <button data-tab="riskguard" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">security</span><span class="text-sm">Risk Guard</span></button>
     <button data-tab="zakat" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">payments</span><span class="text-sm">Zakat</span></button>
+    <button data-tab="telegram" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">send</span><span class="text-sm">Telegram</span></button>
   </div>
 </nav>
 
@@ -724,6 +725,20 @@
       </div>
     </section>
 
+    <!-- TELEGRAM (bot notification mirror) -->
+    <section data-panel="telegram" class="tab-panel flex-col gap-6">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h2 class="text-2xl font-semibold tracking-tight">Telegram Alerts<button class="info-btn" onclick="showInfo('headlines')">i</button></h2>
+          <p class="text-sm text-muted mt-1">Exactly what the bot pushes to your phone — morning briefing, GTT orders, tier changes, exits.</p>
+        </div>
+        <span class="flex items-center gap-2 text-xs font-semibold px-3 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200"><span class="pulse-dot"></span>Bot connected</span>
+      </div>
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 md:p-8">
+        <div id="tgChat" class="flex flex-col gap-4 max-w-2xl mx-auto"></div>
+      </div>
+    </section>
+
     <!-- Other tabs (porting in progress) -->
     <section data-panel="placeholder" class="tab-panel flex-col gap-6">
       <div class="bg-surface-lowest border border-outline-variant rounded-card p-12 flex flex-col items-center text-center gap-3">
@@ -1203,7 +1218,7 @@ function drawEquity(){
                y:{ grid:{ color:'#e7e8ea' }, ticks:{ color:'#70757d', font:{size:10}, callback:v=>'₹'+(v/1000)+'K' } } } }
   });
 }
-const lazyCharts = { montecarlo: ()=>{ drawMC(); drawEquity(); }, fiidii: drawFII, halal: initHalal, riskguard: renderRiskGuard, features: renderFeats };
+const lazyCharts = { montecarlo: ()=>{ drawMC(); drawEquity(); }, fiidii: drawFII, halal: initHalal, riskguard: renderRiskGuard, features: renderFeats, telegram: renderTelegram };
 
 // ---- Nav switching (generic: any [data-panel] shows; else placeholder) ----
 const phPanel = document.querySelector('[data-panel="placeholder"]');
@@ -1448,6 +1463,43 @@ function renderAlerts(){
     </div>`;
 }
 renderAlerts();
+
+// ---- Telegram chat mirror: render bot pushes as chat bubbles ----
+function renderTelegram(){
+  const box = document.getElementById('tgChat'); if(!box) return;
+  const sig = DASH.signals || {}; const r = sig.regime || {};
+  const cards = sig.cards || []; const trades = ((DASH.portfolio||{}).trades||[]).slice().reverse();
+  const msgs = [];
+  // 1) morning briefing
+  msgs.push({ t:'9:00',
+    html:`<strong>☀️ Morning briefing</strong><br>Regime <strong>${r.name||'—'}</strong> · VIX ${r.vix??'—'} · max ${r.max_positions??'—'} positions today.${(sig.sectors&&sig.sectors.length)?` Favouring <strong>${sig.sectors.join(', ')}</strong>.`:''}` });
+  // 2) per-signal GTT pushes
+  if(cards.length){
+    cards.forEach((c,i)=> msgs.push({ t:'9:0'+(i+2), tone:'buy',
+      html:`<strong>🟢 BUY ${c.ticker}</strong> @ ${inr(c.entry)} · score ${c.score}<br>Stop ${inr(c.stop)} · Target ${inr(c.target)} · ${c.shares} sh (${c.cap_pct}% cap)<br><span class="text-muted">GTT OCO staged: stop-leg ${inr(c.stop_trigger)} / target-leg ${inr(c.target_trigger)}</span>` }));
+  } else {
+    msgs.push({ t:'9:02', html:`No signals cleared the gates today. Cash is a position — re-scan tomorrow at 9 AM.` });
+  }
+  // 3) tier-change alerts (or daily all-clear)
+  if(HALAL_ALERTS.length){
+    HALAL_ALERTS.forEach(a=> msgs.push({ t:'9:10', tone: a.worsened?'alert':'',
+      html:`<strong>⚠️ Halal tier change</strong><br>${a.from}→${a.to} ${a.ticker}${a.to==='🔴'?' — now NON-TRADEABLE, exit/avoid':''}` }));
+  } else {
+    msgs.push({ t:'9:10', html:`✅ No halal tier changes since the last quarterly screen — all holdings still compliant.` });
+  }
+  // 4) closed-trade exits
+  trades.forEach((tr,i)=> msgs.push({ t:'15:2'+i, tone: tr.pnl>=0?'buy':'alert',
+    html:`<strong>${tr.pnl>=0?'✅ Target hit':'🛑 Stopped out'}: ${tr.ticker}</strong><br>Exit ${inr(tr.exit)} · realised ${(tr.pnl>=0?'+':'')}${inr(tr.pnl)}` }));
+
+  const tone = { buy:'bg-green-50 border-green-200', alert:'bg-red-50 border-red-200', '':'bg-surface border-outline-variant' };
+  box.innerHTML = msgs.map(m=>`<div class="flex gap-3 items-end">
+      <span class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm flex-none">🤖</span>
+      <div class="flex flex-col gap-1 max-w-[82%]">
+        <div class="border ${tone[m.tone||'']} rounded-2xl rounded-bl-md px-4 py-3 text-sm leading-relaxed">${m.html}</div>
+        <span class="text-[10px] text-muted ml-1">Halal Trader Bot · ${m.t}</span>
+      </div></div>`).join('');
+}
+renderTelegram();
 </script>
 
 <!-- Info (ⓘ) modal overlay — Boro-skinned -->
