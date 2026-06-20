@@ -6,6 +6,7 @@
 <title>Stock AI Dashboard — Halal Portfolio</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="halal_data.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -538,6 +539,27 @@
       </div>
     </section>
 
+    <!-- HALAL SCREEN -->
+    <section data-panel="halal" class="tab-panel flex-col gap-8">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-1">
+        <h2 class="text-2xl font-semibold tracking-tight">🕌 Halal Screen — AAOIFI Shariah Compliance</h2>
+        <p class="text-sm text-muted">Real fundamentals · 84 NSE stocks screened · debt/assets &lt; 33% · interest income &lt; 5%</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-4">
+          <h3 class="font-semibold tracking-tight">Is this stock halal?</h3>
+          <input id="halalSearch" oninput="renderHalalLookup()" type="text" placeholder="Type a ticker — e.g. TCS, ADANIPORTS" class="bg-surface border border-outline-variant rounded-pill px-5 py-3 text-base font-medium focus:border-primary outline-none transition-colors">
+          <div class="flex flex-wrap gap-2" id="halalChips"></div>
+          <div id="halalResult"></div>
+        </div>
+        <div class="flex flex-col gap-6">
+          <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><h4 class="font-semibold tracking-tight text-sm">⚠️ Watchlist mislabels caught</h4><p class="text-sm text-muted">10 of 84 hand-curated "halal" names fail AAOIFI on real fundamentals — they were curated by sector/reputation, not actual ratios. The screen catches them.</p></div>
+          <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><h4 class="font-semibold tracking-tight text-sm">🧹 Dividend purification (auto)</h4><p class="text-sm text-muted">Even 🟢 stocks carry a sliver of interest income. Purify that % of dividends to charity so the gain is clean — looked up per-stock from cached fundamentals.</p></div>
+          <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-3"><h4 class="font-semibold tracking-tight text-sm">🔴 Names that fail the screen</h4><div class="flex flex-col gap-2" id="tierAlerts"></div></div>
+        </div>
+      </div>
+    </section>
+
     <!-- Other tabs (porting in progress) -->
     <section data-panel="placeholder" class="tab-panel flex-col gap-6">
       <div class="bg-surface-lowest border border-outline-variant rounded-card p-12 flex flex-col items-center text-center gap-3">
@@ -598,6 +620,48 @@ document.getElementById('confList').innerHTML = CONF.map(([m,p],i)=>{
     <div class="flex justify-between text-sm"><span class="${final?'font-semibold':'text-muted'}">${m}</span><span class="font-semibold">${p}%</span></div>
     <div class="h-2 rounded-pill bg-surface-highest overflow-hidden"><div class="h-full ${final?'bg-primary':'bg-secondary'} rounded-pill" style="width:${p}%"></div></div>
   </div>`;}).join('');
+
+// ---- Halal Screen (AAOIFI) ----
+const HALAL_DATA = (window.HALAL_DASH && window.HALAL_DASH.data) || {};
+function classifyHalal(d, i){
+  const dt = d==null?1:(d<33?0:(d<45?1:2));
+  const it = i==null?1:(i<5?0:(i<10?1:2));
+  const sev = Math.max(dt,it);
+  const tier = ["🟢","🟡","🔴"][sev];
+  const dTxt = d==null?"Debt/assets unknown — treated as caution":`Debt/assets ${d}% `+(dt===0?"— well under 33%":(dt===1?"— in the 33–45% caution band":"— exceeds 45% limit"));
+  const iTxt = i==null?"Interest income unknown — treated as caution":`Interest income ${i}% of revenue `+(it===0?"— under 5%":(it===1?"— in the 5–10% caution band":"— exceeds 10% limit"));
+  const reasons = [ (dt===0?"✓ ":(dt===1?"⚠ ":"✗ "))+dTxt, (it===0?"✓ ":(it===1?"⚠ ":"✗ "))+iTxt ];
+  return { tier, verdict:["HALAL","DOUBTFUL — screen + purify","NOT HALAL"][sev], reasons };
+}
+function halalCardHTML(t, rec){
+  const c = classifyHalal(rec.d, rec.i);
+  const bg = c.tier==='🟢'?'bg-green-50 border-green-200':(c.tier==='🟡'?'bg-surface-highest border-outline-variant':'bg-red-50 border-red-200');
+  const tc = c.tier==='🟢'?'text-green-600':(c.tier==='🟡'?'text-on-surface':'text-red-500');
+  return `<div class="rounded-card p-5 border ${bg}">
+    <div class="flex items-center justify-between mb-3"><span class="text-lg font-bold">${c.tier} ${t}</span><span class="text-sm font-semibold ${tc}">${c.verdict}</span></div>
+    <ul class="flex flex-col gap-1.5 text-sm text-on-surface">${c.reasons.map(r=>`<li>${r}</li>`).join('')}</ul>
+    ${rec.pur?`<p class="text-xs text-muted mt-3">Dividend purification: <strong>${rec.pur}%</strong> of dividends to charity.</p>`:''}
+  </div>`;
+}
+function renderHalalLookup(){
+  const q = (document.getElementById('halalSearch').value||"").trim().toUpperCase();
+  const box = document.getElementById('halalResult');
+  if(!q){ box.innerHTML=""; return; }
+  const key = Object.keys(HALAL_DATA).find(k=>k===q || k.startsWith(q));
+  if(key){ box.innerHTML = halalCardHTML(key, HALAL_DATA[key]); return; }
+  box.innerHTML = `<div class="rounded-card p-4 text-sm bg-surface border border-outline-variant text-muted">"${q}" isn't in the quarterly cache. In the app this falls back to a live yfinance screen — try a cached name from the chips above.</div>`;
+}
+function initHalal(){
+  if(!Object.keys(HALAL_DATA).length) return;
+  const chips = ["TCS","RELIANCE","BHARTIARTL","NTPC","TITAN","MARUTI"].filter(t=>HALAL_DATA[t]);
+  document.getElementById('halalChips').innerHTML = chips.map(t=>`<span onclick="document.getElementById('halalSearch').value='${t}';renderHalalLookup()" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-pill border border-outline-variant bg-surface text-xs cursor-pointer hover:border-primary transition-colors">${classifyHalal(HALAL_DATA[t].d,HALAL_DATA[t].i).tier} <strong>${t}</strong></span>`).join('');
+  if(!document.getElementById('halalSearch').value){ document.getElementById('halalSearch').value="TCS"; }
+  renderHalalLookup();
+  const red = Object.keys(HALAL_DATA).filter(t=>classifyHalal(HALAL_DATA[t].d,HALAL_DATA[t].i).tier==="🔴");
+  document.getElementById('tierAlerts').innerHTML = red.map(t=>{ const r=HALAL_DATA[t];
+    return `<div class="flex items-center justify-between text-sm border-b border-outline-variant last:border-0 pb-2"><span class="font-medium">🔴 ${t}</span><span class="text-xs text-muted">D/A ${r.d}% · Int ${r.i}%</span></div>`;
+  }).join('') || '<p class="text-sm text-muted">No cached names fail the screen.</p>';
+}
 
 // ---- Zakat calculator ----
 function calcZakat(){
@@ -714,7 +778,7 @@ function drawFII(){
                y:{ grid:{ color:'#e7e8ea' }, ticks:{ color:'#70757d', font:{size:11}, callback:v=>'₹'+v } } } }
   });
 }
-const lazyCharts = { montecarlo: drawMC, fiidii: drawFII };
+const lazyCharts = { montecarlo: drawMC, fiidii: drawFII, halal: initHalal };
 
 // ---- Nav switching (generic: any [data-panel] shows; else placeholder) ----
 const phPanel = document.querySelector('[data-panel="placeholder"]');
