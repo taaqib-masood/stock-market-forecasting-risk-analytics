@@ -143,6 +143,26 @@ The dashboard has **13 tabs** covering the full system:
 | 📋 Watchlist | 195 halal stocks, sector-filtered pills, live search, signal dots |
 | 🌙 Zakat | Portfolio Zakat calculator (2 methods), nisab check, hawl guide |
 
+### Boro UI Dashboard (new) — `demo-boro.html`
+
+A redesigned, warm-minimalist version of the dashboard (Google Stitch "Boro" design)
+with a **live data feed** and extra interactivity — same tabs, plus a morning-cockpit home screen.
+
+```bash
+open demo-boro.html                                   # static, no server
+
+# Populate with real data (live scan + paper portfolio + latest backtest equity curve):
+python -m scripts.export_dashboard --capital 50000    # writes dashboard_data.js (window.DASH)
+```
+
+Beyond `demo.html` it adds: a **Today's Signals** card (ranked BUY trade cards with
+entry/stop/target/size), a **paper-portfolio panel** (marked-to-market P&L + exposure),
+a **per-signal "why" drawer** (the 7 scorer criteria + staged gates), a **backtest
+equity-curve** viewer, an **Alerts & GTT feed** (mirrors Telegram + Kite), and an
+interactive **AI Features** explorer (search / category filter / importance bars).
+`dashboard_data.js` ships with `sample:true` placeholder data until the generator runs;
+on a no-signal day the generator writes the real empty state ("cash is a position").
+
 ---
 
 ## 🤖 GitHub Actions — Automated Pipeline
