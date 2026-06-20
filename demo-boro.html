@@ -7,6 +7,7 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="halal_data.js"></script>
+<script src="info_data.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -35,6 +36,29 @@
   .tab-panel { display:none; }
   .tab-panel.active { display:flex; }
   ::-webkit-scrollbar { width:8px; } ::-webkit-scrollbar-thumb { background:#e0ddda; border-radius:8px; }
+  /* ── Info (ⓘ) tooltip system — Boro-skinned ── */
+  .info-btn { display:inline-flex; align-items:center; justify-content:center; width:16px; height:16px;
+    border-radius:9999px; background:#fff; border:1px solid #e7e8ea; color:#70757d; font-size:10px;
+    font-weight:700; font-style:normal; cursor:pointer; margin-left:6px; vertical-align:middle;
+    transition:all .15s ease; line-height:1; flex:none; }
+  .info-btn:hover { border-color:#080909; color:#080909; }
+  .info-overlay { display:none; position:fixed; inset:0; z-index:9000; background:rgba(8,9,9,.45);
+    backdrop-filter:blur(6px); align-items:center; justify-content:center; padding:24px; }
+  .info-overlay.open { display:flex; }
+  .info-card { position:relative; background:#fff; border:1px solid #e7e8ea; border-radius:24px;
+    padding:32px; max-width:440px; width:100%; color:#1c1b1b;
+    animation:infoPop .22s cubic-bezier(.16,1,.3,1); }
+  @keyframes infoPop { from{ opacity:0; transform:translateY(8px) scale(.98);} to{ opacity:1; transform:none;} }
+  .info-card-close { position:absolute; top:20px; right:20px; width:32px; height:32px; border-radius:9999px;
+    background:#fcf8f8; border:1px solid #e7e8ea; color:#70757d; cursor:pointer; font-size:14px;
+    display:flex; align-items:center; justify-content:center; transition:all .15s; }
+  .info-card-close:hover { background:#080909; color:#fff; border-color:#080909; }
+  .info-card .ic { font-size:34px; line-height:1; }
+  .info-card .cat { font-size:12px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:#075cf2; margin-top:14px; }
+  .info-card h3 { font-size:24px; font-weight:600; letter-spacing:-.01em; color:#080909; margin:4px 0 16px; }
+  .info-card .desc { font-size:15px; line-height:1.6; color:#444747; }
+  .info-card .rule { margin-top:18px; padding:16px; background:#fcf8f8; border:1px solid #e7e8ea;
+    border-radius:16px; font-size:14px; line-height:1.55; color:#1c1b1b; }
 </style>
 </head>
 <body class="bg-surface text-on-surface min-h-screen">
@@ -123,19 +147,19 @@
       <!-- Stats -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2">
-          <p class="text-sm font-medium text-muted">Nifty 50</p>
+          <p class="text-sm font-medium text-muted">Nifty 50<button class="info-btn" onclick="showInfo('nifty50')">i</button></p>
           <div class="flex items-end justify-between"><h3 class="text-2xl font-semibold tracking-tight">22,847</h3><span class="text-xs font-semibold px-2 py-1 bg-green-50 text-green-600 rounded-pill border border-green-200">+0.6%</span></div>
         </div>
         <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2">
-          <p class="text-sm font-medium text-muted">VIX</p>
+          <p class="text-sm font-medium text-muted">VIX<button class="info-btn" onclick="showInfo('vix')">i</button></p>
           <div class="flex items-end justify-between"><h3 class="text-2xl font-semibold tracking-tight">14.2</h3><span class="text-xs font-semibold px-2 py-1 bg-surface-highest text-on-surface rounded-pill border border-outline-variant">Calm</span></div>
         </div>
         <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2">
-          <p class="text-sm font-medium text-muted">USD/INR</p>
+          <p class="text-sm font-medium text-muted">USD/INR<button class="info-btn" onclick="showInfo('usdinr')">i</button></p>
           <div class="flex items-end justify-between"><h3 class="text-2xl font-semibold tracking-tight">83.87</h3><span class="text-xs font-semibold px-2 py-1 bg-surface-highest text-on-surface rounded-pill border border-outline-variant">Neutral</span></div>
         </div>
         <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2">
-          <p class="text-sm font-medium text-muted">Portfolio Value</p>
+          <p class="text-sm font-medium text-muted">Portfolio Value<button class="info-btn" onclick="showInfo('portfolio')">i</button></p>
           <div class="flex items-end justify-between"><h3 class="text-2xl font-semibold tracking-tight">₹1,24,300</h3><span class="text-xs font-semibold px-2 py-1 bg-green-50 text-green-600 rounded-pill border border-green-200">+24.3%</span></div>
         </div>
       </div>
@@ -172,7 +196,7 @@
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-4">
-          <div class="flex justify-between items-start"><p class="text-sm font-medium text-muted">RSI · Momentum</p><span class="text-2xl font-semibold">58.4</span></div>
+          <div class="flex justify-between items-start"><p class="text-sm font-medium text-muted">RSI · Momentum<button class="info-btn" onclick="showInfo('rsi')">i</button></p><span class="text-2xl font-semibold">58.4</span></div>
           <div>
             <div class="h-2 rounded-pill bg-surface-highest relative overflow-hidden"><div class="absolute inset-y-0 left-0 bg-green-500 rounded-pill" style="width:58.4%"></div></div>
             <div class="flex justify-between text-[11px] text-muted mt-2"><span>0 · Oversold</span><span>Overbought · 100</span></div>
@@ -180,7 +204,7 @@
           <p class="text-xs text-muted">14-day · Healthy zone (30–70)</p>
         </div>
         <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-4">
-          <p class="text-sm font-medium text-muted">MACD · Trend Momentum</p>
+          <p class="text-sm font-medium text-muted">MACD · Trend Momentum<button class="info-btn" onclick="showInfo('macd')">i</button></p>
           <div class="flex gap-6">
             <div><p class="text-xs text-muted mb-1">MACD</p><p class="text-lg font-semibold text-green-600">+12.4</p></div>
             <div><p class="text-xs text-muted mb-1">Signal</p><p class="text-lg font-semibold">+9.1</p></div>
@@ -189,7 +213,7 @@
           <span class="text-xs font-semibold text-green-600">Bullish crossover ✓</span>
         </div>
         <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-4">
-          <p class="text-sm font-medium text-muted">Bollinger Bands</p>
+          <p class="text-sm font-medium text-muted">Bollinger Bands<button class="info-btn" onclick="showInfo('bollinger')">i</button></p>
           <div class="flex gap-6">
             <div><p class="text-xs text-muted mb-1">Upper</p><p class="text-base font-semibold">₹3,180</p></div>
             <div><p class="text-xs text-muted mb-1">Price</p><p class="text-base font-semibold">₹2,940</p></div>
@@ -217,7 +241,7 @@
         <span class="material-symbols-outlined text-3xl text-green-600">public</span>
         <div>
           <div class="flex items-center gap-3 mb-2">
-            <h2 class="text-2xl font-semibold tracking-tight">Economic Phase</h2>
+            <h2 class="text-2xl font-semibold tracking-tight">Economic Phase<button class="info-btn" onclick="showInfo('eco_cycle')">i</button></h2>
             <span class="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200">Expansion</span>
           </div>
           <p class="text-sm text-muted max-w-2xl">Macro conditions are favourable. Invest normally — focus on IT, Auto, Retail, FMCG sectors.</p>
@@ -295,7 +319,7 @@
         <span class="material-symbols-outlined text-3xl text-on-surface">fort</span>
         <div>
           <div class="flex items-center gap-3 mb-2">
-            <h2 class="text-2xl font-semibold tracking-tight">Moat Score</h2>
+            <h2 class="text-2xl font-semibold tracking-tight">Moat Score<button class="info-btn" onclick="showInfo('moat')">i</button></h2>
             <span class="text-sm font-bold uppercase tracking-widest px-3 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200">4/5 · Strong</span>
           </div>
           <p class="text-sm text-muted max-w-2xl">Reliance has a dominant competitive position. Very hard to replace in telecom, retail, and energy.</p>
@@ -469,7 +493,7 @@
       </div>
 
       <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">India VIX</p><h3 class="text-2xl font-semibold tracking-tight">13.8</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">Calm ✓</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">India VIX<button class="info-btn" onclick="showInfo('india_vix')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">13.8</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">Calm ✓</span></div>
         <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">Put-Call Ratio</p><h3 class="text-2xl font-semibold tracking-tight">0.92</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-surface-highest text-on-surface border border-outline-variant w-fit">Neutral</span></div>
         <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">Delivery Vol %</p><h3 class="text-2xl font-semibold tracking-tight">58%</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">High Conviction</span></div>
         <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">Advance/Decline</p><h3 class="text-2xl font-semibold tracking-tight">1.42</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">Breadth Good ✓</span></div>
@@ -563,7 +587,7 @@
     <!-- RISK GUARD -->
     <section data-panel="riskguard" class="tab-panel flex-col gap-8">
       <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-1">
-        <h2 class="text-2xl font-semibold tracking-tight">🛡️ Drawdown Guard — "Why I de-risked"</h2>
+        <h2 class="text-2xl font-semibold tracking-tight">🛡️ Drawdown Guard — "Why I de-risked"<button class="info-btn" onclick="showInfo('drawdown_guard')">i</button></h2>
         <p class="text-sm text-muted">The passive overlay scales basket exposure by how far Nifty is below its recent peak — and explains every move.</p>
       </div>
 
@@ -847,6 +871,39 @@ document.getElementById('nav').addEventListener('click', e=>{
   else { document.getElementById('phTitle').textContent = btn.querySelector('span:last-child').textContent; phPanel.classList.add('active'); }
   window.scrollTo(0,0);
 });
+
+// ---- Info (ⓘ) modal system — reads window.INFO from info_data.js ----
+const INFO = (window.INFO) || {};
+function showInfo(key){
+  const d = INFO[key]; if(!d){ console.warn('No INFO entry for', key); return; }
+  document.getElementById('infoIcon').textContent = d.icon || '📊';
+  document.getElementById('infoCategory').textContent = d.cat || 'Indicator';
+  document.getElementById('infoTitle').textContent = d.title || key;
+  document.getElementById('infoDesc').innerHTML = d.desc || '';
+  const rule = document.getElementById('infoRule');
+  if(d.rule){ rule.innerHTML = '📌 <strong>Rule of thumb:</strong> ' + d.rule; rule.style.display=''; }
+  else rule.style.display='none';
+  document.getElementById('infoOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeInfoCard(){
+  document.getElementById('infoOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeInfo(e){ if(e.target === document.getElementById('infoOverlay')) closeInfoCard(); }
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeInfoCard(); });
 </script>
+
+<!-- Info (ⓘ) modal overlay — Boro-skinned -->
+<div class="info-overlay" id="infoOverlay" onclick="closeInfo(event)">
+  <div class="info-card" id="infoCard">
+    <button class="info-card-close" onclick="closeInfoCard()" aria-label="Close">✕</button>
+    <div class="ic" id="infoIcon">📊</div>
+    <div class="cat" id="infoCategory">Indicator</div>
+    <h3 id="infoTitle">Term</h3>
+    <p class="desc" id="infoDesc">Description</p>
+    <div class="rule" id="infoRule"></div>
+  </div>
+</div>
 </body>
 </html>
