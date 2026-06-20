@@ -72,6 +72,10 @@
   .accordion-body.open { max-height:600px; }
   .accordion-icon { transition:transform .3s ease; }
   .accordion-icon.open { transform:rotate(180deg); }
+  /* ── 52-Features chips: stagger-in + hover lift ── */
+  @keyframes featIn { from{ opacity:0; transform:translateY(6px);} to{ opacity:1; transform:none;} }
+  .feat-chip { animation:featIn .35s ease backwards; transition:border-color .15s ease, transform .15s ease, box-shadow .15s ease; }
+  .feat-chip:hover { transform:translateY(-2px); }
 </style>
 </head>
 <body class="bg-surface text-on-surface min-h-screen">
@@ -96,7 +100,7 @@
     <button data-tab="explainer" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">psychology</span><span class="text-sm">AI Explainer</span></button>
     <button data-tab="montecarlo" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">query_stats</span><span class="text-sm">Monte Carlo</span></button>
     <button data-tab="drift" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">trending_down</span><span class="text-sm">Drift</span></button>
-    <button data-tab="features" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">view_list</span><span class="text-sm">52 Features</span></button>
+    <button data-tab="features" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">view_list</span><span class="text-sm">AI Features</span></button>
     <button data-tab="fiidii" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">group</span><span class="text-sm">FII/DII</span></button>
     <button data-tab="india" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">location_on</span><span class="text-sm">India Signals</span></button>
     <button data-tab="watchlist" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">visibility</span><span class="text-sm">Watchlist</span></button>
@@ -517,12 +521,30 @@
     </section>
 
     <!-- 52 FEATURES -->
-    <section data-panel="features" class="tab-panel flex-col gap-10">
-      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex items-center justify-between flex-wrap gap-3">
-        <h2 class="text-2xl font-semibold tracking-tight">52 AI Features</h2>
-        <span class="text-xs font-semibold px-3 py-1 rounded-pill bg-secondary/10 text-secondary border border-secondary/20">Halal Only</span>
+    <section data-panel="features" class="tab-panel flex-col gap-8">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-5">
+        <div class="flex items-start justify-between flex-wrap gap-3">
+          <div>
+            <h2 class="text-2xl font-semibold tracking-tight"><span id="featCount">52</span> AI Features<button class="info-btn" onclick="showInfo('features_overview')">i</button></h2>
+            <p class="text-sm text-muted mt-1" id="featSummary">Engineered in <code class="text-xs">feature_engineering.add_features</code> → fed to the LightGBM + LSTM ensemble.</p>
+          </div>
+          <span class="text-xs font-semibold px-3 py-1 rounded-pill bg-secondary/10 text-secondary border border-secondary/20">Halal Only · no leverage signals</span>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-2xl font-bold tracking-tight" id="featStatTotal">52</p><p class="text-xs text-muted">total features</p></div>
+          <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-2xl font-bold tracking-tight text-green-600" id="featStatCore">7</p><p class="text-xs text-muted">core signal drivers</p></div>
+          <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-2xl font-bold tracking-tight" id="featStatGroups">9</p><p class="text-xs text-muted">categories</p></div>
+          <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-2xl font-bold tracking-tight text-muted" id="featStatOpt">7</p><p class="text-xs text-muted">optional (degrade offline)</p></div>
+        </div>
+        <div class="flex items-center gap-3 bg-surface border border-outline-variant rounded-pill px-5">
+          <span class="material-symbols-outlined text-muted text-[20px]">search</span>
+          <input id="featSearch" type="text" placeholder="Search features — e.g. RSI, volume, macro…" oninput="renderFeats()" class="bg-transparent flex-1 py-3 text-sm outline-none placeholder:text-muted">
+          <button onclick="document.getElementById('featSearch').value='';featFilter='All';renderFeats()" class="material-symbols-outlined text-muted text-[18px] hover:text-primary transition-colors">close</button>
+        </div>
+        <div class="flex flex-wrap gap-2" id="featFilters"></div>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="featGroups"></div>
+      <p id="featEmpty" class="hidden text-sm text-muted text-center py-8">No features match your search.</p>
     </section>
 
     <!-- FII/DII -->
@@ -897,18 +919,97 @@ renderWL();
 calcZakat();
 
 // ---- 52 Features groups ----
+// Real engineered set from feature_engineering.add_features → ensemble.
+// [name, plain-English tip, importance 0-100, core?] — core = one of the 7 scorer drivers.
 const FEATS = {
-  "Momentum": ["RSI 14","RSI 7","RSI 21","MACD","MACD Signal","MACD Histogram","ROC 5","ROC 10","ROC 20","Williams %R"],
-  "Trend": ["Price vs SMA20","Price vs SMA50","Price vs SMA200","SMA5 vs SMA20","Golden Cross","SMA200 Slope"],
-  "Volatility": ["ATR %","Volatility 5d","Volatility 10d","Volatility 20d","BB Width","BB %B"],
-  "Volume": ["Volume Ratio","Volume Z-Score","OBV","MFI 14","CMF 20"],
-  "Calendar": ["Day of Week","Month","Days to Expiry","Holiday Proximity"],
+  "Price & Returns": { opt:false, items:[
+    ["Return 1d","1-day price change",55],["Return 3d","3-day price change",52],
+    ["Return 5d","5-day momentum — a core scorer input",82,true],
+    ["Return Lag 1","yesterday's return",40],["Return Lag 2","2-days-ago return",38],["Return Lag 3","3-days-ago return",36]] },
+  "Trend & Moving Avgs": { opt:false, items:[
+    ["SMA 5","5-day average price",48],["SMA 20","20-day average",58],["SMA 50","50-day average",60],["SMA 200","200-day average",62],
+    ["Price vs SMA20","above/below 20d — core driver",84,true],["Price vs SMA50","above/below 50d — core driver",83,true],
+    ["Price vs SMA200","above/below long-term avg",66],["SMA5 vs SMA20","short-term crossover",54],
+    ["Golden Cross","50d above 200d (bullish regime)",70],["SMA200 Slope","long-term trend direction",58]] },
+  "Momentum": { opt:false, items:[
+    ["RSI 14","overbought/oversold — core driver",90,true],["RSI 7","fast RSI",62],["RSI 21","slow RSI",58],
+    ["MACD","trend-following momentum",72],["MACD Signal","MACD's own average",60],
+    ["MACD Histogram","MACD minus signal — core driver",88,true],
+    ["ROC 5","5-day rate of change",56],["ROC 10","10-day rate of change",54],["ROC 20","20-day rate of change",52],
+    ["Williams %R","momentum oscillator",50]] },
+  "Volatility": { opt:false, items:[
+    ["ATR 14","average true range (position sizing)",68],["ATR %","ATR relative to price",64],
+    ["Volatility 5d","5-day std of returns",52],["Volatility 10d","10-day std",50],["Volatility 20d","20-day std",54],
+    ["BB Width","Bollinger band width (squeeze)",58],["BB %B","position in the band — core driver",80,true]] },
+  "Volume": { opt:false, items:[
+    ["OBV","on-balance volume (accumulation)",56],["Volume SMA20","20-day average volume",46],
+    ["Volume Ratio","today vs avg — core driver",78,true],["Volume Z-Score","how unusual today's volume is",60],
+    ["MFI 14","money flow index",54],["CMF 20","Chaikin money flow",52]] },
+  "Calendar": { opt:false, items:[
+    ["Day of Week","Mon–Fri seasonality",34],["Month","month-of-year effect",32],["Week of Year","weekly seasonality",30],
+    ["Days to Expiry","NSE F&O expiry proximity",44],["Holiday Proximity","pre/post-holiday drift",36]] },
+  "Market Context": { opt:false, items:[
+    ["Nifty Return 20d","index 20-day momentum",50],["Nifty Rel Strength","stock vs Nifty outperformance",64]] },
+  "Sentiment": { opt:true, items:[
+    ["Sentiment Score","FinBERT news polarity",58],["Sentiment Volume","how much news today",44],["Sentiment Momentum","sentiment trend",48]] },
+  "Macro": { opt:true, items:[
+    ["VIX Level","fear gauge",62],["DXY Index","US dollar strength",46],["Yield Curve Spread","10y–2y spread",50],["Market Breadth","adv/decline health",52]] },
 };
-document.getElementById('featGroups').innerHTML = Object.entries(FEATS).map(([g,fs])=>`
-  <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-4">
-    <div class="flex items-center justify-between"><h3 class="font-semibold tracking-tight">${g}</h3><span class="text-xs text-muted font-medium">${fs.length} features</span></div>
-    <div class="flex flex-wrap gap-2">${fs.map(f=>`<span class="text-xs font-medium px-3 py-1.5 rounded-pill bg-surface text-on-surface border border-outline-variant">${f}</span>`).join('')}</div>
-  </div>`).join('');
+let featFilter = 'All';
+const FEAT_GROUPS = Object.keys(FEATS);
+const featTotal = FEAT_GROUPS.reduce((n,g)=>n+FEATS[g].items.length,0);
+const featCore  = FEAT_GROUPS.reduce((n,g)=>n+FEATS[g].items.filter(f=>f[3]).length,0);
+const featOpt   = FEAT_GROUPS.filter(g=>FEATS[g].opt).reduce((n,g)=>n+FEATS[g].items.length,0);
+function featImpColor(v){ return v>=78?'#16a34a':(v>=60?'#075cf2':'#70757d'); }
+function featWhy(name, tip, imp, core){
+  document.getElementById('infoCard').classList.add('wide');
+  document.getElementById('infoIcon').textContent = core?'⭐':'🧮';
+  document.getElementById('infoCategory').textContent = core?'Core signal driver':'Engineered feature';
+  document.getElementById('infoTitle').textContent = name;
+  document.getElementById('infoDesc').innerHTML =
+    `<p class="text-sm text-on-surface-variant">${tip}.</p>
+     <div class="mt-4"><div class="flex items-center justify-between text-xs text-muted mb-1"><span>Model importance</span><span>${imp}/100</span></div>
+       <div class="h-2 rounded-pill bg-surface-highest overflow-hidden"><div class="h-full rounded-pill" style="width:${imp}%;background:${featImpColor(imp)}"></div></div></div>`;
+  const rule = document.getElementById('infoRule'); rule.style.display='';
+  rule.innerHTML = core
+    ? '📌 <strong>Core driver:</strong> one of the 7 criteria the live scanner scores directly (see a signal\'s “why” drawer).'
+    : '📌 Feeds the LightGBM + LSTM ensemble as one of '+featTotal+' inputs; importance is the model\'s learned weight.';
+  document.getElementById('infoOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function renderFeats(){
+  const q = (document.getElementById('featSearch')?.value||'').toLowerCase().trim();
+  document.getElementById('featCount').textContent = featTotal;
+  document.getElementById('featStatTotal').textContent = featTotal;
+  document.getElementById('featStatCore').textContent = featCore;
+  document.getElementById('featStatGroups').textContent = FEAT_GROUPS.length;
+  document.getElementById('featStatOpt').textContent = featOpt;
+  document.getElementById('featFilters').innerHTML = ['All',...FEAT_GROUPS].map(g=>{
+    const on = g===featFilter;
+    return `<button onclick="featFilter='${g}';renderFeats()" class="text-xs font-medium px-4 py-2 rounded-pill border transition-colors ${on?'bg-primary text-white border-primary':'bg-surface text-muted border-outline-variant hover:border-primary'}">${g}</button>`;
+  }).join('');
+  let shown=0, delay=0;
+  const html = FEAT_GROUPS.filter(g=>featFilter==='All'||featFilter===g).map(g=>{
+    const grp = FEATS[g];
+    const items = grp.items.filter(f=> !q || f[0].toLowerCase().includes(q) || f[1].toLowerCase().includes(q) || g.toLowerCase().includes(q));
+    if(!items.length) return '';
+    shown += items.length;
+    const chips = items.map(f=>{
+      const [name,tip,imp,core]=f; const d=(delay+=25);
+      return `<button title="${tip}" onclick="featWhy('${name.replace(/'/g,"\\'")}','${tip.replace(/'/g,"\\'")}',${imp},${!!core})"
+        class="feat-chip group text-left px-3 py-2 rounded-2xl bg-surface border ${core?'border-green-200':'border-outline-variant'} hover:border-primary flex flex-col gap-1.5 min-w-[120px]" style="animation-delay:${d}ms">
+        <span class="text-xs font-semibold flex items-center gap-1">${core?'<span class=\'text-green-600\'>★</span>':''}${name}</span>
+        <span class="h-1 rounded-pill bg-surface-highest overflow-hidden"><span class="block h-full rounded-pill" style="width:${imp}%;background:${featImpColor(imp)}"></span></span>
+      </button>`;
+    }).join('');
+    return `<div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-4">
+      <div class="flex items-center justify-between"><h3 class="font-semibold tracking-tight">${g}${grp.opt?' <span class=\'text-[10px] font-medium text-muted\'>· optional</span>':''}</h3><span class="text-xs text-muted font-medium">${items.length} / ${grp.items.length}</span></div>
+      <div class="flex flex-wrap gap-2">${chips}</div></div>`;
+  }).join('');
+  document.getElementById('featGroups').innerHTML = html;
+  document.getElementById('featEmpty').classList.toggle('hidden', shown>0);
+}
+renderFeats();
 
 // ---- Drift KS-test table ----
 const DRIFT = [["RSI 14",0.08,0.24,0.02,"Stable"],["MACD",0.09,0.18,0.03,"Stable"],["Volume Ratio",0.16,0.04,0.12,"Slight"],["VIX Close",0.12,0.09,0.08,"Slight"],["BB Width",0.07,0.31,0.01,"Stable"]];
@@ -973,7 +1074,7 @@ function drawEquity(){
                y:{ grid:{ color:'#e7e8ea' }, ticks:{ color:'#70757d', font:{size:10}, callback:v=>'₹'+(v/1000)+'K' } } } }
   });
 }
-const lazyCharts = { montecarlo: ()=>{ drawMC(); drawEquity(); }, fiidii: drawFII, halal: initHalal, riskguard: renderRiskGuard };
+const lazyCharts = { montecarlo: ()=>{ drawMC(); drawEquity(); }, fiidii: drawFII, halal: initHalal, riskguard: renderRiskGuard, features: renderFeats };
 
 // ---- Nav switching (generic: any [data-panel] shows; else placeholder) ----
 const phPanel = document.querySelector('[data-panel="placeholder"]');
