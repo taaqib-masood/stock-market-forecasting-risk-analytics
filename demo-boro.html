@@ -1547,6 +1547,24 @@ function renderPortfolio(){
     <td class="py-3 text-right font-medium">${inr(m.market_value)}</td>
     <td class="py-3 text-right font-semibold ${pnlCol(m.unrealised)}">${sign(m.unrealised)} <span class="text-xs font-normal">(${m.unrealised_pct>0?'+':''}${m.unrealised_pct}%)</span></td>
   </tr>`).join('');
+  // ---- #4: purification "owed to charity" — impure-dividend slice across holdings ----
+  const DIV_YIELD = 0.015; // est. avg NSE dividend yield (holdings carry no per-stock dividend data here)
+  let purTotal = 0; const purRows = [];
+  positions.forEach(([t,m])=>{
+    const rec = HALAL_DATA[t]; const purPct = (rec && rec.pur) ? rec.pur : 0;
+    const owed = (m.market_value||0) * DIV_YIELD * purPct/100;
+    if(owed>0){ purTotal += owed; purRows.push({t, purPct, owed}); }
+  });
+  const purCard = `
+    <div class="bg-surface-lowest border border-amber-200 rounded-card p-6 flex flex-col gap-3">
+      <div class="flex items-center justify-between flex-wrap gap-2">
+        <h3 class="font-semibold tracking-tight">🧹 Purification owed to charity<button class="info-btn" onclick="showInfo('purification')">i</button></h3>
+        <span class="text-2xl font-bold text-amber-600">${inr(Math.round(purTotal))}</span>
+      </div>
+      <p class="text-xs text-muted">Impure-dividend slice across ${purRows.length} holding${purRows.length!==1?'s':''}, estimated at ${(DIV_YIELD*100).toFixed(1)}% avg yield. Give it away so the gain stays clean.</p>
+      ${purRows.length?`<div class="flex flex-col gap-1 text-sm">${purRows.map(r=>`<div class="flex items-center justify-between border-b border-outline-variant last:border-0 py-1"><span class="font-medium">${r.t} <span class="text-xs text-muted">${r.purPct}% impure</span></span><span class="text-amber-600 font-medium">${inr(Math.round(r.owed))}</span></div>`).join('')}</div>`:'<p class="text-xs text-green-600">All holdings carry zero impure dividends — nothing to purify.</p>'}
+      ${purTotal>0?`<a href="https://www.launchgood.com" target="_blank" rel="noopener" class="mt-1 inline-flex items-center justify-center gap-2 text-sm font-semibold py-2.5 rounded-pill bg-amber-500 text-white hover:bg-amber-600 transition-colors">Donate ${inr(Math.round(purTotal))} now →</a>`:''}
+    </div>`;
   box.innerHTML = `
     <div class="flex items-center justify-between flex-wrap gap-2">
       <h2 class="text-2xl font-semibold tracking-tight">Paper Portfolio<button class="info-btn" onclick="showInfo('portfolio')">i</button></h2>
@@ -1559,6 +1577,7 @@ function renderPortfolio(){
       <div class="bg-surface-lowest border border-outline-variant rounded-card p-5"><p class="text-sm text-muted">Exposure</p><p class="text-2xl font-bold tracking-tight mt-1">${exposure}%</p>
         <div class="h-1.5 rounded-pill bg-surface-highest overflow-hidden mt-2"><div class="h-full bg-primary rounded-pill" style="width:${exposure}%"></div></div></div>
     </div>
+    ${purCard}
     <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 overflow-x-auto">
       <table class="w-full text-sm">
         <thead><tr class="text-xs uppercase tracking-wider text-muted text-right"><th class="text-left font-medium pb-2">Stock</th><th class="font-medium pb-2">Shares</th><th class="font-medium pb-2">Avg Entry</th><th class="font-medium pb-2">Current</th><th class="font-medium pb-2">Value</th><th class="font-medium pb-2">Unrealised</th></tr></thead>
