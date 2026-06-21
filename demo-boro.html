@@ -319,6 +319,8 @@
 
     <!-- MACRO -->
     <section data-panel="macro" class="tab-panel flex-col gap-10">
+      <!-- Live market regime (from window.DASH.signals.regime) -->
+      <div id="macroRegime"></div>
       <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex items-start gap-4">
         <span class="material-symbols-outlined text-3xl text-green-600">public</span>
         <div>
@@ -1218,7 +1220,7 @@ function drawEquity(){
                y:{ grid:{ color:'#e7e8ea' }, ticks:{ color:'#70757d', font:{size:10}, callback:v=>'₹'+(v/1000)+'K' } } } }
   });
 }
-const lazyCharts = { montecarlo: ()=>{ drawMC(); drawEquity(); }, fiidii: drawFII, halal: initHalal, riskguard: renderRiskGuard, features: renderFeats, telegram: renderTelegram };
+const lazyCharts = { montecarlo: ()=>{ drawMC(); drawEquity(); }, fiidii: drawFII, halal: initHalal, riskguard: renderRiskGuard, features: renderFeats, telegram: renderTelegram, macro: renderMacroRegime };
 
 // ---- Nav switching (generic: any [data-panel] shows; else placeholder) ----
 const phPanel = document.querySelector('[data-panel="placeholder"]');
@@ -1500,6 +1502,44 @@ function renderTelegram(){
       </div></div>`).join('');
 }
 renderTelegram();
+
+// ---- Macro: live market regime + positioning guidance (from window.DASH) ----
+function renderMacroRegime(){
+  const el = document.getElementById('macroRegime'); if(!el) return;
+  const r = (DASH.signals && DASH.signals.regime) || {};
+  if(!r.name){ el.innerHTML=''; return; }
+  const tone = r.name.includes('UP')?'green':(r.name.includes('DOWN')?'red':'secondary');
+  const ring = {green:'bg-green-50 border-green-200 text-green-600', red:'bg-red-50 border-red-200 text-red-500', secondary:'bg-accent-soft border-secondary/30 text-secondary'}[tone];
+  const POS = {
+    RANGING:"Mean-reversion only. Half-size positions, bank profits quickly, don't chase breakouts.",
+    TRENDING_UP:"Risk-on. Full size, let winners run, trail stops behind the trend.",
+    TRENDING_DOWN:"Defensive. Cash is a position — only the strongest setups, tighter stops.",
+    VOLATILE:"Reduce size. Wide stops eat your R:R — wait for VIX to cool before adding."
+  };
+  const pos = POS[r.name] || r.description || '';
+  const vixTone = r.vix<15?'text-green-600':(r.vix<25?'text-muted':'text-red-500');
+  el.innerHTML = `<div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-5">
+    <div class="flex items-start justify-between flex-wrap gap-3">
+      <div>
+        <div class="flex items-center gap-3"><h2 class="text-2xl font-semibold tracking-tight">Live Market Regime</h2>
+          <span class="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-pill border ${ring}">${r.name.replace(/_/g,' ')}</span></div>
+        <p class="text-sm text-muted mt-1">${r.description||''}${r.confidence?' · '+Math.round(r.confidence)+'% confidence':''}</p>
+      </div>
+      <span class="text-xs text-muted">as of ${(DASH.asof||'').slice(0,10)}</span>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-xs text-muted">Nifty 50</p><p class="text-xl font-bold tracking-tight">${r.nifty_price?Math.round(r.nifty_price).toLocaleString('en-IN'):'—'}</p><p class="text-xs ${r.nifty_ret1w>=0?'text-green-600':'text-red-500'}">${r.nifty_ret1w>=0?'+':''}${r.nifty_ret1w}% 1w</p></div>
+      <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-xs text-muted">VIX</p><p class="text-xl font-bold tracking-tight">${r.vix??'—'}</p><p class="text-xs ${vixTone}">${r.vix<15?'calm':(r.vix<25?'normal':'fearful')}</p></div>
+      <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-xs text-muted">Max positions</p><p class="text-xl font-bold tracking-tight">${r.max_positions??'—'}</p><p class="text-xs text-muted">size ×${r.position_size_mul??'—'}</p></div>
+      <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-xs text-muted">Min score gate</p><p class="text-xl font-bold tracking-tight">${r.min_score??'—'}</p><p class="text-xs text-muted">to trade today</p></div>
+    </div>
+    <div class="flex items-start gap-3 bg-surface rounded-2xl border border-outline-variant p-4">
+      <span class="material-symbols-outlined text-secondary">lightbulb</span>
+      <div><p class="text-xs font-semibold uppercase tracking-wider text-muted mb-0.5">What this means for positioning</p><p class="text-sm text-on-surface">${pos}</p></div>
+    </div>
+  </div>`;
+}
+renderMacroRegime();
 </script>
 
 <!-- Info (ⓘ) modal overlay — Boro-skinned -->
