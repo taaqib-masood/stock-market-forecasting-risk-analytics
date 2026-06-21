@@ -104,10 +104,9 @@
     <button data-tab="macro" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">public</span><span class="text-sm">Macro</span></button>
     <button data-tab="screener" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">filter_alt</span><span class="text-sm">Screener</span></button>
     <button data-tab="moat" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">fort</span><span class="text-sm">Moat</span></button>
-    <button data-tab="explainer" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">psychology</span><span class="text-sm">AI Explainer</span></button>
+    <button data-tab="explainer" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">psychology</span><span class="text-sm">AI Insights</span></button>
     <button data-tab="montecarlo" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">query_stats</span><span class="text-sm">Monte Carlo</span></button>
     <button data-tab="drift" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">trending_down</span><span class="text-sm">Drift</span></button>
-    <button data-tab="features" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">view_list</span><span class="text-sm">AI Features</span></button>
     <button data-tab="fiidii" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">group</span><span class="text-sm">FII/DII</span></button>
     <button data-tab="india" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">location_on</span><span class="text-sm">India Signals</span></button>
     <button data-tab="watchlist" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">visibility</span><span class="text-sm">Watchlist</span></button>
@@ -422,7 +421,19 @@
     </section>
 
     <!-- AI EXPLAINER -->
-    <section data-panel="explainer" class="tab-panel flex-col gap-10">
+    <section data-panel="explainer" class="tab-panel flex-col gap-8">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h2 class="text-2xl font-semibold tracking-tight">AI Insights<button class="info-btn" onclick="showInfo('features_overview')">i</button></h2>
+          <p class="text-sm text-muted mt-1">Why a signal fired (SHAP + model confidence) and the full feature set the models read — one place.</p>
+        </div>
+        <div class="flex gap-1 bg-surface border border-outline-variant rounded-pill p-1" id="aiSubNav">
+          <button data-aisub="explainer" onclick="aiSub('explainer')" class="text-xs font-semibold px-4 py-2 rounded-pill transition-colors bg-primary text-white">Why a signal fired</button>
+          <button data-aisub="features" onclick="aiSub('features')" class="text-xs font-semibold px-4 py-2 rounded-pill transition-colors text-muted hover:text-primary">All features</button>
+        </div>
+      </div>
+
+      <div id="aiPane-explainer" class="flex flex-col gap-8">
       <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-4">
         <div class="flex items-center gap-3 flex-wrap">
           <h2 class="text-2xl font-semibold tracking-tight">AI Decision Explainer</h2>
@@ -451,6 +462,33 @@
           <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-muted"></span>Earnings date approaching — vol may rise</li>
         </ul>
       </div>
+      </div><!-- /aiPane-explainer -->
+
+      <div id="aiPane-features" class="hidden flex-col gap-8">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-5">
+          <div class="flex items-start justify-between flex-wrap gap-3">
+            <div>
+              <h2 class="text-2xl font-semibold tracking-tight"><span id="featCount">52</span> AI Features<button class="info-btn" onclick="showInfo('features_overview')">i</button></h2>
+              <p class="text-sm text-muted mt-1" id="featSummary">Engineered in <code class="text-xs">feature_engineering.add_features</code> → fed to the LightGBM + LSTM ensemble.</p>
+            </div>
+            <span class="text-xs font-semibold px-3 py-1 rounded-pill bg-secondary/10 text-secondary border border-secondary/20">Halal Only · no leverage signals</span>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-2xl font-bold tracking-tight" id="featStatTotal">52</p><p class="text-xs text-muted">total features</p></div>
+            <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-2xl font-bold tracking-tight text-green-600" id="featStatCore">7</p><p class="text-xs text-muted">core signal drivers</p></div>
+            <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-2xl font-bold tracking-tight" id="featStatGroups">9</p><p class="text-xs text-muted">categories</p></div>
+            <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-2xl font-bold tracking-tight text-muted" id="featStatOpt">7</p><p class="text-xs text-muted">optional (degrade offline)</p></div>
+          </div>
+          <div class="flex items-center gap-3 bg-surface border border-outline-variant rounded-pill px-5">
+            <span class="material-symbols-outlined text-muted text-[20px]">search</span>
+            <input id="featSearch" type="text" placeholder="Search features — e.g. RSI, volume, macro…" oninput="renderFeats()" class="bg-transparent flex-1 py-3 text-sm outline-none placeholder:text-muted">
+            <button onclick="document.getElementById('featSearch').value='';featFilter='All';renderFeats()" class="material-symbols-outlined text-muted text-[18px] hover:text-primary transition-colors">close</button>
+          </div>
+          <div class="flex flex-wrap gap-2" id="featFilters"></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="featGroups"></div>
+        <p id="featEmpty" class="hidden text-sm text-muted text-center py-8">No features match your search.</p>
+      </div><!-- /aiPane-features -->
     </section>
 
     <!-- MONTE CARLO -->
@@ -503,33 +541,6 @@
           <tbody id="driftBody"></tbody>
         </table>
       </div>
-    </section>
-
-    <!-- 52 FEATURES -->
-    <section data-panel="features" class="tab-panel flex-col gap-8">
-      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-5">
-        <div class="flex items-start justify-between flex-wrap gap-3">
-          <div>
-            <h2 class="text-2xl font-semibold tracking-tight"><span id="featCount">52</span> AI Features<button class="info-btn" onclick="showInfo('features_overview')">i</button></h2>
-            <p class="text-sm text-muted mt-1" id="featSummary">Engineered in <code class="text-xs">feature_engineering.add_features</code> → fed to the LightGBM + LSTM ensemble.</p>
-          </div>
-          <span class="text-xs font-semibold px-3 py-1 rounded-pill bg-secondary/10 text-secondary border border-secondary/20">Halal Only · no leverage signals</span>
-        </div>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-2xl font-bold tracking-tight" id="featStatTotal">52</p><p class="text-xs text-muted">total features</p></div>
-          <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-2xl font-bold tracking-tight text-green-600" id="featStatCore">7</p><p class="text-xs text-muted">core signal drivers</p></div>
-          <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-2xl font-bold tracking-tight" id="featStatGroups">9</p><p class="text-xs text-muted">categories</p></div>
-          <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-2xl font-bold tracking-tight text-muted" id="featStatOpt">7</p><p class="text-xs text-muted">optional (degrade offline)</p></div>
-        </div>
-        <div class="flex items-center gap-3 bg-surface border border-outline-variant rounded-pill px-5">
-          <span class="material-symbols-outlined text-muted text-[20px]">search</span>
-          <input id="featSearch" type="text" placeholder="Search features — e.g. RSI, volume, macro…" oninput="renderFeats()" class="bg-transparent flex-1 py-3 text-sm outline-none placeholder:text-muted">
-          <button onclick="document.getElementById('featSearch').value='';featFilter='All';renderFeats()" class="material-symbols-outlined text-muted text-[18px] hover:text-primary transition-colors">close</button>
-        </div>
-        <div class="flex flex-wrap gap-2" id="featFilters"></div>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="featGroups"></div>
-      <p id="featEmpty" class="hidden text-sm text-muted text-center py-8">No features match your search.</p>
     </section>
 
     <!-- FII/DII -->
@@ -1183,6 +1194,17 @@ function renderFeats(){
   document.getElementById('featEmpty').classList.toggle('hidden', shown>0);
 }
 renderFeats();
+// AI Insights sub-tab toggle (merged Explainer + Features)
+function aiSub(which){
+  ['explainer','features'].forEach(k=>{
+    const pane=document.getElementById('aiPane-'+k); if(pane) pane.classList.toggle('hidden', k!==which);
+    const btn=document.querySelector('[data-aisub="'+k+'"]');
+    if(btn){ const on=k===which;
+      btn.classList.toggle('bg-primary', on); btn.classList.toggle('text-white', on);
+      btn.classList.toggle('text-muted', !on); }
+  });
+  if(which==='features') renderFeats();
+}
 
 // ---- Drift KS-test table ----
 const DRIFT = [["RSI 14",0.08,0.24,0.02,"Stable"],["MACD",0.09,0.18,0.03,"Stable"],["Volume Ratio",0.16,0.04,0.12,"Slight"],["VIX Close",0.12,0.09,0.08,"Slight"],["BB Width",0.07,0.31,0.01,"Stable"]];
@@ -1247,7 +1269,7 @@ function drawEquity(){
                y:{ grid:{ color:'#e7e8ea' }, ticks:{ color:'#70757d', font:{size:10}, callback:v=>'₹'+(v/1000)+'K' } } } }
   });
 }
-const lazyCharts = { montecarlo: ()=>{ drawMC(); drawEquity(); }, fiidii: drawFII, halal: initHalal, riskguard: renderRiskGuard, features: renderFeats, telegram: renderTelegram, macro: renderMacroRegime, technical: renderTechnical };
+const lazyCharts = { montecarlo: ()=>{ drawMC(); drawEquity(); }, fiidii: drawFII, halal: initHalal, riskguard: renderRiskGuard, explainer: renderFeats, telegram: renderTelegram, macro: renderMacroRegime, technical: renderTechnical };
 
 // ---- Nav switching (generic: any [data-panel] shows; else placeholder) ----
 const phPanel = document.querySelector('[data-panel="placeholder"]');
