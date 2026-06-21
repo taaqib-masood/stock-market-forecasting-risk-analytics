@@ -260,61 +260,23 @@
     </section>
 
     <!-- TECHNICAL -->
-    <section data-panel="technical" class="tab-panel flex-col gap-10">
-      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-wrap items-center justify-between gap-6">
-        <div class="flex flex-col gap-2">
+    <section data-panel="technical" class="tab-panel flex-col gap-8">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-6">
+        <div class="flex items-center justify-between flex-wrap gap-4">
           <div class="flex items-center gap-3">
-            <span class="text-xs font-bold tracking-widest uppercase px-3 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200">Strong Buy</span>
-            <span class="text-sm text-muted">Confidence 8/10 · 7 of 9 indicators agree</span>
+            <h2 class="text-2xl font-semibold tracking-tight">Technical Drill-down</h2>
+            <select id="techTicker" onchange="renderTechnical()" class="bg-surface border border-outline-variant rounded-pill px-4 py-2 text-sm font-medium outline-none focus:border-primary cursor-pointer"></select>
           </div>
-          <h2 class="text-3xl font-bold tracking-tight">RELIANCE <span class="text-muted font-medium text-2xl">₹2,940</span></h2>
+          <div id="techHead" class="text-right"></div>
         </div>
-        <div class="flex gap-8">
-          <div><p class="text-xs text-muted font-medium mb-1">Buy Near</p><p class="text-lg font-semibold">₹2,925</p></div>
-          <div><p class="text-xs text-muted font-medium mb-1">Stop Loss</p><p class="text-lg font-semibold text-red-500">₹2,800</p></div>
-          <div><p class="text-xs text-muted font-medium mb-1">Target</p><p class="text-lg font-semibold text-green-600">₹3,200</p></div>
-        </div>
+        <div class="w-full h-48"><canvas id="techChart"></canvas></div>
       </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-4">
-          <div class="flex justify-between items-start"><p class="text-sm font-medium text-muted">RSI · Momentum<button class="info-btn" onclick="showInfo('rsi')">i</button></p><span class="text-2xl font-semibold">58.4</span></div>
-          <div>
-            <div class="h-2 rounded-pill bg-surface-highest relative overflow-hidden"><div class="absolute inset-y-0 left-0 bg-green-500 rounded-pill" style="width:58.4%"></div></div>
-            <div class="flex justify-between text-[11px] text-muted mt-2"><span>0 · Oversold</span><span>Overbought · 100</span></div>
-          </div>
-          <p class="text-xs text-muted">14-day · Healthy zone (30–70)</p>
-        </div>
-        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-4">
-          <p class="text-sm font-medium text-muted">MACD · Trend Momentum<button class="info-btn" onclick="showInfo('macd')">i</button></p>
-          <div class="flex gap-6">
-            <div><p class="text-xs text-muted mb-1">MACD</p><p class="text-lg font-semibold text-green-600">+12.4</p></div>
-            <div><p class="text-xs text-muted mb-1">Signal</p><p class="text-lg font-semibold">+9.1</p></div>
-            <div><p class="text-xs text-muted mb-1">Hist</p><p class="text-lg font-semibold text-green-600">+3.3</p></div>
-          </div>
-          <span class="text-xs font-semibold text-green-600">Bullish crossover ✓</span>
-        </div>
-        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-4">
-          <p class="text-sm font-medium text-muted">Bollinger Bands<button class="info-btn" onclick="showInfo('bollinger')">i</button></p>
-          <div class="flex gap-6">
-            <div><p class="text-xs text-muted mb-1">Upper</p><p class="text-base font-semibold">₹3,180</p></div>
-            <div><p class="text-xs text-muted mb-1">Price</p><p class="text-base font-semibold">₹2,940</p></div>
-            <div><p class="text-xs text-muted mb-1">Lower</p><p class="text-base font-semibold">₹2,700</p></div>
-          </div>
-          <p class="text-xs text-muted">Position: 44% · Width: 15.9%</p>
-        </div>
-      </div>
-
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="techIndicators"></div>
       <div class="bg-surface-lowest border border-outline-variant rounded-card overflow-hidden">
         <div class="px-8 py-5 border-b border-outline-variant"><h3 class="font-semibold text-lg tracking-tight">Support &amp; Resistance Levels<button class="info-btn" onclick="showInfo('support_resistance')">i</button></h3></div>
-        <div class="flex flex-col">
-          <div class="px-8 py-4 border-b border-outline-variant flex items-center justify-between"><span class="text-sm font-medium text-muted w-28">Resistance 2</span><span class="text-base font-semibold">₹3,200</span><span class="text-xs font-semibold px-3 py-1 rounded-pill bg-red-50 text-red-500 border border-red-200">Strong</span></div>
-          <div class="px-8 py-4 border-b border-outline-variant flex items-center justify-between"><span class="text-sm font-medium text-muted w-28">Resistance 1</span><span class="text-base font-semibold">₹3,050</span><span class="text-xs font-semibold px-3 py-1 rounded-pill bg-surface-highest text-on-surface border border-outline-variant">Moderate</span></div>
-          <div class="px-8 py-4 border-b border-outline-variant flex items-center justify-between bg-surface-low"><span class="text-sm font-bold w-28">Current Price</span><span class="text-lg font-bold">₹2,940</span><span class="text-xs font-semibold px-3 py-1 rounded-pill bg-primary text-white">Live</span></div>
-          <div class="px-8 py-4 border-b border-outline-variant flex items-center justify-between"><span class="text-sm font-medium text-muted w-28">Support 1</span><span class="text-base font-semibold">₹2,820</span><span class="text-xs font-semibold px-3 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200">Strong</span></div>
-          <div class="px-8 py-4 flex items-center justify-between"><span class="text-sm font-medium text-muted w-28">Support 2</span><span class="text-base font-semibold">₹2,650</span><span class="text-xs font-semibold px-3 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200">Very Strong</span></div>
-        </div>
+        <div class="flex flex-col" id="techLadder"></div>
       </div>
+      <p id="techEmpty" class="hidden text-sm text-muted text-center py-8">No technical data yet — run <code class="text-xs">python -m scripts.export_dashboard</code> to populate.</p>
     </section>
 
     <!-- MACRO -->
@@ -1220,7 +1182,7 @@ function drawEquity(){
                y:{ grid:{ color:'#e7e8ea' }, ticks:{ color:'#70757d', font:{size:10}, callback:v=>'₹'+(v/1000)+'K' } } } }
   });
 }
-const lazyCharts = { montecarlo: ()=>{ drawMC(); drawEquity(); }, fiidii: drawFII, halal: initHalal, riskguard: renderRiskGuard, features: renderFeats, telegram: renderTelegram, macro: renderMacroRegime };
+const lazyCharts = { montecarlo: ()=>{ drawMC(); drawEquity(); }, fiidii: drawFII, halal: initHalal, riskguard: renderRiskGuard, features: renderFeats, telegram: renderTelegram, macro: renderMacroRegime, technical: renderTechnical };
 
 // ---- Nav switching (generic: any [data-panel] shows; else placeholder) ----
 const phPanel = document.querySelector('[data-panel="placeholder"]');
@@ -1540,6 +1502,74 @@ function renderMacroRegime(){
   </div>`;
 }
 renderMacroRegime();
+
+// ---- Technical drill-down: per-ticker indicators from window.DASH.technicals ----
+const TECH = (DASH.technicals && DASH.technicals.data) || {};
+let techChartObj = null;
+function renderTechnical(){
+  const sel = document.getElementById('techTicker'); if(!sel) return;
+  const keys = Object.keys(TECH);
+  if(!keys.length){ document.getElementById('techEmpty').classList.remove('hidden'); return; }
+  if(!sel.options.length) sel.innerHTML = keys.map(k=>`<option value="${k}">${k}</option>`).join('');
+  const t = sel.value || keys[0]; const d = TECH[t]; if(!d) return;
+  const buy = d.signal==='BUY';
+  document.getElementById('techHead').innerHTML =
+    `<div class="flex items-center gap-3 justify-end"><span class="text-2xl font-bold tracking-tight">${inr(d.price)}</span>
+       <span class="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-pill border ${buy?'bg-green-50 text-green-600 border-green-200':'bg-surface-highest text-muted border-outline-variant'}">${d.signal}</span></div>
+     <p class="text-xs text-muted mt-1">score ${Math.round(d.score)} · vol ${d.vol_surge}× · 5d ${d.ret_5d>=0?'+':''}${d.ret_5d}%</p>`;
+  // 60-day price sparkline (real closes)
+  const ctx = document.getElementById('techChart');
+  if(techChartObj) techChartObj.destroy();
+  const up = d.closes[d.closes.length-1] >= d.closes[0];
+  const g = ctx.getContext('2d').createLinearGradient(0,0,0,192);
+  g.addColorStop(0, up?'rgba(34,197,94,.10)':'rgba(239,68,68,.10)'); g.addColorStop(1,'rgba(0,0,0,0)');
+  techChartObj = new Chart(ctx,{ type:'line',
+    data:{ labels:d.closes.map((_,i)=>'D-'+(d.closes.length-i)), datasets:[{ data:d.closes, borderColor:up?'#16a34a':'#ef4444', borderWidth:2, fill:true, backgroundColor:g, tension:.3, pointRadius:0, pointHoverRadius:4 }] },
+    options:{ responsive:true, maintainAspectRatio:false, animation:{duration:600},
+      interaction:{intersect:false,mode:'index'},
+      plugins:{ legend:{display:false}, tooltip:{ displayColors:false, backgroundColor:'#080909', cornerRadius:10, callbacks:{ title:i=>i[0].label, label:c=>'₹'+c.parsed.y.toLocaleString('en-IN') } } },
+      scales:{ x:{display:false}, y:{display:false} } }
+  });
+  // indicators
+  const rsiTone = (d.rsi>=70||d.rsi<=30)?'#ef4444':((d.rsi>=40&&d.rsi<=68)?'#16a34a':'#70757d');
+  const rsiZone = d.rsi>=70?'Overbought':(d.rsi<=30?'Oversold':((d.rsi>=40&&d.rsi<=68)?'Healthy (40–68)':'Neutral'));
+  const macdBull = d.macd_hist>=0;
+  const bbPct = Math.max(0,Math.min(100, d.bb_pctb*100));
+  document.getElementById('techIndicators').innerHTML = `
+    <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-4">
+      <div class="flex justify-between items-start"><p class="text-sm font-medium text-muted">RSI · Momentum<button class="info-btn" onclick="showInfo('rsi')">i</button></p><span class="text-2xl font-semibold">${d.rsi}</span></div>
+      <div><div class="h-2 rounded-pill bg-surface-highest relative overflow-hidden"><div class="absolute inset-y-0 left-0 rounded-pill transition-all" style="width:${d.rsi}%;background:${rsiTone}"></div></div>
+        <div class="flex justify-between text-[11px] text-muted mt-2"><span>0 · Oversold</span><span>Overbought · 100</span></div></div>
+      <p class="text-xs text-muted">14-day · ${rsiZone}</p>
+    </div>
+    <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-4">
+      <p class="text-sm font-medium text-muted">MACD · Trend Momentum<button class="info-btn" onclick="showInfo('macd')">i</button></p>
+      <div class="flex items-center gap-2"><span class="text-2xl ${macdBull?'text-green-600':'text-red-500'}">${macdBull?'▲':'▼'}</span><span class="text-lg font-semibold ${macdBull?'text-green-600':'text-red-500'}">${macdBull?'Bullish':'Bearish'}</span></div>
+      <p class="text-xs text-muted">Histogram ${macdBull?'positive — momentum building':'negative — momentum fading'}</p>
+    </div>
+    <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-4">
+      <p class="text-sm font-medium text-muted">Bollinger %B<button class="info-btn" onclick="showInfo('bollinger')">i</button></p>
+      <span class="text-2xl font-semibold">${(d.bb_pctb*100).toFixed(0)}%</span>
+      <div><div class="h-2 rounded-pill bg-surface-highest relative overflow-hidden"><div class="absolute inset-y-0 left-0 bg-secondary rounded-pill transition-all" style="width:${bbPct}%"></div></div>
+        <div class="flex justify-between text-[11px] text-muted mt-2"><span>Lower band</span><span>Upper band</span></div></div>
+      <p class="text-xs text-muted">SMA20 ${inr(Math.round(d.sma20))} · SMA50 ${inr(Math.round(d.sma50))}</p>
+    </div>`;
+  // Support/Resistance ladder (recent 20d range + ATR bands)
+  const atr = d.atr || d.price*0.015;
+  const levels = [
+    {name:'Resistance 2', val:Math.round(d.price+2*atr), tag:'ATR band', cls:'bg-red-50 text-red-500 border-red-200'},
+    {name:'Resistance 1', val:d.hi20, tag:'20-day high', cls:'bg-surface-highest text-on-surface border-outline-variant'},
+    {name:'Current Price', val:Math.round(d.price), tag:'Live', cls:'bg-primary text-white border-primary', cur:true},
+    {name:'Support 1', val:d.lo20, tag:'20-day low', cls:'bg-green-50 text-green-600 border-green-200'},
+    {name:'Support 2', val:Math.round(d.price-2*atr), tag:'ATR band', cls:'bg-green-50 text-green-600 border-green-200'},
+  ].sort((a,b)=>b.val-a.val);
+  document.getElementById('techLadder').innerHTML = levels.map((lv,i)=>`
+    <div class="px-8 py-4 ${i<levels.length-1?'border-b border-outline-variant':''} flex items-center justify-between ${lv.cur?'bg-surface-low':''}">
+      <span class="text-sm ${lv.cur?'font-bold':'font-medium text-muted'} w-28">${lv.name}</span>
+      <span class="${lv.cur?'text-lg font-bold':'text-base font-semibold'}">${inr(lv.val)}</span>
+      <span class="text-xs font-semibold px-3 py-1 rounded-pill border ${lv.cls}">${lv.tag}</span></div>`).join('');
+}
+renderTechnical();
 </script>
 
 <!-- Info (ⓘ) modal overlay — Boro-skinned -->
