@@ -110,9 +110,8 @@
     <button data-tab="fiidii" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">group</span><span class="text-sm">FII/DII</span></button>
     <button data-tab="india" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">location_on</span><span class="text-sm">India Signals</span></button>
     <button data-tab="watchlist" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">visibility</span><span class="text-sm">Watchlist</span></button>
-    <button data-tab="halal" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">verified</span><span class="text-sm">Halal Screen</span></button>
+    <button data-tab="halal" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">verified</span><span class="text-sm">Halal &amp; Zakat</span></button>
     <button data-tab="riskguard" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">security</span><span class="text-sm">Risk Guard</span></button>
-    <button data-tab="zakat" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">payments</span><span class="text-sm">Zakat</span></button>
     <button data-tab="telegram" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">send</span><span class="text-sm">Telegram</span></button>
   </div>
 </nav>
@@ -636,25 +635,20 @@
     </section>
 
     <!-- ZAKAT -->
-    <section data-panel="zakat" class="tab-panel flex-col gap-8">
-      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-1">
-        <h2 class="text-2xl font-semibold tracking-tight">🌙 Zakat Calculator<button class="info-btn" onclick="showInfo('zakat_explained')">i</button> <span class="text-muted font-medium text-lg">— Stock Portfolio</span></h2>
-        <p class="text-sm text-muted">Calculate your annual Zakat obligation on equity investments · AAOIFI method</p>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-        <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-5">
-          <h3 class="font-semibold tracking-tight">Your Holdings</h3>
-          <div class="flex flex-col gap-2"><label class="text-xs font-semibold uppercase tracking-widest text-muted">Portfolio Value (₹)</label><input id="z_portfolio" type="number" value="500000" oninput="calcZakat()" class="bg-surface border border-outline-variant rounded-pill px-5 py-3 text-base font-medium focus:border-primary outline-none transition-colors"></div>
-          <div class="flex flex-col gap-2"><label class="text-xs font-semibold uppercase tracking-widest text-muted">Cost Basis (₹)</label><input id="z_cost" type="number" value="420000" oninput="calcZakat()" class="bg-surface border border-outline-variant rounded-pill px-5 py-3 text-base font-medium focus:border-primary outline-none transition-colors"></div>
-          <div class="flex flex-col gap-2"><label class="text-xs font-semibold uppercase tracking-widest text-muted">Cash &amp; Savings (₹)</label><input id="z_cash" type="number" value="120000" oninput="calcZakat()" class="bg-surface border border-outline-variant rounded-pill px-5 py-3 text-base font-medium focus:border-primary outline-none transition-colors"></div>
-          <div class="flex flex-col gap-2"><label class="text-xs font-semibold uppercase tracking-widest text-muted">Gold Value (₹)</label><input id="z_gold" type="number" value="80000" oninput="calcZakat()" class="bg-surface border border-outline-variant rounded-pill px-5 py-3 text-base font-medium focus:border-primary outline-none transition-colors"></div>
-        </div>
-        <div class="bg-surface-lowest border border-outline-variant rounded-card p-8"><div id="zakatResult"></div></div>
-      </div>
-    </section>
-
     <!-- HALAL SCREEN -->
     <section data-panel="halal" class="tab-panel flex-col gap-8">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h2 class="text-2xl font-semibold tracking-tight">Halal &amp; Zakat</h2>
+          <p class="text-sm text-muted mt-1">AAOIFI Shariah screening plus your annual Zakat &amp; dividend-purification ledger — one place.</p>
+        </div>
+        <div class="flex gap-1 bg-surface border border-outline-variant rounded-pill p-1" id="hzSubNav">
+          <button data-hzsub="halal" onclick="hzSub('halal')" class="text-xs font-semibold px-4 py-2 rounded-pill transition-colors bg-primary text-white">Screening</button>
+          <button data-hzsub="zakat" onclick="hzSub('zakat')" class="text-xs font-semibold px-4 py-2 rounded-pill transition-colors text-muted hover:text-primary">Zakat &amp; Purification</button>
+        </div>
+      </div>
+
+      <div id="hzPane-halal" class="flex flex-col gap-8">
       <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-1">
         <h2 class="text-2xl font-semibold tracking-tight">🕌 Halal Screen — AAOIFI Shariah Compliance</h2>
         <p class="text-sm text-muted">Real fundamentals · 84 NSE stocks screened · debt/assets &lt; 33% · interest income &lt; 5%</p>
@@ -674,6 +668,24 @@
           <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-3"><h4 class="font-semibold tracking-tight text-sm">🔴 Names that fail the screen</h4><div class="flex flex-col gap-2" id="tierAlerts"></div></div>
         </div>
       </div>
+      </div><!-- /hzPane-halal -->
+
+      <div id="hzPane-zakat" class="hidden flex-col gap-8">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-1">
+          <h2 class="text-2xl font-semibold tracking-tight">🌙 Zakat Calculator<button class="info-btn" onclick="showInfo('zakat_explained')">i</button> <span class="text-muted font-medium text-lg">— Stock Portfolio</span></h2>
+          <p class="text-sm text-muted">Calculate your annual Zakat obligation on equity investments · AAOIFI method</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+          <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-5">
+            <h3 class="font-semibold tracking-tight">Your Holdings</h3>
+            <div class="flex flex-col gap-2"><label class="text-xs font-semibold uppercase tracking-widest text-muted">Portfolio Value (₹)</label><input id="z_portfolio" type="number" value="500000" oninput="calcZakat()" class="bg-surface border border-outline-variant rounded-pill px-5 py-3 text-base font-medium focus:border-primary outline-none transition-colors"></div>
+            <div class="flex flex-col gap-2"><label class="text-xs font-semibold uppercase tracking-widest text-muted">Cost Basis (₹)</label><input id="z_cost" type="number" value="420000" oninput="calcZakat()" class="bg-surface border border-outline-variant rounded-pill px-5 py-3 text-base font-medium focus:border-primary outline-none transition-colors"></div>
+            <div class="flex flex-col gap-2"><label class="text-xs font-semibold uppercase tracking-widest text-muted">Cash &amp; Savings (₹)</label><input id="z_cash" type="number" value="120000" oninput="calcZakat()" class="bg-surface border border-outline-variant rounded-pill px-5 py-3 text-base font-medium focus:border-primary outline-none transition-colors"></div>
+            <div class="flex flex-col gap-2"><label class="text-xs font-semibold uppercase tracking-widest text-muted">Gold Value (₹)</label><input id="z_gold" type="number" value="80000" oninput="calcZakat()" class="bg-surface border border-outline-variant rounded-pill px-5 py-3 text-base font-medium focus:border-primary outline-none transition-colors"></div>
+          </div>
+          <div class="bg-surface-lowest border border-outline-variant rounded-card p-8"><div id="zakatResult"></div></div>
+        </div>
+      </div><!-- /hzPane-zakat -->
     </section>
 
     <!-- RISK GUARD -->
@@ -1204,6 +1216,17 @@ function aiSub(which){
       btn.classList.toggle('text-muted', !on); }
   });
   if(which==='features') renderFeats();
+}
+// Halal & Zakat sub-tab toggle (merged Halal Screen + Zakat)
+function hzSub(which){
+  ['halal','zakat'].forEach(k=>{
+    const pane=document.getElementById('hzPane-'+k); if(pane) pane.classList.toggle('hidden', k!==which);
+    const btn=document.querySelector('[data-hzsub="'+k+'"]');
+    if(btn){ const on=k===which;
+      btn.classList.toggle('bg-primary', on); btn.classList.toggle('text-white', on);
+      btn.classList.toggle('text-muted', !on); }
+  });
+  if(which==='zakat') calcZakat();
 }
 
 // ---- Drift KS-test table ----
