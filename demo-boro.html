@@ -141,13 +141,40 @@
     <section data-panel="sentiment" class="tab-panel active flex-col gap-10">
       <!-- Tier-change alert banner (🟢→🔴 since last screen) -->
       <div id="tierBanner"></div>
-      <!-- Hero -->
+
+      <!-- #7: PRODUCT HERO — the screened halal basket + crash overlay is the default product ("certainty, not signals") -->
+      <div class="rounded-card p-8 text-white relative overflow-hidden" style="background:linear-gradient(135deg,#0f3d2e,#0b2a3f);">
+        <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image:radial-gradient(circle at 2px 2px,white 1px,transparent 0);background-size:24px 24px;"></div>
+        <div class="relative z-10 flex flex-col gap-6">
+          <div class="flex items-start justify-between flex-wrap gap-4">
+            <div>
+              <p class="text-xs font-bold tracking-widest uppercase mb-2" style="color:#6ee7b7;">Your Product · Halal Core</p>
+              <h2 class="text-3xl md:text-4xl font-bold leading-tight tracking-tight max-w-2xl">Hold a screened halal basket — crash-guarded.</h2>
+              <p class="text-sm text-white/60 mt-3 max-w-2xl">An equal-weight, AAOIFI-screened basket, rebalanced quarterly, with a drawdown overlay that steps toward cash as a crash deepens. The product is <strong class="text-white">certainty</strong> — not daily signals.</p>
+            </div>
+            <span class="text-[11px] font-semibold px-3 py-1 rounded-pill bg-white/10 border border-white/20 text-white/70 whitespace-nowrap">7-yr proof backtest · src/passive.py</span>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white/5 border border-white/10 rounded-card p-4"><p class="text-xs text-white/50">Basket 7y (buy &amp; hold)</p><p class="text-2xl font-bold tracking-tight" style="color:#6ee7b7;">+337%</p><p class="text-[11px] text-white/40">avg · 100% positive*</p></div>
+            <div class="bg-white/5 border border-white/10 rounded-card p-4"><p class="text-xs text-white/50">Max drawdown</p><p class="text-2xl font-bold tracking-tight">−32% → <span style="color:#6ee7b7;">−13%</span></p><p class="text-[11px] text-white/40">with crash overlay</p></div>
+            <div class="bg-white/5 border border-white/10 rounded-card p-4"><p class="text-xs text-white/50">Sharpe</p><p class="text-2xl font-bold tracking-tight">1.32 → <span style="color:#6ee7b7;">1.56</span></p><p class="text-[11px] text-white/40">overlay vs hold</p></div>
+            <div class="bg-white/5 border border-white/10 rounded-card p-4"><p class="text-xs text-white/50">The overlay's job</p><p class="text-2xl font-bold tracking-tight">cut crashes</p><p class="text-[11px] text-white/40">+ screen · purify · Zakat</p></div>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <button onclick="document.querySelector('[data-tab=\'halal\']').click()" class="px-5 py-2.5 rounded-pill bg-white font-semibold text-sm hover:opacity-90 transition-opacity" style="color:#0f3d2e;">Screen the basket →</button>
+            <button onclick="document.getElementById('sigCards').scrollIntoView({behavior:'smooth'})" class="px-5 py-2.5 rounded-pill bg-white/10 border border-white/20 text-white font-semibold text-sm hover:bg-white/20 transition-colors">Today's tactical signals ↓</button>
+            <span class="text-[11px] text-white/40">*Survivorship-caveated: today's halal universe is composed of survivors. See PROOF_RESULT.md.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero (tactical signal — secondary to the passive core above) -->
       <div id="heroCard" onmousemove="trackMouse(event,this)" class="bg-primary rounded-card p-8 text-white relative overflow-hidden flex flex-col md:flex-row items-center justify-between">
         <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
         <div class="hero-glow"></div>
         <div class="relative z-10 flex flex-col gap-6 w-full md:w-2/3">
           <div>
-            <p class="text-xs font-bold tracking-widest text-white/50 uppercase mb-2">What Should I Do Today?</p>
+            <p class="text-xs font-bold tracking-widest text-white/50 uppercase mb-2">Optional Tactical Overlay · today's signal</p>
             <h2 class="text-5xl font-bold leading-none mb-4 tracking-tight">BUY RELIANCE <span class="text-white/50 font-medium text-3xl ml-2">₹2,945</span></h2>
             <div class="flex items-center gap-6 text-sm font-medium">
               <span class="text-white/50">Stop <strong class="text-white">₹2,800</strong></span>
@@ -173,9 +200,13 @@
       <!-- Today's Signals (live from dashboard_data.js → window.DASH) -->
       <div class="flex flex-col gap-4">
         <div class="flex items-center justify-between flex-wrap gap-3">
-          <div class="flex items-center gap-3">
-            <h2 class="text-2xl font-semibold tracking-tight">Today's Signals</h2>
-            <span id="sigSample" class="hidden text-[11px] font-semibold px-2.5 py-1 rounded-pill bg-surface-highest text-muted border border-outline-variant">Sample · run export_dashboard.py</span>
+          <div class="flex flex-col gap-0.5">
+            <div class="flex items-center gap-3">
+              <h2 class="text-2xl font-semibold tracking-tight">Today's Signals</h2>
+              <span class="text-[11px] font-semibold px-2.5 py-1 rounded-pill bg-amber-50 text-amber-700 border border-amber-200">Secondary · optional</span>
+              <span id="sigSample" class="hidden text-[11px] font-semibold px-2.5 py-1 rounded-pill bg-surface-highest text-muted border border-outline-variant">Sample · run export_dashboard.py</span>
+            </div>
+            <p class="text-xs text-muted">A tactical overlay on the core basket. In the 7-yr proof, active signals trailed simply holding the screened basket — treat these as optional, not the product.</p>
           </div>
           <div id="sigRegime" class="text-xs font-medium text-muted"></div>
         </div>
