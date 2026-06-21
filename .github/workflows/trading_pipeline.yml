@@ -8,6 +8,8 @@ on:
     - cron: "15 10 * * 1-5"
     # Sunday 10:00 AM IST = 4:30 AM UTC
     - cron: "30 4 * * 0"
+    # Quarterly halal re-screen — 1st of Jan/Apr/Jul/Oct, 9:30 AM IST = 4:00 AM UTC
+    - cron: "0 4 1 1,4,7,10 *"
   push:
     branches: [main]
   workflow_dispatch:
@@ -21,6 +23,7 @@ on:
           - nightly-scan
           - auto-close
           - weekly-backtest
+          - quarterly-rescreen
 
 env:
   TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
@@ -227,3 +230,66 @@ jobs:
             -d chat_id="${TELEGRAM_CHAT_ID}" \
             -d parse_mode="HTML" \
             -d text="❌ <b>WEEKLY BACKTEST FAILED</b>%0ACheck: <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>GitHub Actions</a>"
+
+  # ── Quarterly Halal Re-screen (1st of Jan/Apr/Jul/Oct) ─────────────────────
+  # Kills the "who screens the screener" SPOF: refresh fundamentals → rebuild the
+  # halal dashboard feed → diff tiers → push transitions to Telegram → commit the
+  # refreshed cache/snapshot back so the next quarter diffs against it.
+  quarterly-rescreen:
+    name: Quarterly Halal Re-screen
+    if: |
+      github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'quarterly-rescreen' ||
+      github.event_name == 'schedule' && startsWith(github.event.schedule, '0 4 1')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: pip-
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install fundamentals source (best-effort)
+        run: pip install Bharat-sm-data || echo "Bharat-sm-data unavailable — refresh will keep existing cache"
+
+      - name: Refresh fundamentals (preserves cache on failure)
+        run: python scripts/refresh_fundamentals.py || echo "refresh failed — keeping existing cache, tier diff still runs"
+
+      - name: Rebuild halal dashboard feed
+        run: python scripts/build_halal_dashboard_data.py || true
+
+      - name: Diff tiers + push changes to Telegram
+        run: python -m src.tier_monitor --notify
+
+      - name: Commit refreshed screening state
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/fundamentals_cache.json data/tier_snapshot.json halal_data.js
+          if git diff --cached --quiet; then
+            echo "No screening changes to commit."
+          else
+            git commit -m "chore(halal): quarterly re-screen — refresh fundamentals + tier snapshot [skip ci]"
+            git push
+          fi
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
+            -d chat_id="${TELEGRAM_CHAT_ID}" \
+            -d parse_mode="HTML" \
+            -d text="❌ <b>QUARTERLY RE-SCREEN FAILED</b>%0ACheck: <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>GitHub Actions</a>"
