@@ -1127,7 +1127,53 @@ function calcZakat(){
       <div class="flex justify-between items-baseline border-b border-outline-variant pb-3"><span class="text-sm text-muted">Total Zakat Due (2.5%)</span><span class="text-3xl font-bold tracking-tight">${inr(zakat)}</span></div>
       <div class="flex justify-between items-baseline"><span class="text-sm text-muted">Zakat on gains only</span><span class="text-lg font-semibold">${inr(gainZakat)}</span></div>
       <p class="text-xs text-muted mt-2 leading-relaxed">Unrealised gain: ${inr(gain)}. AAOIFI: zakat is due on the full market value of tradeable shares held under one year, not just gains.</p>
+    </div>
+    <div class="flex flex-col sm:flex-row gap-3 mt-5">
+      <button onclick="zakatCertificate()" class="flex-1 inline-flex items-center justify-center gap-2 text-sm font-semibold py-3 rounded-pill bg-primary text-white hover:opacity-90 transition-opacity">📄 Download certificate (PDF)</button>
+      <a href="https://www.launchgood.com" target="_blank" rel="noopener" class="flex-1 inline-flex items-center justify-center gap-2 text-sm font-semibold py-3 rounded-pill border border-primary/30 text-primary hover:bg-primary hover:text-white transition-colors">Donate Zakat now →</a>
     </div>`;
+}
+// ---- #6: guided Zakat → downloadable PDF certificate (print-to-PDF, no deps) ----
+function zakatCertificate(){
+  const g=id=>parseFloat(document.getElementById(id).value)||0;
+  const portfolio=g('z_portfolio'), cost=g('z_cost'), cash=g('z_cash'), gold=g('z_gold');
+  const NISAB=45000, RATE=0.025;
+  const total=portfolio+cash+gold, zakat=total*RATE, met=total>=NISAB;
+  const inr=v=>'₹'+Math.round(v).toLocaleString('en-IN');
+  const today=new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+  const w=window.open('','_blank','width=820,height=1040');
+  if(!w){ alert('Allow pop-ups to download the Zakat certificate.'); return; }
+  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Zakat Certificate — ${today}</title><style>
+    *{box-sizing:border-box;font-family:Georgia,'Times New Roman',serif;}
+    body{margin:0;padding:48px;color:#1a2233;background:#f6f4ec;}
+    .cert{border:3px double #c4a44a;border-radius:14px;padding:48px;max-width:680px;margin:0 auto;background:#fffdf7;box-shadow:0 10px 40px rgba(0,0,0,.08);}
+    .crest{font-size:44px;text-align:center;line-height:1;}
+    h1{text-align:center;font-size:27px;letter-spacing:1px;margin:10px 0 2px;}
+    .sub{text-align:center;color:#7a7a6a;font-size:13px;margin-bottom:30px;}
+    .row{display:flex;justify-content:space-between;padding:11px 2px;border-bottom:1px solid #ece7d6;font-size:15px;}
+    .row.tot{border-bottom:none;margin-top:16px;align-items:baseline;}
+    .total{font-size:30px;color:#16653a;font-weight:bold;}
+    .note{font-size:11.5px;color:#9a9a8a;margin-top:26px;line-height:1.7;}
+    .sign{display:flex;justify-content:space-between;margin-top:42px;font-size:12px;color:#555;}
+    @media print{ .noprint{display:none;} body{background:#fff;padding:0;} .cert{box-shadow:none;} }
+  </style></head><body>
+    <div class="cert">
+      <div class="crest">🕌</div>
+      <h1>Zakat Certificate</h1>
+      <p class="sub">Annual purification of wealth · AAOIFI method · issued ${today}</p>
+      <div class="row"><span>Zakatable portfolio value</span><span>${inr(portfolio)}</span></div>
+      <div class="row"><span>Cash &amp; savings</span><span>${inr(cash)}</span></div>
+      <div class="row"><span>Gold value</span><span>${inr(gold)}</span></div>
+      <div class="row"><span><strong>Total zakatable wealth</strong></span><span><strong>${inr(total)}</strong></span></div>
+      <div class="row"><span>Nisab status (silver ~₹45,000)</span><span>${met?'✅ Zakat applicable':'❌ Below nisab'}</span></div>
+      <div class="row tot"><span>Zakat due (2.5%)</span><span class="total">${inr(zakat)}</span></div>
+      <p class="note">This certificate records a self-assessed Zakat obligation computed at 2.5% of total zakatable wealth held above the nisab threshold for one lunar year (hawl). Dividend purification is a separate obligation and is not included here. This is a calculation aid, <strong>not a fatwa</strong> — confirm with a qualified scholar.</p>
+      <div class="sign"><span>_______________________<br>Account holder</span><span style="text-align:right;">Boro · Halal Finance<br>generated ${today}</span></div>
+      <button class="noprint" onclick="window.print()" style="display:block;margin:30px auto 0;padding:12px 26px;background:#16653a;color:#fff;border:none;border-radius:8px;font-size:14px;font-family:system-ui,sans-serif;cursor:pointer;">Save as PDF / Print</button>
+    </div>
+    <script>setTimeout(function(){window.print();},450);<\/script>
+  </body></html>`);
+  w.document.close();
 }
 
 // ---- Watchlist ----
