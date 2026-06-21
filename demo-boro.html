@@ -983,7 +983,67 @@ function halalCardHTML(t, rec){
     ${rec.pur?`<p class="text-xs text-muted mt-3">Dividend purification: <strong>${rec.pur}%</strong> of dividends to charity.</p>`:''}
     ${timelineHTML(t)}
     ${citationHTML(rec)}
+    <button onclick="shareVerdict('${t}')" class="mt-3 w-full flex items-center justify-center gap-2 text-xs font-semibold py-2.5 rounded-pill border border-primary/30 text-primary hover:bg-primary hover:text-white transition-colors"><span class="material-symbols-outlined text-[16px]">ios_share</span>Share this verdict</button>
   </div>`;
+}
+// ---- Shareable verdict card: the viral hook (copy-link + downloadable PNG) ----
+function _verdictSVG(t, rec){
+  const c = classifyHalal(rec.d, rec.i);
+  const accent = c.tier==='🟢'?'#16a34a':(c.tier==='🟡'?'#d97706':'#dc2626');
+  const fmt = rec.asof ? new Date(rec.asof).toLocaleDateString('en-IN',{month:'short',year:'numeric'}) : '—';
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const reasons = c.reasons.map((r,i)=>`<text x="64" y="${560+i*52}" font-family="Inter,Arial,sans-serif" font-size="26" fill="#cbd5e1">${esc(r)}</text>`).join('');
+  const pur = rec.pur?`<text x="64" y="700" font-family="Inter,Arial,sans-serif" font-size="24" fill="#94a3b8">Dividend purification: ${rec.pur}% to charity</text>`:'';
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080">
+    <rect width="1080" height="1080" fill="#0b1220"/>
+    <rect x="0" y="0" width="1080" height="12" fill="${accent}"/>
+    <text x="64" y="120" font-family="Inter,Arial,sans-serif" font-size="34" font-weight="700" fill="#ffffff">Boro · Halal Verdict</text>
+    <text x="64" y="168" font-family="Inter,Arial,sans-serif" font-size="24" fill="#64748b">AAOIFI Shariah screening · verified ${fmt}</text>
+    <text x="64" y="360" font-family="Inter,Arial,sans-serif" font-size="120" font-weight="800" fill="#ffffff">${c.tier} ${esc(t)}</text>
+    <text x="64" y="450" font-family="Inter,Arial,sans-serif" font-size="56" font-weight="700" fill="${accent}">${esc(c.verdict)}</text>
+    ${reasons}
+    ${pur}
+    <text x="64" y="980" font-family="Inter,Arial,sans-serif" font-size="22" fill="#475569">Debt/assets ${rec.d??'—'}% · Interest income ${rec.i??'—'}% · source: ${esc(rec.src||'—')}</text>
+    <text x="64" y="1020" font-family="Inter,Arial,sans-serif" font-size="22" fill="#475569">Screen it yourself — not financial advice.</text>
+  </svg>`;
+}
+function shareVerdict(t){
+  const rec = HALAL_DATA[t]; if(!rec) return;
+  const c = classifyHalal(rec.d, rec.i);
+  let ov = document.getElementById('shareOverlay');
+  if(!ov){ ov=document.createElement('div'); ov.id='shareOverlay';
+    ov.style.cssText='position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:20px;';
+    ov.onclick=e=>{ if(e.target===ov) ov.remove(); };
+    document.body.appendChild(ov); }
+  const link = location.origin+location.pathname+'#halal='+t;
+  ov.innerHTML = `<div style="background:var(--surface-lowest,#fff);border-radius:20px;max-width:420px;width:100%;padding:22px;box-shadow:0 30px 80px -20px rgba(0,0,0,.5);">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <strong style="font-size:16px;">Share verdict</strong>
+        <span onclick="document.getElementById('shareOverlay').remove()" class="material-symbols-outlined" style="cursor:pointer;color:#94a3b8;">close</span>
+      </div>
+      <img id="shareImg" alt="${t} halal verdict" style="width:100%;border-radius:14px;display:block;border:1px solid rgba(0,0,0,.08);"/>
+      <div style="display:flex;gap:10px;margin-top:16px;">
+        <button onclick="copyVerdictLink('${t}')" class="flex-1" style="flex:1;padding:11px;border-radius:10px;border:1px solid var(--outline-variant,#e5e7eb);font-weight:600;font-size:13px;cursor:pointer;background:transparent;">🔗 <span id="copyLbl">Copy link</span></button>
+        <button onclick="downloadVerdict('${t}')" style="flex:1;padding:11px;border-radius:10px;border:none;background:var(--primary,#6366f1);color:#fff;font-weight:600;font-size:13px;cursor:pointer;">⬇ Download image</button>
+      </div>
+      <p style="font-size:11px;color:#94a3b8;margin-top:10px;text-align:center;">${link}</p>
+    </div>`;
+  const svg = _verdictSVG(t, rec);
+  document.getElementById('shareImg').src = 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+}
+function copyVerdictLink(t){
+  const rec=HALAL_DATA[t]; const c=classifyHalal(rec.d,rec.i);
+  const link = location.origin+location.pathname+'#halal='+t;
+  const text = `${c.tier} ${t} — ${c.verdict} (AAOIFI screen). ${link}`;
+  navigator.clipboard.writeText(text).then(()=>{ const l=document.getElementById('copyLbl'); if(l){ l.textContent='Copied!'; setTimeout(()=>l.textContent='Copy link',1500);} });
+}
+function downloadVerdict(t){
+  const rec=HALAL_DATA[t]; const svg=_verdictSVG(t,rec);
+  const img=new Image();
+  img.onload=()=>{ const cv=document.createElement('canvas'); cv.width=1080; cv.height=1080;
+    cv.getContext('2d').drawImage(img,0,0);
+    const a=document.createElement('a'); a.href=cv.toDataURL('image/png'); a.download=`halal-verdict-${t}.png`; a.click(); };
+  img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
 }
 // ---- Tier-change alert banner (🟢→🔴 since last quarterly screen) ----
 const HALAL_ALERTS = (window.HALAL_DASH && window.HALAL_DASH.alerts) || [];
@@ -1307,6 +1367,17 @@ document.getElementById('nav').addEventListener('click', e=>{
   else { document.getElementById('phTitle').textContent = btn.querySelector('span:last-child').textContent; phPanel.classList.add('active'); }
   window.scrollTo(0,0);
 });
+
+// ---- Deep link: #halal=TICKER opens the verdict directly (shareable cards) ----
+(function(){
+  const m = (location.hash||'').match(/halal=([A-Za-z0-9]+)/);
+  if(!m) return;
+  const tk = m[1].toUpperCase();
+  const btn = document.querySelector('[data-tab="halal"]');
+  if(btn) btn.click();
+  const s = document.getElementById('halalSearch');
+  if(s){ s.value = tk; renderHalalLookup(); }
+})();
 
 // ---- Info (ⓘ) modal system — reads window.INFO from info_data.js ----
 const INFO = (window.INFO) || {};
