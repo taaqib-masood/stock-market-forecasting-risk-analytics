@@ -19,6 +19,7 @@
 [build]
   publish = "."
   command = ""
+  functions = "netlify/functions"   # serverless trigger (dispatch.js) for the buttons
 
 # Serve the dashboard at the site root.
 [[redirects]]
