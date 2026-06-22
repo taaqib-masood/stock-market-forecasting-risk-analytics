@@ -9,9 +9,9 @@ A Python system that screens Indian (NSE) equities against the AAOIFI Shariah st
 [![Tests](https://img.shields.io/badge/tests-118%20passing-brightgreen.svg)](#testing--validation)
 [![Telegram](https://img.shields.io/badge/Telegram-Bot-blue.svg)](https://telegram.org/)
 [![Trading Pipeline](https://github.com/taaqib-masood/stock-market-forecasting-risk-analytics/actions/workflows/trading_pipeline.yml/badge.svg)](https://github.com/taaqib-masood/stock-market-forecasting-risk-analytics/actions/workflows/trading_pipeline.yml)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/c2d7b0e6-4805-45ec-a2f5-700ee30f5537/deploy-status)](https://app.netlify.com/projects/splendid-gingersnap-a7ae5a/deploys)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/c2d7b0e6-4805-45ec-a2f5-700ee30f5537/deploy-status)](https://app.netlify.com/projects/stocks-proj/deploys)
 
-**[Live Dashboard](https://splendid-gingersnap-a7ae5a.netlify.app) · [How it works](#-architecture) · [Run it yourself](#-quick-start)**
+**[Live Dashboard](https://stocks-proj.netlify.app) · [How it works](#-architecture) · [Run it yourself](#-quick-start)**
 
 ---
 
