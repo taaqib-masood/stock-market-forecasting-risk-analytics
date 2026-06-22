@@ -89,6 +89,14 @@ def _fetch_alpaca(ticker: str, start: str, end: str, timeframe: str = "1Day") ->
 def _fetch_yfinance(ticker: str, start: str, end: str) -> pd.DataFrame:
     import yfinance as yf
     df = yf.download(ticker, start=start, end=end, progress=False, auto_adjust=True)
+    if df.empty and "." not in ticker:
+        # bare symbol (e.g. "RELIANCE") is NSE-listed, not US — yfinance needs
+        # the ".NS" suffix for those. Retry once before giving up.
+        nse_ticker = f"{ticker}.NS"
+        df = yf.download(nse_ticker, start=start, end=end, progress=False, auto_adjust=True)
+        if not df.empty:
+            print(f"  [Data] '{ticker}' not found on yfinance — used '{nse_ticker}' (NSE) instead")
+            ticker = nse_ticker
     if df.empty:
         raise ValueError(f"No yfinance data for {ticker}")
     df.columns = [c[0] if isinstance(c, tuple) else c for c in df.columns]
