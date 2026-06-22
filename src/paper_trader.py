@@ -272,6 +272,15 @@ def trade_stats(state: dict) -> dict:
     wins   = [t["pnl"] for t in trades if t["pnl"] > 0]
     losses = [t["pnl"] for t in trades if t["pnl"] <= 0]
     pnls   = [t["pnl"] for t in trades]
+
+    holding_days = []
+    for t in trades:
+        if not t.get("entry_date") or not t.get("closed_at"):
+            continue
+        entry = datetime.strptime(t["entry_date"], "%Y-%m-%d %H:%M")
+        exit_ = datetime.strptime(t["closed_at"], "%Y-%m-%d %H:%M")
+        holding_days.append((exit_ - entry).total_seconds() / 86400)
+
     return {
         "total":         len(trades),
         "wins":          len(wins),
@@ -284,6 +293,7 @@ def trade_stats(state: dict) -> dict:
                          if losses and sum(losses) != 0 else float("inf"),
         "best":          round(max(pnls), 2),
         "worst":         round(min(pnls), 2),
+        "avg_days_held": round(sum(holding_days) / len(holding_days), 1) if holding_days else 0,
     }
 
 
@@ -369,6 +379,7 @@ def render_portfolio(state: dict):
               f"Avg Loss: {R}₹{stats['avg_loss']:+,.2f}{RESET}")
         print(f"  {'Best Trade':<18} {G}₹{stats['best']:+,.2f}{RESET}   "
               f"Worst: {R}₹{stats['worst']:+,.2f}{RESET}")
+        print(f"  {'Avg Days Held':<18} {stats['avg_days_held']}")
         print()
 
     # ── Footer ─────────────────────────────────────────────────────────────────
