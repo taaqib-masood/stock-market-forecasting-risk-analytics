@@ -245,9 +245,13 @@
           <p class="text-sm font-semibold text-on-surface">Run controls <span class="text-xs text-muted font-normal">— runs the paper-trading commands via the control server</span></p>
           <button onclick="document.getElementById('ctlCfg').classList.toggle('hidden')" class="text-xs text-muted underline">connection ⚙</button>
         </div>
-        <div id="ctlCfg" class="hidden flex flex-wrap gap-2 text-xs">
-          <input id="ctlBase" placeholder="http://localhost:8765" class="border border-outline-variant rounded-pill px-3 py-1.5 flex-1 min-w-[200px]" />
-          <input id="ctlToken" type="password" placeholder="control token" class="border border-outline-variant rounded-pill px-3 py-1.5 flex-1 min-w-[160px]" />
+        <div id="ctlCfg" class="hidden flex flex-wrap gap-2 text-xs items-center">
+          <select id="ctlMode" class="border border-outline-variant rounded-pill px-3 py-1.5">
+            <option value="ci">Cloud (GitHub Actions)</option>
+            <option value="local">Local (control server)</option>
+          </select>
+          <input id="ctlBase" placeholder="http://localhost:8765 (local only)" class="border border-outline-variant rounded-pill px-3 py-1.5 flex-1 min-w-[200px]" />
+          <input id="ctlToken" type="password" placeholder="control token (local only)" class="border border-outline-variant rounded-pill px-3 py-1.5 flex-1 min-w-[160px]" />
           <button onclick="ctlSave()" class="px-3 py-1.5 rounded-pill bg-surface-highest border border-outline-variant">Save</button>
         </div>
         <div class="flex flex-wrap gap-2">
@@ -256,7 +260,7 @@
           <button onclick="runCtl('/daily-briefing','Running full briefing…')" class="px-4 py-2 rounded-pill bg-surface-highest border border-outline-variant text-sm font-semibold">📋 Daily briefing</button>
           <button onclick="refreshPortfolio()" class="px-4 py-2 rounded-pill bg-surface-highest border border-outline-variant text-sm font-semibold">↻ Portfolio</button>
         </div>
-        <p id="ctlStatus" class="text-xs text-muted">Idle. Set the control server URL + token under ⚙, then start the server: <code>CONTROL_TOKEN=… python -m src.control_server</code></p>
+        <p id="ctlStatus" class="text-xs text-muted">Idle · <b>Cloud mode</b> (default): buttons trigger GitHub Actions, no server needed (works on the deployed Netlify site). Switch to <b>Local</b> under ⚙ to drive a local <code>control_server</code>.</p>
       </div>
 
       <!-- News Sentiment -->
@@ -1544,13 +1548,33 @@ const inr = n => '₹' + Number(n).toLocaleString('en-IN');
   if(p.total_pnl_pct!=null) set('mkt-pf-chg', (p.total_pnl_pct>0?'+':'')+p.total_pnl_pct+'%');
 })();
 
-// ---- Run controls: call src.control_server (no terminal needed) ----
-function ctlCfg(){ return { base:(localStorage.getItem('ctlBase')||'http://localhost:8765').replace(/\/+$/,''), token:localStorage.getItem('ctlToken')||'' }; }
+// ---- Run controls: Cloud (GitHub Actions via Netlify fn) OR Local (control_server) ----
+function ctlCfg(){ return {
+  mode: localStorage.getItem('ctlMode')||'ci',
+  base:(localStorage.getItem('ctlBase')||'http://localhost:8765').replace(/\/+$/,''),
+  token:localStorage.getItem('ctlToken')||'' }; }
 function ctlStatus(m){ const e=document.getElementById('ctlStatus'); if(e) e.textContent=m; }
-function ctlSave(){ localStorage.setItem('ctlBase',(document.getElementById('ctlBase').value||'').trim()); localStorage.setItem('ctlToken',(document.getElementById('ctlToken').value||'').trim()); ctlStatus('Saved connection settings.'); }
+function ctlSave(){
+  localStorage.setItem('ctlMode',document.getElementById('ctlMode').value);
+  localStorage.setItem('ctlBase',(document.getElementById('ctlBase').value||'').trim());
+  localStorage.setItem('ctlToken',(document.getElementById('ctlToken').value||'').trim());
+  ctlStatus('Saved. Mode: '+document.getElementById('ctlMode').value);
+}
 async function runCtl(path,busyMsg){
-  const {base,token}=ctlCfg();
-  if(!token){ ctlStatus('⚠ Open ⚙ and set the control token first.'); return; }
+  const {mode,base,token}=ctlCfg();
+  if(mode==='ci'){
+    const job = path==='/auto-close' ? 'auto-close' : 'nightly-scan';   // scan & briefing → nightly-scan
+    ctlStatus(busyMsg+' — triggering GitHub Actions…');
+    try{
+      const r=await fetch('/.netlify/functions/dispatch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({job})});
+      const j=await r.json();
+      if(j.ok) ctlStatus('✓ '+(j.note||('dispatched '+job))+' This page auto-updates after the run + redeploy.');
+      else ctlStatus('✗ '+(j.error||('failed ('+r.status+')'))+(r.status===404?' — is the Netlify function deployed?':''));
+    }catch(e){ ctlStatus('✗ Cannot reach the dispatch function (deployed on Netlify, or run `netlify dev`): '+e.message); }
+    return;
+  }
+  // local mode → control_server
+  if(!token){ ctlStatus('⚠ Local mode needs a control token (open ⚙).'); return; }
   ctlStatus(busyMsg+' (can take a minute)…');
   try{
     const r=await fetch(base+path,{method:'POST',headers:{'X-Control-Token':token}});
@@ -1560,8 +1584,9 @@ async function runCtl(path,busyMsg){
   }catch(e){ ctlStatus('✗ Cannot reach control server at '+base+' — is it running? '+e.message); }
 }
 async function refreshPortfolio(){
-  const {base,token}=ctlCfg();
-  if(!token){ ctlStatus('⚠ Open ⚙ and set the control token first.'); return; }
+  const {mode,base,token}=ctlCfg();
+  if(mode==='ci'){ ctlStatus('Reloading committed feed…'); location.reload(); return; }
+  if(!token){ ctlStatus('⚠ Local mode needs a control token (open ⚙).'); return; }
   ctlStatus('Fetching portfolio…');
   try{
     const r=await fetch(base+'/portfolio',{headers:{'X-Control-Token':token}});
@@ -1570,7 +1595,8 @@ async function refreshPortfolio(){
     else ctlStatus('✗ '+(j.error||'failed'));
   }catch(e){ ctlStatus('✗ Cannot reach control server: '+e.message); }
 }
-(function(){ const b=document.getElementById('ctlBase'),t=document.getElementById('ctlToken'); if(b)b.value=localStorage.getItem('ctlBase')||''; if(t)t.value=localStorage.getItem('ctlToken')||''; })();
+(function(){ const m=document.getElementById('ctlMode'),b=document.getElementById('ctlBase'),t=document.getElementById('ctlToken');
+  if(m)m.value=localStorage.getItem('ctlMode')||'ci'; if(b)b.value=localStorage.getItem('ctlBase')||''; if(t)t.value=localStorage.getItem('ctlToken')||''; })();
 function signalCardHTML(c){
   const pass = Object.values(c.criteria||{}).filter(Boolean).length;
   const tot  = Object.keys(c.criteria||{}).length || 7;
