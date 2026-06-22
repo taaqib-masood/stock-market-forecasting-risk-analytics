@@ -1,0 +1,1 @@
+window.BACKTEST_HISTORY = [];
