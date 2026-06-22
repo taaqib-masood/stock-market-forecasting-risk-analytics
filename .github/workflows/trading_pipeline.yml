@@ -63,6 +63,7 @@ jobs:
           from src import feature_engineering, data_provider
           from src import news_sentiment, macro_indicators, explainer
           from src import mlflow_tracker, drift_detector
+          from src import walk_forward
           print('All imports OK')
           "
 
