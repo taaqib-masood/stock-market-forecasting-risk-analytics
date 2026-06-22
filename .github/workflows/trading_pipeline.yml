@@ -136,7 +136,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No dashboard changes to commit."
           else
-            git commit -m "chore(dashboard): nightly live feed refresh [skip ci]"
+            git commit -m "chore(dashboard): nightly live feed refresh"
             git push
           fi
 
@@ -301,7 +301,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No screening changes to commit."
           else
-            git commit -m "chore(halal): quarterly re-screen — refresh fundamentals + tier snapshot [skip ci]"
+            git commit -m "chore(halal): quarterly re-screen — refresh fundamentals + tier snapshot"
             git push
           fi
 
