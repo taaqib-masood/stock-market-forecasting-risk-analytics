@@ -24,6 +24,15 @@ on:
           - auto-close
           - weekly-backtest
           - quarterly-rescreen
+          - research-backtest
+      ticker:
+        description: "Ticker for research-backtest (ignored by other jobs)"
+        required: false
+        default: "RELIANCE"
+      years:
+        description: "Years of history for research-backtest (ignored by other jobs)"
+        required: false
+        default: "5"
 
 env:
   TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
@@ -249,6 +258,58 @@ jobs:
             -d chat_id="${TELEGRAM_CHAT_ID}" \
             -d parse_mode="HTML" \
             -d text="❌ <b>WEEKLY BACKTEST FAILED</b>%0ACheck: <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>GitHub Actions</a>"
+
+  # ── Research Backtest (on-demand, from the dashboard) ─────────────────────
+  research-backtest:
+    name: Research Backtest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'research-backtest'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    env:
+      BT_TICKER: ${{ github.event.inputs.ticker }}
+      BT_YEARS: ${{ github.event.inputs.years }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: pip-
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run backtest and export to dashboard history
+        run: python -m scripts.export_backtest --ticker "$BT_TICKER" --years "$BT_YEARS"
+
+      - name: Commit backtest history
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/backtest_history.json backtest_data.js
+          if git diff --cached --quiet; then
+            echo "No backtest changes to commit."
+          else
+            git commit -m "chore(backtest): research run — ${BT_TICKER}"
+            git push
+          fi
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
+            -d chat_id="${TELEGRAM_CHAT_ID}" \
+            -d parse_mode="HTML" \
+            -d text="❌ <b>RESEARCH BACKTEST FAILED</b> (${BT_TICKER})%0ACheck: <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>GitHub Actions</a>"
 
   # ── Quarterly Halal Re-screen (1st of Jan/Apr/Jul/Oct) ─────────────────────
   # Kills the "who screens the screener" SPOF: refresh fundamentals → rebuild the
