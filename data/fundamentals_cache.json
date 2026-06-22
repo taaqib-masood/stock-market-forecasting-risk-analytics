@@ -1,0 +1,7520 @@
+{
+  "TCS": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025",
+      "FY 2026"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0623,
+      "interest_income_ratio": 0.0045
+    },
+    "history": [
+      {
+        "period": "FY 2019",
+        "debt": 62.0,
+        "assets": 113901.0,
+        "revenue": 150774.0,
+        "interest_other_income": 198.0,
+        "debt_to_assets": 0.0005,
+        "interest_income_ratio": 0.0013
+      },
+      {
+        "period": "FY 2020",
+        "debt": 8174.0,
+        "assets": 120127.0,
+        "revenue": 161541.0,
+        "interest_other_income": 924.0,
+        "debt_to_assets": 0.068,
+        "interest_income_ratio": 0.0057
+      },
+      {
+        "period": "FY 2021",
+        "debt": 7795.0,
+        "assets": 129992.0,
+        "revenue": 167311.0,
+        "interest_other_income": 637.0,
+        "debt_to_assets": 0.06,
+        "interest_income_ratio": 0.0038
+      },
+      {
+        "period": "FY 2022",
+        "debt": 7818.0,
+        "assets": 140924.0,
+        "revenue": 195772.0,
+        "interest_other_income": 784.0,
+        "debt_to_assets": 0.0555,
+        "interest_income_ratio": 0.004
+      },
+      {
+        "period": "FY 2023",
+        "debt": 7688.0,
+        "assets": 142859.0,
+        "revenue": 228907.0,
+        "interest_other_income": 779.0,
+        "debt_to_assets": 0.0538,
+        "interest_income_ratio": 0.0034
+      },
+      {
+        "period": "FY 2024",
+        "debt": 8021.0,
+        "assets": 145472.0,
+        "revenue": 245315.0,
+        "interest_other_income": 778.0,
+        "debt_to_assets": 0.0551,
+        "interest_income_ratio": 0.0032
+      },
+      {
+        "period": "FY 2025",
+        "debt": 9392.0,
+        "assets": 158649.0,
+        "revenue": 259286.0,
+        "interest_other_income": 796.0,
+        "debt_to_assets": 0.0592,
+        "interest_income_ratio": 0.0031
+      },
+      {
+        "period": "FY 2026",
+        "debt": 11283.0,
+        "assets": 181167.0,
+        "revenue": 271423.0,
+        "interest_other_income": 1227.0,
+        "debt_to_assets": 0.0623,
+        "interest_income_ratio": 0.0045
+      }
+    ]
+  },
+  "INFY": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025",
+      "FY 2026"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0595,
+      "interest_income_ratio": 0.0023
+    },
+    "history": [
+      {
+        "period": "FY 2019",
+        "debt": 0.0,
+        "assets": 84066.0,
+        "revenue": 85557.0,
+        "interest_other_income": 0.0,
+        "debt_to_assets": 0.0,
+        "interest_income_ratio": 0.0
+      },
+      {
+        "period": "FY 2020",
+        "debt": 4633.0,
+        "assets": 91800.0,
+        "revenue": 93594.0,
+        "interest_other_income": 170.0,
+        "debt_to_assets": 0.0505,
+        "interest_income_ratio": 0.0018
+      },
+      {
+        "period": "FY 2021",
+        "debt": 5325.0,
+        "assets": 107511.0,
+        "revenue": 102673.0,
+        "interest_other_income": 195.0,
+        "debt_to_assets": 0.0495,
+        "interest_income_ratio": 0.0019
+      },
+      {
+        "period": "FY 2022",
+        "debt": 5474.0,
+        "assets": 116729.0,
+        "revenue": 123936.0,
+        "interest_other_income": 200.0,
+        "debt_to_assets": 0.0469,
+        "interest_income_ratio": 0.0016
+      },
+      {
+        "period": "FY 2023",
+        "debt": 8299.0,
+        "assets": 124596.0,
+        "revenue": 149468.0,
+        "interest_other_income": 284.0,
+        "debt_to_assets": 0.0666,
+        "interest_income_ratio": 0.0019
+      },
+      {
+        "period": "FY 2024",
+        "debt": 8359.0,
+        "assets": 137360.0,
+        "revenue": 158381.0,
+        "interest_other_income": 470.0,
+        "debt_to_assets": 0.0609,
+        "interest_income_ratio": 0.003
+      },
+      {
+        "period": "FY 2025",
+        "debt": 8227.0,
+        "assets": 147795.0,
+        "revenue": 166590.0,
+        "interest_other_income": 416.0,
+        "debt_to_assets": 0.0557,
+        "interest_income_ratio": 0.0025
+      },
+      {
+        "period": "FY 2026",
+        "debt": 9176.0,
+        "assets": 154288.0,
+        "revenue": 182972.0,
+        "interest_other_income": 416.0,
+        "debt_to_assets": 0.0595,
+        "interest_income_ratio": 0.0023
+      }
+    ]
+  },
+  "WIPRO": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.1501,
+      "interest_income_ratio": 0.0159
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 13901.2,
+        "assets": 75390.8,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.1844,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 9946.7,
+        "assets": 82586.4,
+        "revenue": 61632.700000000004,
+        "interest_other_income": 737.5,
+        "debt_to_assets": 0.1204,
+        "interest_income_ratio": 0.012
+      },
+      {
+        "period": "FY 2020",
+        "debt": 9724.0,
+        "assets": 80999.6,
+        "revenue": 63865.5,
+        "interest_other_income": 732.8,
+        "debt_to_assets": 0.12,
+        "interest_income_ratio": 0.0115
+      },
+      {
+        "period": "FY 2021",
+        "debt": 10451.4,
+        "assets": 82565.8,
+        "revenue": 64338.6,
+        "interest_other_income": 508.8,
+        "debt_to_assets": 0.1266,
+        "interest_income_ratio": 0.0079
+      },
+      {
+        "period": "FY 2022",
+        "debt": 17592.9,
+        "assets": 107275.6,
+        "revenue": 81378.9,
+        "interest_other_income": 532.5,
+        "debt_to_assets": 0.164,
+        "interest_income_ratio": 0.0065
+      },
+      {
+        "period": "FY 2023",
+        "debt": 17466.6,
+        "assets": 116923.70000000001,
+        "revenue": 92762.20000000001,
+        "interest_other_income": 1007.7,
+        "debt_to_assets": 0.1494,
+        "interest_income_ratio": 0.0109
+      },
+      {
+        "period": "FY 2024",
+        "debt": 16464.9,
+        "assets": 114608.9,
+        "revenue": 92391.1,
+        "interest_other_income": 1255.2,
+        "debt_to_assets": 0.1437,
+        "interest_income_ratio": 0.0136
+      },
+      {
+        "period": "FY 2025",
+        "debt": 19203.5,
+        "assets": 127929.1,
+        "revenue": 92997.79999999999,
+        "interest_other_income": 1477.0,
+        "debt_to_assets": 0.1501,
+        "interest_income_ratio": 0.0159
+      }
+    ]
+  },
+  "HCLTECH": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0601,
+      "interest_income_ratio": 0.0054
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 557.0,
+        "assets": 47989.0,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.0116,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 4195.0,
+        "assets": 58349.0,
+        "revenue": 61370.0,
+        "interest_other_income": 174.0,
+        "debt_to_assets": 0.0719,
+        "interest_income_ratio": 0.0028
+      },
+      {
+        "period": "FY 2020",
+        "debt": 7986.0,
+        "assets": 82819.0,
+        "revenue": 71265.0,
+        "interest_other_income": 505.0,
+        "debt_to_assets": 0.0964,
+        "interest_income_ratio": 0.0071
+      },
+      {
+        "period": "FY 2021",
+        "debt": 6864.0,
+        "assets": 86047.0,
+        "revenue": 76306.0,
+        "interest_other_income": 511.0,
+        "debt_to_assets": 0.0798,
+        "interest_income_ratio": 0.0067
+      },
+      {
+        "period": "FY 2022",
+        "debt": 6343.0,
+        "assets": 88921.0,
+        "revenue": 86718.0,
+        "interest_other_income": 319.0,
+        "debt_to_assets": 0.0713,
+        "interest_income_ratio": 0.0037
+      },
+      {
+        "period": "FY 2023",
+        "debt": 4794.0,
+        "assets": 93250.0,
+        "revenue": 102814.0,
+        "interest_other_income": 353.0,
+        "debt_to_assets": 0.0514,
+        "interest_income_ratio": 0.0034
+      },
+      {
+        "period": "FY 2024",
+        "debt": 5758.0,
+        "assets": 99006.0,
+        "revenue": 111408.0,
+        "interest_other_income": 553.0,
+        "debt_to_assets": 0.0582,
+        "interest_income_ratio": 0.005
+      },
+      {
+        "period": "FY 2025",
+        "debt": 6276.0,
+        "assets": 104480.0,
+        "revenue": 119540.0,
+        "interest_other_income": 644.0,
+        "debt_to_assets": 0.0601,
+        "interest_income_ratio": 0.0054
+      }
+    ]
+  },
+  "TECHM": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0458,
+      "interest_income_ratio": 0.006
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 2396.6,
+        "assets": 30431.4,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.0788,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 1995.5,
+        "assets": 33445.8,
+        "revenue": 35276.299999999996,
+        "interest_other_income": 133.2,
+        "debt_to_assets": 0.0597,
+        "interest_income_ratio": 0.0038
+      },
+      {
+        "period": "FY 2020",
+        "debt": 3670.4999999999995,
+        "assets": 37317.9,
+        "revenue": 38060.1,
+        "interest_other_income": 191.9,
+        "debt_to_assets": 0.0984,
+        "interest_income_ratio": 0.005
+      },
+      {
+        "period": "FY 2021",
+        "debt": 2900.8,
+        "assets": 39601.9,
+        "revenue": 38643.4,
+        "interest_other_income": 174.0,
+        "debt_to_assets": 0.0732,
+        "interest_income_ratio": 0.0045
+      },
+      {
+        "period": "FY 2022",
+        "debt": 2618.3999999999996,
+        "assets": 44415.5,
+        "revenue": 45761.1,
+        "interest_other_income": 162.6,
+        "debt_to_assets": 0.059,
+        "interest_income_ratio": 0.0036
+      },
+      {
+        "period": "FY 2023",
+        "debt": 2740.2,
+        "assets": 45827.2,
+        "revenue": 54255.2,
+        "interest_other_income": 325.6,
+        "debt_to_assets": 0.0598,
+        "interest_income_ratio": 0.006
+      },
+      {
+        "period": "FY 2024",
+        "debt": 2536.7,
+        "assets": 43149.1,
+        "revenue": 52922.9,
+        "interest_other_income": 392.2,
+        "debt_to_assets": 0.0588,
+        "interest_income_ratio": 0.0074
+      },
+      {
+        "period": "FY 2025",
+        "debt": 2025.2,
+        "assets": 44266.600000000006,
+        "revenue": 53852.3,
+        "interest_other_income": 321.7,
+        "debt_to_assets": 0.0458,
+        "interest_income_ratio": 0.006
+      }
+    ]
+  },
+  "BHARTIARTL": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.423,
+      "interest_income_ratio": 0.1119
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 111333.5,
+        "assets": 249520.99999999997,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.4462,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 125428.29999999999,
+        "assets": 274026.3,
+        "revenue": 86245.2,
+        "interest_other_income": 10622.2,
+        "debt_to_assets": 0.4577,
+        "interest_income_ratio": 0.1232
+      },
+      {
+        "period": "FY 2020",
+        "debt": 148228.1,
+        "assets": 359091.3,
+        "revenue": 90598.3,
+        "interest_other_income": 13991.8,
+        "debt_to_assets": 0.4128,
+        "interest_income_ratio": 0.1544
+      },
+      {
+        "period": "FY 2021",
+        "debt": 162785.2,
+        "assets": 344417.10000000003,
+        "revenue": 112386.1,
+        "interest_other_income": 15091.0,
+        "debt_to_assets": 0.4726,
+        "interest_income_ratio": 0.1343
+      },
+      {
+        "period": "FY 2022",
+        "debt": 169677.9,
+        "assets": 361207.20000000007,
+        "revenue": 122048.4,
+        "interest_other_income": 16616.2,
+        "debt_to_assets": 0.4698,
+        "interest_income_ratio": 0.1361
+      },
+      {
+        "period": "FY 2023",
+        "debt": 226020.30000000002,
+        "assets": 444557.00000000006,
+        "revenue": 140833.5,
+        "interest_other_income": 19299.9,
+        "debt_to_assets": 0.5084,
+        "interest_income_ratio": 0.137
+      },
+      {
+        "period": "FY 2024",
+        "debt": 215592.30000000002,
+        "assets": 442019.19999999995,
+        "revenue": 154306.1,
+        "interest_other_income": 22647.7,
+        "debt_to_assets": 0.4877,
+        "interest_income_ratio": 0.1468
+      },
+      {
+        "period": "FY 2025",
+        "debt": 213642.09999999998,
+        "assets": 505005.49999999994,
+        "revenue": 194386.6,
+        "interest_other_income": 21753.9,
+        "debt_to_assets": 0.423,
+        "interest_income_ratio": 0.1119
+      }
+    ]
+  },
+  "RELIANCE": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025",
+      "FY 2026"
+    ],
+    "latest": {
+      "debt_to_assets": 0.1851,
+      "interest_income_ratio": 0.0249
+    },
+    "history": [
+      {
+        "period": "FY 2019",
+        "debt": 307714.0,
+        "assets": 997630.0,
+        "revenue": 577698.0,
+        "interest_other_income": 16495.0,
+        "debt_to_assets": 0.3084,
+        "interest_income_ratio": 0.0286
+      },
+      {
+        "period": "FY 2020",
+        "debt": 355133.0,
+        "assets": 1163015.0,
+        "revenue": 610806.0,
+        "interest_other_income": 22027.0,
+        "debt_to_assets": 0.3054,
+        "interest_income_ratio": 0.0361
+      },
+      {
+        "period": "FY 2021",
+        "debt": 278962.0,
+        "assets": 1320065.0,
+        "revenue": 505153.0,
+        "interest_other_income": 21189.0,
+        "debt_to_assets": 0.2113,
+        "interest_income_ratio": 0.0419
+      },
+      {
+        "period": "FY 2022",
+        "debt": 319158.0,
+        "assets": 1498622.0,
+        "revenue": 715734.0,
+        "interest_other_income": 14584.0,
+        "debt_to_assets": 0.213,
+        "interest_income_ratio": 0.0204
+      },
+      {
+        "period": "FY 2023",
+        "debt": 451664.0,
+        "assets": 1605882.0,
+        "revenue": 890011.0,
+        "interest_other_income": 19571.0,
+        "debt_to_assets": 0.2813,
+        "interest_income_ratio": 0.022
+      },
+      {
+        "period": "FY 2024",
+        "debt": 350719.0,
+        "assets": 1755048.0,
+        "revenue": 917121.0,
+        "interest_other_income": 23118.0,
+        "debt_to_assets": 0.1998,
+        "interest_income_ratio": 0.0252
+      },
+      {
+        "period": "FY 2025",
+        "debt": 374313.0,
+        "assets": 1949713.0,
+        "revenue": 982671.0,
+        "interest_other_income": 24269.0,
+        "debt_to_assets": 0.192,
+        "interest_income_ratio": 0.0247
+      },
+      {
+        "period": "FY 2026",
+        "debt": 402962.0,
+        "assets": 2177546.0,
+        "revenue": 1086181.0,
+        "interest_other_income": 27061.0,
+        "debt_to_assets": 0.1851,
+        "interest_income_ratio": 0.0249
+      }
+    ]
+  },
+  "MARUTI": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0007,
+      "interest_income_ratio": 0.0012
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 120.8,
+        "assets": 60248.4,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.002,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 159.6,
+        "assets": 63968.7,
+        "revenue": 88785.8,
+        "interest_other_income": 75.9,
+        "debt_to_assets": 0.0025,
+        "interest_income_ratio": 0.0009
+      },
+      {
+        "period": "FY 2020",
+        "debt": 184.1,
+        "assets": 63627.7,
+        "revenue": 79112.8,
+        "interest_other_income": 134.2,
+        "debt_to_assets": 0.0029,
+        "interest_income_ratio": 0.0017
+      },
+      {
+        "period": "FY 2021",
+        "debt": 540.9,
+        "assets": 71376.1,
+        "revenue": 73477.3,
+        "interest_other_income": 101.8,
+        "debt_to_assets": 0.0076,
+        "interest_income_ratio": 0.0014
+      },
+      {
+        "period": "FY 2022",
+        "debt": 425.5,
+        "assets": 74655.5,
+        "revenue": 90236.40000000001,
+        "interest_other_income": 126.6,
+        "debt_to_assets": 0.0057,
+        "interest_income_ratio": 0.0014
+      },
+      {
+        "period": "FY 2023",
+        "debt": 1247.3,
+        "assets": 84596.90000000001,
+        "revenue": 119889.40000000001,
+        "interest_other_income": 187.0,
+        "debt_to_assets": 0.0147,
+        "interest_income_ratio": 0.0016
+      },
+      {
+        "period": "FY 2024",
+        "debt": 118.6,
+        "assets": 115304.1,
+        "revenue": 146205.80000000002,
+        "interest_other_income": 193.6,
+        "debt_to_assets": 0.001,
+        "interest_income_ratio": 0.0013
+      },
+      {
+        "period": "FY 2025",
+        "debt": 87.0,
+        "assets": 131971.2,
+        "revenue": 158179.1,
+        "interest_other_income": 194.2,
+        "debt_to_assets": 0.0007,
+        "interest_income_ratio": 0.0012
+      }
+    ]
+  },
+  "TVSMOTOR": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.6004,
+      "interest_income_ratio": 0.0474
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 6927.539999999999,
+        "assets": 13190.3,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.5252,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 9298.050000000001,
+        "assets": 16696.489999999998,
+        "revenue": 20187.13,
+        "interest_other_income": 663.4,
+        "debt_to_assets": 0.5569,
+        "interest_income_ratio": 0.0329
+      },
+      {
+        "period": "FY 2020",
+        "debt": 11591.449999999999,
+        "assets": 19272.17,
+        "revenue": 18901.140000000003,
+        "interest_other_income": 854.54,
+        "debt_to_assets": 0.6015,
+        "interest_income_ratio": 0.0452
+      },
+      {
+        "period": "FY 2021",
+        "debt": 12179.159999999998,
+        "assets": 21865.07,
+        "revenue": 19468.04,
+        "interest_other_income": 881.49,
+        "debt_to_assets": 0.557,
+        "interest_income_ratio": 0.0453
+      },
+      {
+        "period": "FY 2022",
+        "debt": 15827.21,
+        "assets": 26919.1,
+        "revenue": 24390.670000000002,
+        "interest_other_income": 940.22,
+        "debt_to_assets": 0.588,
+        "interest_income_ratio": 0.0385
+      },
+      {
+        "period": "FY 2023",
+        "debt": 22375.58,
+        "assets": 35024.53999999999,
+        "revenue": 32111.99,
+        "interest_other_income": 1367.89,
+        "debt_to_assets": 0.6389,
+        "interest_income_ratio": 0.0426
+      },
+      {
+        "period": "FY 2024",
+        "debt": 26005.700000000004,
+        "assets": 42024.0,
+        "revenue": 38909.6,
+        "interest_other_income": 1916.6,
+        "debt_to_assets": 0.6188,
+        "interest_income_ratio": 0.0493
+      },
+      {
+        "period": "FY 2025",
+        "debt": 28608.71,
+        "assets": 47650.89,
+        "revenue": 44188.48,
+        "interest_other_income": 2093.25,
+        "debt_to_assets": 0.6004,
+        "interest_income_ratio": 0.0474
+      }
+    ]
+  },
+  "M&M": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.4527,
+      "interest_income_ratio": 0.0558
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 55897.92,
+        "assets": 136369.31,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.4099,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 70848.29999999999,
+        "assets": 161888.66,
+        "revenue": 107742.09,
+        "interest_other_income": 5021.35,
+        "debt_to_assets": 0.4376,
+        "interest_income_ratio": 0.0466
+      },
+      {
+        "period": "FY 2020",
+        "debt": 82092.28,
+        "assets": 165716.13,
+        "revenue": 77712.65999999999,
+        "interest_other_income": 6021.15,
+        "debt_to_assets": 0.4954,
+        "interest_income_ratio": 0.0775
+      },
+      {
+        "period": "FY 2021",
+        "debt": 80624.83,
+        "assets": 164968.33000000002,
+        "revenue": 77077.15,
+        "interest_other_income": 6102.22,
+        "debt_to_assets": 0.4887,
+        "interest_income_ratio": 0.0792
+      },
+      {
+        "period": "FY 2022",
+        "debt": 77605.21,
+        "assets": 172388.49,
+        "revenue": 93545.23000000001,
+        "interest_other_income": 5018.05,
+        "debt_to_assets": 0.4502,
+        "interest_income_ratio": 0.0536
+      },
+      {
+        "period": "FY 2023",
+        "debt": 92246.85,
+        "assets": 204283.13,
+        "revenue": 127025.78,
+        "interest_other_income": 5829.7,
+        "debt_to_assets": 0.4516,
+        "interest_income_ratio": 0.0459
+      },
+      {
+        "period": "FY 2024",
+        "debt": 106625.52,
+        "assets": 234721.74,
+        "revenue": 142376.12,
+        "interest_other_income": 7488.21,
+        "debt_to_assets": 0.4543,
+        "interest_income_ratio": 0.0526
+      },
+      {
+        "period": "FY 2025",
+        "debt": 124949.31000000001,
+        "assets": 276013.16,
+        "revenue": 162929.29,
+        "interest_other_income": 9083.39,
+        "debt_to_assets": 0.4527,
+        "interest_income_ratio": 0.0558
+      }
+    ]
+  },
+  "EICHERMOT": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0169,
+      "interest_income_ratio": 0.0026
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 150.84,
+        "assets": 9522.23,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.0158,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 186.76,
+        "assets": 11386.83,
+        "revenue": 10498.849999999999,
+        "interest_other_income": 7.33,
+        "debt_to_assets": 0.0164,
+        "interest_income_ratio": 0.0007
+      },
+      {
+        "period": "FY 2020",
+        "debt": 249.0,
+        "assets": 12449.720000000001,
+        "revenue": 9728.54,
+        "interest_other_income": 18.88,
+        "debt_to_assets": 0.02,
+        "interest_income_ratio": 0.0019
+      },
+      {
+        "period": "FY 2021",
+        "debt": 219.25,
+        "assets": 14558.609999999999,
+        "revenue": 9204.67,
+        "interest_other_income": 16.45,
+        "debt_to_assets": 0.0151,
+        "interest_income_ratio": 0.0018
+      },
+      {
+        "period": "FY 2022",
+        "debt": 107.71,
+        "assets": 16139.830000000002,
+        "revenue": 10798.8,
+        "interest_other_income": 18.78,
+        "debt_to_assets": 0.0067,
+        "interest_income_ratio": 0.0017
+      },
+      {
+        "period": "FY 2023",
+        "debt": 288.41,
+        "assets": 19197.64,
+        "revenue": 15352.460000000001,
+        "interest_other_income": 28.02,
+        "debt_to_assets": 0.015,
+        "interest_income_ratio": 0.0018
+      },
+      {
+        "period": "FY 2024",
+        "debt": 419.44,
+        "assets": 23115.129999999997,
+        "revenue": 18059.37,
+        "interest_other_income": 50.88,
+        "debt_to_assets": 0.0181,
+        "interest_income_ratio": 0.0028
+      },
+      {
+        "period": "FY 2025",
+        "debt": 458.13,
+        "assets": 27174.41,
+        "revenue": 20875.059999999998,
+        "interest_other_income": 54.34,
+        "debt_to_assets": 0.0169,
+        "interest_income_ratio": 0.0026
+      }
+    ]
+  },
+  "HEROMOTOCO": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0247,
+      "interest_income_ratio": 0.0017
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 227.89000000000001,
+        "assets": 17396.73,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.0131,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 311.5,
+        "assets": 18504.36,
+        "revenue": 34718.31,
+        "interest_other_income": 37.18,
+        "debt_to_assets": 0.0168,
+        "interest_income_ratio": 0.0011
+      },
+      {
+        "period": "FY 2020",
+        "debt": 453.25,
+        "assets": 19674.07,
+        "revenue": 30756.64,
+        "interest_other_income": 46.64,
+        "debt_to_assets": 0.023,
+        "interest_income_ratio": 0.0015
+      },
+      {
+        "period": "FY 2021",
+        "debt": 584.02,
+        "assets": 23096.09,
+        "revenue": 31517.09,
+        "interest_other_income": 46.41,
+        "debt_to_assets": 0.0253,
+        "interest_income_ratio": 0.0015
+      },
+      {
+        "period": "FY 2022",
+        "debt": 605.17,
+        "assets": 22478.39,
+        "revenue": 30106.289999999997,
+        "interest_other_income": 53.1,
+        "debt_to_assets": 0.0269,
+        "interest_income_ratio": 0.0018
+      },
+      {
+        "period": "FY 2023",
+        "debt": 567.54,
+        "assets": 23917.03,
+        "revenue": 34730.5,
+        "interest_other_income": 104.88,
+        "debt_to_assets": 0.0237,
+        "interest_income_ratio": 0.003
+      },
+      {
+        "period": "FY 2024",
+        "debt": 606.4100000000001,
+        "assets": 26152.79,
+        "revenue": 38643.16,
+        "interest_other_income": 76.37,
+        "debt_to_assets": 0.0232,
+        "interest_income_ratio": 0.002
+      },
+      {
+        "period": "FY 2025",
+        "debt": 699.93,
+        "assets": 28390.32,
+        "revenue": 41967.5,
+        "interest_other_income": 70.65,
+        "debt_to_assets": 0.0247,
+        "interest_income_ratio": 0.0017
+      }
+    ]
+  },
+  "SUNPHARMA": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0257,
+      "interest_income_ratio": 0.0042
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 10385.27,
+        "assets": 64297.39,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.1615,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 10514.36,
+        "assets": 64589.53,
+        "revenue": 30091.4,
+        "interest_other_income": 555.25,
+        "debt_to_assets": 0.1628,
+        "interest_income_ratio": 0.0185
+      },
+      {
+        "period": "FY 2020",
+        "debt": 8314.880000000001,
+        "assets": 68194.32,
+        "revenue": 33489.09,
+        "interest_other_income": 302.73,
+        "debt_to_assets": 0.1219,
+        "interest_income_ratio": 0.009
+      },
+      {
+        "period": "FY 2021",
+        "debt": 3868.58,
+        "assets": 67622.22,
+        "revenue": 34357.31,
+        "interest_other_income": 141.43,
+        "debt_to_assets": 0.0572,
+        "interest_income_ratio": 0.0041
+      },
+      {
+        "period": "FY 2022",
+        "debt": 1290.3,
+        "assets": 69775.91,
+        "revenue": 39729.96,
+        "interest_other_income": 127.35,
+        "debt_to_assets": 0.0185,
+        "interest_income_ratio": 0.0032
+      },
+      {
+        "period": "FY 2023",
+        "debt": 6885.87,
+        "assets": 80711.90000000002,
+        "revenue": 44520.2,
+        "interest_other_income": 172.0,
+        "debt_to_assets": 0.0853,
+        "interest_income_ratio": 0.0039
+      },
+      {
+        "period": "FY 2024",
+        "debt": 3273.67,
+        "assets": 85327.79000000001,
+        "revenue": 49887.17,
+        "interest_other_income": 238.47,
+        "debt_to_assets": 0.0384,
+        "interest_income_ratio": 0.0048
+      },
+      {
+        "period": "FY 2025",
+        "debt": 2362.19,
+        "assets": 91908.14,
+        "revenue": 54729.01,
+        "interest_other_income": 231.36,
+        "debt_to_assets": 0.0257,
+        "interest_income_ratio": 0.0042
+      }
+    ]
+  },
+  "DRREDDY": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0974,
+      "interest_income_ratio": 0.0084
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 5071.400000000001,
+        "assets": 22349.3,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.2269,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 3838.0999999999995,
+        "assets": 22418.300000000003,
+        "revenue": 15829.5,
+        "interest_other_income": 88.9,
+        "debt_to_assets": 0.1712,
+        "interest_income_ratio": 0.0056
+      },
+      {
+        "period": "FY 2020",
+        "debt": 2210.2,
+        "assets": 23223.300000000003,
+        "revenue": 18193.7,
+        "interest_other_income": 98.3,
+        "debt_to_assets": 0.0952,
+        "interest_income_ratio": 0.0054
+      },
+      {
+        "period": "FY 2021",
+        "debt": 3030.8,
+        "assets": 26587.9,
+        "revenue": 19386.9,
+        "interest_other_income": 97.0,
+        "debt_to_assets": 0.114,
+        "interest_income_ratio": 0.005
+      },
+      {
+        "period": "FY 2022",
+        "debt": 3384.5,
+        "assets": 29745.5,
+        "revenue": 22099.9,
+        "interest_other_income": 95.8,
+        "debt_to_assets": 0.1138,
+        "interest_income_ratio": 0.0043
+      },
+      {
+        "period": "FY 2023",
+        "debt": 1347.2,
+        "assets": 32209.1,
+        "revenue": 25762.2,
+        "interest_other_income": 142.8,
+        "debt_to_assets": 0.0418,
+        "interest_income_ratio": 0.0055
+      },
+      {
+        "period": "FY 2024",
+        "debt": 2002.0,
+        "assets": 38779.700000000004,
+        "revenue": 28920.1,
+        "interest_other_income": 171.1,
+        "debt_to_assets": 0.0516,
+        "interest_income_ratio": 0.0059
+      },
+      {
+        "period": "FY 2025",
+        "debt": 4676.6,
+        "assets": 48022.8,
+        "revenue": 33762.9,
+        "interest_other_income": 282.9,
+        "debt_to_assets": 0.0974,
+        "interest_income_ratio": 0.0084
+      }
+    ]
+  },
+  "CIPLA": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025",
+      "FY 2026"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0145,
+      "interest_income_ratio": 0.0014
+    },
+    "history": [
+      {
+        "period": "FY 2019",
+        "debt": 4316.23,
+        "assets": 23761.91,
+        "revenue": 16838.98,
+        "interest_other_income": 168.43,
+        "debt_to_assets": 0.1816,
+        "interest_income_ratio": 0.01
+      },
+      {
+        "period": "FY 2020",
+        "debt": 2816.43,
+        "assets": 23422.79,
+        "revenue": 17476.190000000002,
+        "interest_other_income": 197.36,
+        "debt_to_assets": 0.1202,
+        "interest_income_ratio": 0.0113
+      },
+      {
+        "period": "FY 2021",
+        "debt": 2014.4099999999999,
+        "assets": 24855.28,
+        "revenue": 19425.58,
+        "interest_other_income": 160.7,
+        "debt_to_assets": 0.081,
+        "interest_income_ratio": 0.0083
+      },
+      {
+        "period": "FY 2022",
+        "debt": 1055.78,
+        "assets": 26857.159999999996,
+        "revenue": 22044.25,
+        "interest_other_income": 106.35,
+        "debt_to_assets": 0.0393,
+        "interest_income_ratio": 0.0048
+      },
+      {
+        "period": "FY 2023",
+        "debt": 803.12,
+        "assets": 29300.0,
+        "revenue": 23228.57,
+        "interest_other_income": 109.54,
+        "debt_to_assets": 0.0274,
+        "interest_income_ratio": 0.0047
+      },
+      {
+        "period": "FY 2024",
+        "debt": 559.41,
+        "assets": 32532.53,
+        "revenue": 26520.66,
+        "interest_other_income": 89.88,
+        "debt_to_assets": 0.0172,
+        "interest_income_ratio": 0.0034
+      },
+      {
+        "period": "FY 2025",
+        "debt": 438.19,
+        "assets": 37333.509999999995,
+        "revenue": 37900.73,
+        "interest_other_income": 62.01,
+        "debt_to_assets": 0.0117,
+        "interest_income_ratio": 0.0016
+      },
+      {
+        "period": "FY 2026",
+        "debt": 613.77,
+        "assets": 42342.71000000001,
+        "revenue": 39893.53,
+        "interest_other_income": 54.39,
+        "debt_to_assets": 0.0145,
+        "interest_income_ratio": 0.0014
+      }
+    ]
+  },
+  "DIVISLAB": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0002,
+      "interest_income_ratio": 0.0003
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 63.11,
+        "assets": 6784.820000000001,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.0093,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 105.6,
+        "assets": 8035.909999999999,
+        "revenue": 5101.89,
+        "interest_other_income": 4.68,
+        "debt_to_assets": 0.0131,
+        "interest_income_ratio": 0.0009
+      },
+      {
+        "period": "FY 2020",
+        "debt": 38.85,
+        "assets": 8531.32,
+        "revenue": 5584.05,
+        "interest_other_income": 7.14,
+        "debt_to_assets": 0.0046,
+        "interest_income_ratio": 0.0013
+      },
+      {
+        "period": "FY 2021",
+        "debt": 4.83,
+        "assets": 10770.84,
+        "revenue": 7031.96,
+        "interest_other_income": 2.1,
+        "debt_to_assets": 0.0004,
+        "interest_income_ratio": 0.0003
+      },
+      {
+        "period": "FY 2022",
+        "debt": 3.69,
+        "assets": 13360.240000000002,
+        "revenue": 9073.7,
+        "interest_other_income": 2.0,
+        "debt_to_assets": 0.0003,
+        "interest_income_ratio": 0.0002
+      },
+      {
+        "period": "FY 2023",
+        "debt": 3.26,
+        "assets": 14424.529999999999,
+        "revenue": 8112.17,
+        "interest_other_income": 1.96,
+        "debt_to_assets": 0.0002,
+        "interest_income_ratio": 0.0002
+      },
+      {
+        "period": "FY 2024",
+        "debt": 3.0,
+        "assets": 15460.0,
+        "revenue": 8184.0,
+        "interest_other_income": 4.0,
+        "debt_to_assets": 0.0002,
+        "interest_income_ratio": 0.0005
+      },
+      {
+        "period": "FY 2025",
+        "debt": 4.0,
+        "assets": 16921.0,
+        "revenue": 9712.0,
+        "interest_other_income": 3.0,
+        "debt_to_assets": 0.0002,
+        "interest_income_ratio": 0.0003
+      }
+    ]
+  },
+  "APOLLOHOSP": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.2625,
+      "interest_income_ratio": 0.0208
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 3426.64,
+        "assets": 8595.619999999999,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.3986,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 3673.2000000000003,
+        "assets": 9165.900000000001,
+        "revenue": 9648.9,
+        "interest_other_income": 327.0,
+        "debt_to_assets": 0.4007,
+        "interest_income_ratio": 0.0339
+      },
+      {
+        "period": "FY 2020",
+        "debt": 3595.6,
+        "assets": 11288.800000000001,
+        "revenue": 11472.099999999999,
+        "interest_other_income": 532.8,
+        "debt_to_assets": 0.3185,
+        "interest_income_ratio": 0.0464
+      },
+      {
+        "period": "FY 2021",
+        "debt": 4159.8,
+        "assets": 11391.599999999999,
+        "revenue": 10665.6,
+        "interest_other_income": 449.2,
+        "debt_to_assets": 0.3652,
+        "interest_income_ratio": 0.0421
+      },
+      {
+        "period": "FY 2022",
+        "debt": 4068.1000000000004,
+        "assets": 13261.0,
+        "revenue": 15034.9,
+        "interest_other_income": 378.6,
+        "debt_to_assets": 0.3068,
+        "interest_income_ratio": 0.0252
+      },
+      {
+        "period": "FY 2023",
+        "debt": 4332.4,
+        "assets": 14415.699999999999,
+        "revenue": 16702.8,
+        "interest_other_income": 380.8,
+        "debt_to_assets": 0.3005,
+        "interest_income_ratio": 0.0228
+      },
+      {
+        "period": "FY 2024",
+        "debt": 5332.6,
+        "assets": 16742.2,
+        "revenue": 19185.4,
+        "interest_other_income": 449.4,
+        "debt_to_assets": 0.3185,
+        "interest_income_ratio": 0.0234
+      },
+      {
+        "period": "FY 2025",
+        "debt": 5419.200000000001,
+        "assets": 20644.300000000003,
+        "revenue": 22027.3,
+        "interest_other_income": 458.5,
+        "debt_to_assets": 0.2625,
+        "interest_income_ratio": 0.0208
+      }
+    ]
+  },
+  "HINDUNILVR": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025",
+      "FY 2026"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0185,
+      "interest_income_ratio": 0.0058
+    },
+    "history": [
+      {
+        "period": "FY 2019",
+        "debt": 99.0,
+        "assets": 18629.0,
+        "revenue": 39860.0,
+        "interest_other_income": 33.0,
+        "debt_to_assets": 0.0053,
+        "interest_income_ratio": 0.0008
+      },
+      {
+        "period": "FY 2020",
+        "debt": 0.0,
+        "assets": 20153.0,
+        "revenue": 40487.0,
+        "interest_other_income": 118.0,
+        "debt_to_assets": 0.0,
+        "interest_income_ratio": 0.0029
+      },
+      {
+        "period": "FY 2021",
+        "debt": 0.0,
+        "assets": 68740.0,
+        "revenue": 47555.0,
+        "interest_other_income": 117.0,
+        "debt_to_assets": 0.0,
+        "interest_income_ratio": 0.0025
+      },
+      {
+        "period": "FY 2022",
+        "debt": 1043.0,
+        "assets": 70506.0,
+        "revenue": 52887.0,
+        "interest_other_income": 106.0,
+        "debt_to_assets": 0.0148,
+        "interest_income_ratio": 0.002
+      },
+      {
+        "period": "FY 2023",
+        "debt": 1219.0,
+        "assets": 73077.0,
+        "revenue": 61267.0,
+        "interest_other_income": 114.0,
+        "debt_to_assets": 0.0167,
+        "interest_income_ratio": 0.0019
+      },
+      {
+        "period": "FY 2024",
+        "debt": 1484.0,
+        "assets": 78489.0,
+        "revenue": 62900.0,
+        "interest_other_income": 334.0,
+        "debt_to_assets": 0.0189,
+        "interest_income_ratio": 0.0053
+      },
+      {
+        "period": "FY 2025",
+        "debt": 1648.0,
+        "assets": 79863.0,
+        "revenue": 62945.0,
+        "interest_other_income": 381.0,
+        "debt_to_assets": 0.0206,
+        "interest_income_ratio": 0.0061
+      },
+      {
+        "period": "FY 2026",
+        "debt": 1478.0,
+        "assets": 79738.0,
+        "revenue": 70156.0,
+        "interest_other_income": 410.0,
+        "debt_to_assets": 0.0185,
+        "interest_income_ratio": 0.0058
+      }
+    ]
+  },
+  "NESTLEIND": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2024",
+      "FY 2025",
+      "FY 2026"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0337,
+      "interest_income_ratio": 0.0065
+    },
+    "history": [
+      {
+        "period": "FY 2024",
+        "debt": 344.53,
+        "assets": 10523.060000000001,
+        "revenue": 25324.25,
+        "interest_other_income": 145.49,
+        "debt_to_assets": 0.0327,
+        "interest_income_ratio": 0.0057
+      },
+      {
+        "period": "FY 2025",
+        "debt": 1166.85,
+        "assets": 12193.32,
+        "revenue": 21236.01,
+        "interest_other_income": 136.0,
+        "debt_to_assets": 0.0957,
+        "interest_income_ratio": 0.0064
+      },
+      {
+        "period": "FY 2026",
+        "debt": 444.1600000000001,
+        "assets": 13182.49,
+        "revenue": 24265.97,
+        "interest_other_income": 158.31,
+        "debt_to_assets": 0.0337,
+        "interest_income_ratio": 0.0065
+      }
+    ]
+  },
+  "TATACONSUM": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025",
+      "FY 2026"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0823,
+      "interest_income_ratio": 0.0067
+    },
+    "history": [
+      {
+        "period": "FY 2019",
+        "debt": 1141.1,
+        "assets": 10880.68,
+        "revenue": 7408.63,
+        "interest_other_income": 52.47,
+        "debt_to_assets": 0.1049,
+        "interest_income_ratio": 0.0071
+      },
+      {
+        "period": "FY 2020",
+        "debt": 1586.32,
+        "assets": 18473.04,
+        "revenue": 9759.39,
+        "interest_other_income": 77.86,
+        "debt_to_assets": 0.0859,
+        "interest_income_ratio": 0.008
+      },
+      {
+        "period": "FY 2021",
+        "debt": 1633.5500000000002,
+        "assets": 20217.82,
+        "revenue": 11807.710000000001,
+        "interest_other_income": 68.69,
+        "debt_to_assets": 0.0808,
+        "interest_income_ratio": 0.0058
+      },
+      {
+        "period": "FY 2022",
+        "debt": 1412.01,
+        "assets": 21074.870000000003,
+        "revenue": 12565.43,
+        "interest_other_income": 72.78,
+        "debt_to_assets": 0.067,
+        "interest_income_ratio": 0.0058
+      },
+      {
+        "period": "FY 2023",
+        "debt": 1600.04,
+        "assets": 22762.489999999998,
+        "revenue": 14194.78,
+        "interest_other_income": 87.16,
+        "debt_to_assets": 0.0703,
+        "interest_income_ratio": 0.0061
+      },
+      {
+        "period": "FY 2024",
+        "debt": 3477.2200000000003,
+        "assets": 27878.79,
+        "revenue": 15451.470000000001,
+        "interest_other_income": 129.81,
+        "debt_to_assets": 0.1247,
+        "interest_income_ratio": 0.0084
+      },
+      {
+        "period": "FY 2025",
+        "debt": 2392.68,
+        "assets": 31830.619999999995,
+        "revenue": 17931.55,
+        "interest_other_income": 290.2,
+        "debt_to_assets": 0.0752,
+        "interest_income_ratio": 0.0162
+      },
+      {
+        "period": "FY 2026",
+        "debt": 2819.5099999999998,
+        "assets": 34278.74,
+        "revenue": 20546.11,
+        "interest_other_income": 137.03,
+        "debt_to_assets": 0.0823,
+        "interest_income_ratio": 0.0067
+      }
+    ]
+  },
+  "BRITANNIA": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.1411,
+      "interest_income_ratio": 0.0076
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 200.7,
+        "assets": 5187.92,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.0387,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 156.01999999999998,
+        "assets": 6237.950000000001,
+        "revenue": 11261.12,
+        "interest_other_income": 9.09,
+        "debt_to_assets": 0.025,
+        "interest_income_ratio": 0.0008
+      },
+      {
+        "period": "FY 2020",
+        "debt": 1537.5900000000001,
+        "assets": 7829.540000000001,
+        "revenue": 11879.39,
+        "interest_other_income": 76.9,
+        "debt_to_assets": 0.1964,
+        "interest_income_ratio": 0.0065
+      },
+      {
+        "period": "FY 2021",
+        "debt": 2106.94,
+        "assets": 8000.09,
+        "revenue": 13449.82,
+        "interest_other_income": 110.9,
+        "debt_to_assets": 0.2634,
+        "interest_income_ratio": 0.0082
+      },
+      {
+        "period": "FY 2022",
+        "debt": 2481.2,
+        "assets": 7526.6,
+        "revenue": 14359.09,
+        "interest_other_income": 144.29,
+        "debt_to_assets": 0.3297,
+        "interest_income_ratio": 0.01
+      },
+      {
+        "period": "FY 2023",
+        "debt": 2997.37,
+        "assets": 9350.849999999999,
+        "revenue": 16897.42,
+        "interest_other_income": 169.1,
+        "debt_to_assets": 0.3205,
+        "interest_income_ratio": 0.01
+      },
+      {
+        "period": "FY 2024",
+        "debt": 2064.96,
+        "assets": 9071.5,
+        "revenue": 16983.45,
+        "interest_other_income": 164.0,
+        "debt_to_assets": 0.2276,
+        "interest_income_ratio": 0.0097
+      },
+      {
+        "period": "FY 2025",
+        "debt": 1246.51,
+        "assets": 8836.75,
+        "revenue": 18169.76,
+        "interest_other_income": 138.8,
+        "debt_to_assets": 0.1411,
+        "interest_income_ratio": 0.0076
+      }
+    ]
+  },
+  "ULTRACEMCO": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.1804,
+      "interest_income_ratio": 0.0215
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 19480.219999999998,
+        "assets": 57141.09,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.3409,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 25337.000000000004,
+        "assets": 76525.37,
+        "revenue": 42072.79,
+        "interest_other_income": 1777.86,
+        "debt_to_assets": 0.3311,
+        "interest_income_ratio": 0.0423
+      },
+      {
+        "period": "FY 2020",
+        "debt": 23018.959999999995,
+        "assets": 79213.81,
+        "revenue": 43080.95,
+        "interest_other_income": 1991.65,
+        "debt_to_assets": 0.2906,
+        "interest_income_ratio": 0.0462
+      },
+      {
+        "period": "FY 2021",
+        "debt": 21719.390000000003,
+        "assets": 86176.34999999999,
+        "revenue": 45605.060000000005,
+        "interest_other_income": 1485.65,
+        "debt_to_assets": 0.252,
+        "interest_income_ratio": 0.0326
+      },
+      {
+        "period": "FY 2022",
+        "debt": 11298.800000000001,
+        "assets": 83811.44,
+        "revenue": 53268.26,
+        "interest_other_income": 944.71,
+        "debt_to_assets": 0.1348,
+        "interest_income_ratio": 0.0177
+      },
+      {
+        "period": "FY 2023",
+        "debt": 11057.740000000002,
+        "assets": 91380.40000000001,
+        "revenue": 63747.090000000004,
+        "interest_other_income": 822.72,
+        "debt_to_assets": 0.121,
+        "interest_income_ratio": 0.0129
+      },
+      {
+        "period": "FY 2024",
+        "debt": 11402.95,
+        "assets": 100797.11,
+        "revenue": 71547.1,
+        "interest_other_income": 968.0,
+        "debt_to_assets": 0.1131,
+        "interest_income_ratio": 0.0135
+      },
+      {
+        "period": "FY 2025",
+        "debt": 24102.18,
+        "assets": 133632.06,
+        "revenue": 76699.3,
+        "interest_other_income": 1650.54,
+        "debt_to_assets": 0.1804,
+        "interest_income_ratio": 0.0215
+      }
+    ]
+  },
+  "GRASIM": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.3726,
+      "interest_income_ratio": 0.0832
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 67013.59,
+        "assets": 207898.66,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.3223,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 84418.31,
+        "assets": 241126.98,
+        "revenue": 78057.0,
+        "interest_other_income": 6060.03,
+        "debt_to_assets": 0.3501,
+        "interest_income_ratio": 0.0776
+      },
+      {
+        "period": "FY 2020",
+        "debt": 84765.73999999999,
+        "assets": 244181.44,
+        "revenue": 76734.46,
+        "interest_other_income": 6890.31,
+        "debt_to_assets": 0.3471,
+        "interest_income_ratio": 0.0898
+      },
+      {
+        "period": "FY 2021",
+        "debt": 79066.58,
+        "assets": 267348.77,
+        "revenue": 77876.45,
+        "interest_other_income": 5723.48,
+        "debt_to_assets": 0.2957,
+        "interest_income_ratio": 0.0735
+      },
+      {
+        "period": "FY 2022",
+        "debt": 74733.0,
+        "assets": 289148.79,
+        "revenue": 97418.54000000001,
+        "interest_other_income": 4776.0,
+        "debt_to_assets": 0.2585,
+        "interest_income_ratio": 0.049
+      },
+      {
+        "period": "FY 2023",
+        "debt": 103027.37000000001,
+        "assets": 336822.77,
+        "revenue": 121448.09,
+        "interest_other_income": 6043.73,
+        "debt_to_assets": 0.3059,
+        "interest_income_ratio": 0.0498
+      },
+      {
+        "period": "FY 2024",
+        "debt": 137143.91,
+        "assets": 412116.49,
+        "revenue": 132331.26,
+        "interest_other_income": 9277.43,
+        "debt_to_assets": 0.3328,
+        "interest_income_ratio": 0.0701
+      },
+      {
+        "period": "FY 2025",
+        "debt": 186314.56,
+        "assets": 500040.43000000005,
+        "revenue": 150233.72,
+        "interest_other_income": 12500.38,
+        "debt_to_assets": 0.3726,
+        "interest_income_ratio": 0.0832
+      }
+    ]
+  },
+  "ADANIPORTS": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025",
+      "FY 2026"
+    ],
+    "latest": {
+      "debt_to_assets": 0.3454,
+      "interest_income_ratio": 0.1132
+    },
+    "history": [
+      {
+        "period": "FY 2019",
+        "debt": 27445.72,
+        "assets": 56311.43,
+        "revenue": 12287.78,
+        "interest_other_income": 1385.19,
+        "debt_to_assets": 0.4874,
+        "interest_income_ratio": 0.1127
+      },
+      {
+        "period": "FY 2020",
+        "debt": 29978.700000000004,
+        "assets": 61916.70000000001,
+        "revenue": 13871.92,
+        "interest_other_income": 1950.64,
+        "debt_to_assets": 0.4842,
+        "interest_income_ratio": 0.1406
+      },
+      {
+        "period": "FY 2021",
+        "debt": 35582.97,
+        "assets": 74581.93,
+        "revenue": 14519.83,
+        "interest_other_income": 2255.29,
+        "debt_to_assets": 0.4771,
+        "interest_income_ratio": 0.1553
+      },
+      {
+        "period": "FY 2022",
+        "debt": 47652.869999999995,
+        "assets": 98327.99,
+        "revenue": 19359.9,
+        "interest_other_income": 2543.92,
+        "debt_to_assets": 0.4846,
+        "interest_income_ratio": 0.1314
+      },
+      {
+        "period": "FY 2023",
+        "debt": 53141.96,
+        "assets": 112563.19,
+        "revenue": 22452.4,
+        "interest_other_income": 2362.64,
+        "debt_to_assets": 0.4721,
+        "interest_income_ratio": 0.1052
+      },
+      {
+        "period": "FY 2024",
+        "debt": 49166.66000000001,
+        "assets": 116999.2,
+        "revenue": 28209.980000000003,
+        "interest_other_income": 2732.94,
+        "debt_to_assets": 0.4202,
+        "interest_income_ratio": 0.0969
+      },
+      {
+        "period": "FY 2025",
+        "debt": 51304.82,
+        "assets": 133442.65,
+        "revenue": 32524.640000000003,
+        "interest_other_income": 2812.67,
+        "debt_to_assets": 0.3845,
+        "interest_income_ratio": 0.0865
+      },
+      {
+        "period": "FY 2026",
+        "debt": 63236.159999999996,
+        "assets": 183098.52999999997,
+        "revenue": 41111.979999999996,
+        "interest_other_income": 4653.98,
+        "debt_to_assets": 0.3454,
+        "interest_income_ratio": 0.1132
+      }
+    ]
+  },
+  "BEL": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0015,
+      "interest_income_ratio": 0.0005
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 80.36,
+        "assets": 18964.52,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.0042,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 33.63,
+        "assets": 20820.579999999998,
+        "revenue": 12237.16,
+        "interest_other_income": 15.93,
+        "debt_to_assets": 0.0016,
+        "interest_income_ratio": 0.0013
+      },
+      {
+        "period": "FY 2020",
+        "debt": 8.33,
+        "assets": 24350.52,
+        "revenue": 13067.07,
+        "interest_other_income": 7.66,
+        "debt_to_assets": 0.0003,
+        "interest_income_ratio": 0.0006
+      },
+      {
+        "period": "FY 2021",
+        "debt": 2.52,
+        "assets": 29491.61,
+        "revenue": 14233.65,
+        "interest_other_income": 9.61,
+        "debt_to_assets": 0.0001,
+        "interest_income_ratio": 0.0007
+      },
+      {
+        "period": "FY 2022",
+        "debt": 52.7,
+        "assets": 33912.14,
+        "revenue": 15599.720000000001,
+        "interest_other_income": 8.55,
+        "debt_to_assets": 0.0016,
+        "interest_income_ratio": 0.0005
+      },
+      {
+        "period": "FY 2023",
+        "debt": 61.34,
+        "assets": 35489.99,
+        "revenue": 18015.239999999998,
+        "interest_other_income": 18.83,
+        "debt_to_assets": 0.0017,
+        "interest_income_ratio": 0.001
+      },
+      {
+        "period": "FY 2024",
+        "debt": 62.51,
+        "assets": 39524.479999999996,
+        "revenue": 20938.38,
+        "interest_other_income": 12.06,
+        "debt_to_assets": 0.0016,
+        "interest_income_ratio": 0.0006
+      },
+      {
+        "period": "FY 2025",
+        "debt": 61.23,
+        "assets": 40823.57,
+        "revenue": 24511.11,
+        "interest_other_income": 12.53,
+        "debt_to_assets": 0.0015,
+        "interest_income_ratio": 0.0005
+      }
+    ]
+  },
+  "TATASTEEL": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025",
+      "FY 2026"
+    ],
+    "latest": {
+      "debt_to_assets": 0.3116,
+      "interest_income_ratio": 0.0305
+    },
+    "history": [
+      {
+        "period": "FY 2019",
+        "debt": 100802.91,
+        "assets": 232773.44,
+        "revenue": 159494.4,
+        "interest_other_income": 7660.1,
+        "debt_to_assets": 0.4331,
+        "interest_income_ratio": 0.048
+      },
+      {
+        "period": "FY 2020",
+        "debt": 116328.20000000001,
+        "assets": 249149.12000000005,
+        "revenue": 142037.72999999998,
+        "interest_other_income": 7533.46,
+        "debt_to_assets": 0.4669,
+        "interest_income_ratio": 0.053
+      },
+      {
+        "period": "FY 2021",
+        "debt": 88501.41000000002,
+        "assets": 243909.18999999997,
+        "revenue": 157873.88,
+        "interest_other_income": 7606.71,
+        "debt_to_assets": 0.3628,
+        "interest_income_ratio": 0.0482
+      },
+      {
+        "period": "FY 2022",
+        "debt": 75561.35,
+        "assets": 282421.67,
+        "revenue": 246198.63,
+        "interest_other_income": 5462.2,
+        "debt_to_assets": 0.2675,
+        "interest_income_ratio": 0.0222
+      },
+      {
+        "period": "FY 2023",
+        "debt": 84893.05,
+        "assets": 285395.77999999997,
+        "revenue": 245015.19,
+        "interest_other_income": 6298.7,
+        "debt_to_assets": 0.2975,
+        "interest_income_ratio": 0.0257
+      },
+      {
+        "period": "FY 2024",
+        "debt": 87082.12,
+        "assets": 269312.4199999999,
+        "revenue": 231074.15,
+        "interest_other_income": 7507.57,
+        "debt_to_assets": 0.3233,
+        "interest_income_ratio": 0.0325
+      },
+      {
+        "period": "FY 2025",
+        "debt": 94801.05,
+        "assets": 275458.5800000001,
+        "revenue": 220345.45,
+        "interest_other_income": 7340.95,
+        "debt_to_assets": 0.3442,
+        "interest_income_ratio": 0.0333
+      },
+      {
+        "period": "FY 2026",
+        "debt": 92381.68000000002,
+        "assets": 296514.62,
+        "revenue": 235145.37,
+        "interest_other_income": 7167.06,
+        "debt_to_assets": 0.3116,
+        "interest_income_ratio": 0.0305
+      }
+    ]
+  },
+  "JSWSTEEL": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.4104,
+      "interest_income_ratio": 0.0496
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 39185.0,
+        "assets": 91970.0,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.4261,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 47376.0,
+        "assets": 114797.0,
+        "revenue": 84961.0,
+        "interest_other_income": 3917.0,
+        "debt_to_assets": 0.4127,
+        "interest_income_ratio": 0.0461
+      },
+      {
+        "period": "FY 2020",
+        "debt": 61399.0,
+        "assets": 131820.0,
+        "revenue": 73872.0,
+        "interest_other_income": 4265.0,
+        "debt_to_assets": 0.4658,
+        "interest_income_ratio": 0.0577
+      },
+      {
+        "period": "FY 2021",
+        "debt": 66701.0,
+        "assets": 147163.0,
+        "revenue": 80432.0,
+        "interest_other_income": 3957.0,
+        "debt_to_assets": 0.4532,
+        "interest_income_ratio": 0.0492
+      },
+      {
+        "period": "FY 2022",
+        "debt": 72208.0,
+        "assets": 196485.0,
+        "revenue": 148819.0,
+        "interest_other_income": 4968.0,
+        "debt_to_assets": 0.3675,
+        "interest_income_ratio": 0.0334
+      },
+      {
+        "period": "FY 2023",
+        "debt": 80820.0,
+        "assets": 210539.0,
+        "revenue": 167581.0,
+        "interest_other_income": 6902.0,
+        "debt_to_assets": 0.3839,
+        "interest_income_ratio": 0.0412
+      },
+      {
+        "period": "FY 2024",
+        "debt": 87948.0,
+        "assets": 227898.0,
+        "revenue": 176599.0,
+        "interest_other_income": 8105.0,
+        "debt_to_assets": 0.3859,
+        "interest_income_ratio": 0.0459
+      },
+      {
+        "period": "FY 2025",
+        "debt": 98688.0,
+        "assets": 240445.0,
+        "revenue": 169518.0,
+        "interest_other_income": 8412.0,
+        "debt_to_assets": 0.4104,
+        "interest_income_ratio": 0.0496
+      }
+    ]
+  },
+  "HINDALCO": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.2419,
+      "interest_income_ratio": 0.0142
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 52074.020000000004,
+        "assets": 147013.82,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.3542,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 52415.0,
+        "assets": 151972.0,
+        "revenue": 131669.0,
+        "interest_other_income": 3778.0,
+        "debt_to_assets": 0.3449,
+        "interest_income_ratio": 0.0287
+      },
+      {
+        "period": "FY 2020",
+        "debt": 68399.0,
+        "assets": 168618.0,
+        "revenue": 119359.0,
+        "interest_other_income": 4197.0,
+        "debt_to_assets": 0.4056,
+        "interest_income_ratio": 0.0352
+      },
+      {
+        "period": "FY 2021",
+        "debt": 67206.0,
+        "assets": 188822.0,
+        "revenue": 133339.0,
+        "interest_other_income": 3738.0,
+        "debt_to_assets": 0.3559,
+        "interest_income_ratio": 0.028
+      },
+      {
+        "period": "FY 2022",
+        "debt": 64486.0,
+        "assets": 221855.0,
+        "revenue": 197042.0,
+        "interest_other_income": 3768.0,
+        "debt_to_assets": 0.2907,
+        "interest_income_ratio": 0.0191
+      },
+      {
+        "period": "FY 2023",
+        "debt": 60291.0,
+        "assets": 223489.0,
+        "revenue": 224509.0,
+        "interest_other_income": 3646.0,
+        "debt_to_assets": 0.2698,
+        "interest_income_ratio": 0.0162
+      },
+      {
+        "period": "FY 2024",
+        "debt": 56356.0,
+        "assets": 230723.0,
+        "revenue": 217523.0,
+        "interest_other_income": 3858.0,
+        "debt_to_assets": 0.2443,
+        "interest_income_ratio": 0.0177
+      },
+      {
+        "period": "FY 2025",
+        "debt": 63929.0,
+        "assets": 264300.0,
+        "revenue": 241207.0,
+        "interest_other_income": 3419.0,
+        "debt_to_assets": 0.2419,
+        "interest_income_ratio": 0.0142
+      }
+    ]
+  },
+  "NTPC": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.4777,
+      "interest_income_ratio": 0.0675
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 130048.56000000003,
+        "assets": 282492.26,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.4604,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 173058.23,
+        "assets": 346922.99000000005,
+        "revenue": 103278.93999999999,
+        "interest_other_income": 5604.65,
+        "debt_to_assets": 0.4988,
+        "interest_income_ratio": 0.0543
+      },
+      {
+        "period": "FY 2020",
+        "debt": 200629.66999999998,
+        "assets": 377670.98,
+        "revenue": 117721.79999999999,
+        "interest_other_income": 8189.01,
+        "debt_to_assets": 0.5312,
+        "interest_income_ratio": 0.0696
+      },
+      {
+        "period": "FY 2021",
+        "debt": 210207.87000000002,
+        "assets": 398021.7899999999,
+        "revenue": 118213.84,
+        "interest_other_income": 9224.21,
+        "debt_to_assets": 0.5281,
+        "interest_income_ratio": 0.078
+      },
+      {
+        "period": "FY 2022",
+        "debt": 210706.55999999997,
+        "assets": 415831.42,
+        "revenue": 137580.05,
+        "interest_other_income": 9375.68,
+        "debt_to_assets": 0.5067,
+        "interest_income_ratio": 0.0681
+      },
+      {
+        "period": "FY 2023",
+        "debt": 222913.16,
+        "assets": 447188.88999999996,
+        "revenue": 178904.87,
+        "interest_other_income": 11447.15,
+        "debt_to_assets": 0.4985,
+        "interest_income_ratio": 0.064
+      },
+      {
+        "period": "FY 2024",
+        "debt": 237130.98,
+        "assets": 479277.72000000003,
+        "revenue": 183891.78999999998,
+        "interest_other_income": 12300.51,
+        "debt_to_assets": 0.4948,
+        "interest_income_ratio": 0.0669
+      },
+      {
+        "period": "FY 2025",
+        "debt": 250096.15,
+        "assets": 523497.03,
+        "revenue": 196847.13999999998,
+        "interest_other_income": 13281.78,
+        "debt_to_assets": 0.4777,
+        "interest_income_ratio": 0.0675
+      }
+    ]
+  },
+  "POWERGRID": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.4926,
+      "interest_income_ratio": 0.1818
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 131502.96,
+        "assets": 225354.36000000002,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.5835,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 146376.36000000002,
+        "assets": 247380.30000000002,
+        "revenue": 36591.15,
+        "interest_other_income": 8736.57,
+        "debt_to_assets": 0.5917,
+        "interest_income_ratio": 0.2388
+      },
+      {
+        "period": "FY 2020",
+        "debt": 148269.63999999998,
+        "assets": 256671.12999999998,
+        "revenue": 40938.74,
+        "interest_other_income": 9509.0,
+        "debt_to_assets": 0.5777,
+        "interest_income_ratio": 0.2323
+      },
+      {
+        "period": "FY 2021",
+        "debt": 143232.5,
+        "assets": 255707.97000000003,
+        "revenue": 41502.4,
+        "interest_other_income": 8134.69,
+        "debt_to_assets": 0.5601,
+        "interest_income_ratio": 0.196
+      },
+      {
+        "period": "FY 2022",
+        "debt": 134695.63,
+        "assets": 250950.30000000005,
+        "revenue": 46341.99,
+        "interest_other_income": 8036.22,
+        "debt_to_assets": 0.5367,
+        "interest_income_ratio": 0.1734
+      },
+      {
+        "period": "FY 2023",
+        "debt": 128583.81000000001,
+        "assets": 252225.21999999997,
+        "revenue": 46889.75,
+        "interest_other_income": 9633.94,
+        "debt_to_assets": 0.5098,
+        "interest_income_ratio": 0.2055
+      },
+      {
+        "period": "FY 2024",
+        "debt": 123516.21,
+        "assets": 250829.30000000002,
+        "revenue": 47000.729999999996,
+        "interest_other_income": 8772.75,
+        "debt_to_assets": 0.4924,
+        "interest_income_ratio": 0.1867
+      },
+      {
+        "period": "FY 2025",
+        "debt": 131030.20999999998,
+        "assets": 266019.39,
+        "revenue": 47855.34,
+        "interest_other_income": 8700.13,
+        "debt_to_assets": 0.4926,
+        "interest_income_ratio": 0.1818
+      }
+    ]
+  },
+  "ONGC": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.2495,
+      "interest_income_ratio": 0.0232
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 106549.94,
+        "assets": 459232.41,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.232,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 107741.69,
+        "assets": 492343.32000000007,
+        "revenue": 432783.97,
+        "interest_other_income": 5836.73,
+        "debt_to_assets": 0.2188,
+        "interest_income_ratio": 0.0135
+      },
+      {
+        "period": "FY 2020",
+        "debt": 129472.52,
+        "assets": 508364.04,
+        "revenue": 406772.74,
+        "interest_other_income": 7489.34,
+        "debt_to_assets": 0.2547,
+        "interest_income_ratio": 0.0184
+      },
+      {
+        "period": "FY 2021",
+        "debt": 133186.91999999998,
+        "assets": 541747.6199999999,
+        "revenue": 315162.69,
+        "interest_other_income": 5079.03,
+        "debt_to_assets": 0.2458,
+        "interest_income_ratio": 0.0161
+      },
+      {
+        "period": "FY 2022",
+        "debt": 121985.86,
+        "assets": 583259.5099999999,
+        "revenue": 500202.14999999997,
+        "interest_other_income": 5696.04,
+        "debt_to_assets": 0.2091,
+        "interest_income_ratio": 0.0114
+      },
+      {
+        "period": "FY 2023",
+        "debt": 142254.80999999997,
+        "assets": 613114.51,
+        "revenue": 641531.26,
+        "interest_other_income": 7889.36,
+        "debt_to_assets": 0.232,
+        "interest_income_ratio": 0.0123
+      },
+      {
+        "period": "FY 2024",
+        "debt": 191195.23,
+        "assets": 736620.78,
+        "revenue": 618098.39,
+        "interest_other_income": 13025.7,
+        "debt_to_assets": 0.2596,
+        "interest_income_ratio": 0.0211
+      },
+      {
+        "period": "FY 2025",
+        "debt": 187817.30000000002,
+        "assets": 752656.04,
+        "revenue": 625494.54,
+        "interest_other_income": 14534.95,
+        "debt_to_assets": 0.2495,
+        "interest_income_ratio": 0.0232
+      }
+    ]
+  },
+  "BPCL": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.2798,
+      "interest_income_ratio": 0.0081
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 37659.35999999999,
+        "assets": 120356.06,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.3129,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 44839.1,
+        "assets": 136926.11,
+        "revenue": 301200.45,
+        "interest_other_income": 1763.95,
+        "debt_to_assets": 0.3275,
+        "interest_income_ratio": 0.0059
+      },
+      {
+        "period": "FY 2020",
+        "debt": 65475.54,
+        "assets": 150859.98,
+        "revenue": 287901.89999999997,
+        "interest_other_income": 2637.01,
+        "debt_to_assets": 0.434,
+        "interest_income_ratio": 0.0092
+      },
+      {
+        "period": "FY 2021",
+        "debt": 54531.85999999999,
+        "assets": 160978.02000000002,
+        "revenue": 237681.43000000002,
+        "interest_other_income": 1723.41,
+        "debt_to_assets": 0.3388,
+        "interest_income_ratio": 0.0073
+      },
+      {
+        "period": "FY 2022",
+        "debt": 64534.200000000004,
+        "assets": 187528.63,
+        "revenue": 351730.5,
+        "interest_other_income": 2605.64,
+        "debt_to_assets": 0.3441,
+        "interest_income_ratio": 0.0074
+      },
+      {
+        "period": "FY 2023",
+        "debt": 69376.03,
+        "assets": 188108.77000000002,
+        "revenue": 476877.32000000007,
+        "interest_other_income": 3745.38,
+        "debt_to_assets": 0.3688,
+        "interest_income_ratio": 0.0079
+      },
+      {
+        "period": "FY 2024",
+        "debt": 54599.05000000001,
+        "assets": 202417.75,
+        "revenue": 451383.29,
+        "interest_other_income": 4148.89,
+        "debt_to_assets": 0.2697,
+        "interest_income_ratio": 0.0092
+      },
+      {
+        "period": "FY 2025",
+        "debt": 61100.57,
+        "assets": 218382.22,
+        "revenue": 444279.32,
+        "interest_other_income": 3591.44,
+        "debt_to_assets": 0.2798,
+        "interest_income_ratio": 0.0081
+      }
+    ]
+  },
+  "COALINDIA": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0353,
+      "interest_income_ratio": 0.0058
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 1537.72,
+        "assets": 125470.67000000001,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.0123,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 2209.94,
+        "assets": 133021.45,
+        "revenue": 105422.67,
+        "interest_other_income": 263.68,
+        "debt_to_assets": 0.0166,
+        "interest_income_ratio": 0.0025
+      },
+      {
+        "period": "FY 2020",
+        "debt": 6433.7699999999995,
+        "assets": 150020.44,
+        "revenue": 102525.29999999999,
+        "interest_other_income": 502.92,
+        "debt_to_assets": 0.0429,
+        "interest_income_ratio": 0.0049
+      },
+      {
+        "period": "FY 2021",
+        "debt": 5884.23,
+        "assets": 161050.84,
+        "revenue": 93768.84,
+        "interest_other_income": 642.24,
+        "debt_to_assets": 0.0365,
+        "interest_income_ratio": 0.0068
+      },
+      {
+        "period": "FY 2022",
+        "debt": 3513.64,
+        "assets": 179436.33000000002,
+        "revenue": 113596.83,
+        "interest_other_income": 541.49,
+        "debt_to_assets": 0.0196,
+        "interest_income_ratio": 0.0048
+      },
+      {
+        "period": "FY 2023",
+        "debt": 4331.419999999999,
+        "assets": 221395.84999999998,
+        "revenue": 144811.72,
+        "interest_other_income": 684.31,
+        "debt_to_assets": 0.0196,
+        "interest_income_ratio": 0.0047
+      },
+      {
+        "period": "FY 2024",
+        "debt": 6523.03,
+        "assets": 236469.56000000003,
+        "revenue": 153158.33000000002,
+        "interest_other_income": 819.37,
+        "debt_to_assets": 0.0276,
+        "interest_income_ratio": 0.0053
+      },
+      {
+        "period": "FY 2025",
+        "debt": 9145.730000000001,
+        "assets": 258985.28999999998,
+        "revenue": 153301.24000000002,
+        "interest_other_income": 883.65,
+        "debt_to_assets": 0.0353,
+        "interest_income_ratio": 0.0058
+      }
+    ]
+  },
+  "TITAN": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.5112,
+      "interest_income_ratio": 0.0156
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 1691.01,
+        "assets": 9521.04,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.1776,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 2392.98,
+        "assets": 11709.84,
+        "revenue": 19961.46,
+        "interest_other_income": 52.54,
+        "debt_to_assets": 0.2044,
+        "interest_income_ratio": 0.0026
+      },
+      {
+        "period": "FY 2020",
+        "debt": 3562.0,
+        "assets": 13544.0,
+        "revenue": 21205.0,
+        "interest_other_income": 166.0,
+        "debt_to_assets": 0.263,
+        "interest_income_ratio": 0.0078
+      },
+      {
+        "period": "FY 2021",
+        "debt": 5638.0,
+        "assets": 16444.0,
+        "revenue": 21830.0,
+        "interest_other_income": 203.0,
+        "debt_to_assets": 0.3429,
+        "interest_income_ratio": 0.0093
+      },
+      {
+        "period": "FY 2022",
+        "debt": 7275.0,
+        "assets": 21188.0,
+        "revenue": 29033.0,
+        "interest_other_income": 218.0,
+        "debt_to_assets": 0.3434,
+        "interest_income_ratio": 0.0075
+      },
+      {
+        "period": "FY 2023",
+        "debt": 9367.0,
+        "assets": 27020.0,
+        "revenue": 40884.0,
+        "interest_other_income": 300.0,
+        "debt_to_assets": 0.3467,
+        "interest_income_ratio": 0.0073
+      },
+      {
+        "period": "FY 2024",
+        "debt": 15528.0,
+        "assets": 31547.0,
+        "revenue": 51618.0,
+        "interest_other_income": 619.0,
+        "debt_to_assets": 0.4922,
+        "interest_income_ratio": 0.012
+      },
+      {
+        "period": "FY 2025",
+        "debt": 20777.0,
+        "assets": 40645.0,
+        "revenue": 60943.0,
+        "interest_other_income": 953.0,
+        "debt_to_assets": 0.5112,
+        "interest_income_ratio": 0.0156
+      }
+    ]
+  },
+  "TRENT": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025",
+      "FY 2026"
+    ],
+    "latest": {
+      "debt_to_assets": 0.2184,
+      "interest_income_ratio": 0.0115
+    },
+    "history": [
+      {
+        "period": "FY 2019",
+        "debt": 494.14,
+        "assets": 2558.76,
+        "revenue": 2671.06,
+        "interest_other_income": 50.64,
+        "debt_to_assets": 0.1931,
+        "interest_income_ratio": 0.019
+      },
+      {
+        "period": "FY 2020",
+        "debt": 299.74,
+        "assets": 5506.68,
+        "revenue": 3635.4,
+        "interest_other_income": 263.37,
+        "debt_to_assets": 0.0544,
+        "interest_income_ratio": 0.0724
+      },
+      {
+        "period": "FY 2021",
+        "debt": 2963.63,
+        "assets": 5723.73,
+        "revenue": 2794.56,
+        "interest_other_income": 260.79,
+        "debt_to_assets": 0.5178,
+        "interest_income_ratio": 0.0933
+      },
+      {
+        "period": "FY 2022",
+        "debt": 4725.36,
+        "assets": 7726.02,
+        "revenue": 4678.37,
+        "interest_other_income": 324.84,
+        "debt_to_assets": 0.6116,
+        "interest_income_ratio": 0.0694
+      },
+      {
+        "period": "FY 2023",
+        "debt": 4464.14,
+        "assets": 8081.530000000001,
+        "revenue": 8586.35,
+        "interest_other_income": 408.99,
+        "debt_to_assets": 0.5524,
+        "interest_income_ratio": 0.0476
+      },
+      {
+        "period": "FY 2024",
+        "debt": 1752.99,
+        "assets": 7161.75,
+        "revenue": 13364.019999999999,
+        "interest_other_income": 367.66,
+        "debt_to_assets": 0.2448,
+        "interest_income_ratio": 0.0275
+      },
+      {
+        "period": "FY 2025",
+        "debt": 2237.19,
+        "assets": 9419.64,
+        "revenue": 17439.670000000002,
+        "interest_other_income": 200.1,
+        "debt_to_assets": 0.2375,
+        "interest_income_ratio": 0.0115
+      },
+      {
+        "period": "FY 2026",
+        "debt": 2561.25,
+        "assets": 11728.58,
+        "revenue": 20192.95,
+        "interest_other_income": 232.73,
+        "debt_to_assets": 0.2184,
+        "interest_income_ratio": 0.0115
+      }
+    ]
+  },
+  "MPHASIS": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0757,
+      "interest_income_ratio": 0.0114
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 389.88,
+        "assets": 6980.36,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.0559,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 542.5899999999999,
+        "assets": 7368.259999999999,
+        "revenue": 7907.69,
+        "interest_other_income": 17.37,
+        "debt_to_assets": 0.0736,
+        "interest_income_ratio": 0.0022
+      },
+      {
+        "period": "FY 2020",
+        "debt": 571.28,
+        "assets": 8739.75,
+        "revenue": 9021.36,
+        "interest_other_income": 81.19,
+        "debt_to_assets": 0.0654,
+        "interest_income_ratio": 0.009
+      },
+      {
+        "period": "FY 2021",
+        "debt": 513.45,
+        "assets": 9364.66,
+        "revenue": 9855.26,
+        "interest_other_income": 63.42,
+        "debt_to_assets": 0.0548,
+        "interest_income_ratio": 0.0064
+      },
+      {
+        "period": "FY 2022",
+        "debt": 527.24,
+        "assets": 10684.33,
+        "revenue": 12121.890000000001,
+        "interest_other_income": 74.4,
+        "debt_to_assets": 0.0493,
+        "interest_income_ratio": 0.0061
+      },
+      {
+        "period": "FY 2023",
+        "debt": 198.48,
+        "assets": 11506.49,
+        "revenue": 13960.1,
+        "interest_other_income": 97.26,
+        "debt_to_assets": 0.0172,
+        "interest_income_ratio": 0.007
+      },
+      {
+        "period": "FY 2024",
+        "debt": 1543.57,
+        "assets": 14000.32,
+        "revenue": 13496.32,
+        "interest_other_income": 160.87,
+        "debt_to_assets": 0.1103,
+        "interest_income_ratio": 0.0119
+      },
+      {
+        "period": "FY 2025",
+        "debt": 1115.94,
+        "assets": 14744.34,
+        "revenue": 14484.99,
+        "interest_other_income": 165.5,
+        "debt_to_assets": 0.0757,
+        "interest_income_ratio": 0.0114
+      }
+    ]
+  },
+  "PERSISTENT": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0356,
+      "interest_income_ratio": 0.0056
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 2.19,
+        "assets": 2643.76,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.0008,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 1.67,
+        "assets": 2855.59,
+        "revenue": 3453.6,
+        "interest_other_income": 0.31,
+        "debt_to_assets": 0.0006,
+        "interest_income_ratio": 0.0001
+      },
+      {
+        "period": "FY 2020",
+        "debt": 71.37,
+        "assets": 3092.1800000000003,
+        "revenue": 3698.19,
+        "interest_other_income": 6.33,
+        "debt_to_assets": 0.0231,
+        "interest_income_ratio": 0.0017
+      },
+      {
+        "period": "FY 2021",
+        "debt": 98.44,
+        "assets": 3665.53,
+        "revenue": 4295.660000000001,
+        "interest_other_income": 5.79,
+        "debt_to_assets": 0.0269,
+        "interest_income_ratio": 0.0013
+      },
+      {
+        "period": "FY 2022",
+        "debt": 578.22,
+        "assets": 5419.110000000001,
+        "revenue": 5854.71,
+        "interest_other_income": 11.84,
+        "debt_to_assets": 0.1067,
+        "interest_income_ratio": 0.002
+      },
+      {
+        "period": "FY 2023",
+        "debt": 655.37,
+        "assets": 6619.15,
+        "revenue": 8421.210000000001,
+        "interest_other_income": 47.34,
+        "debt_to_assets": 0.099,
+        "interest_income_ratio": 0.0056
+      },
+      {
+        "period": "FY 2024",
+        "debt": 451.13,
+        "assets": 7405.449999999999,
+        "revenue": 9949.61,
+        "interest_other_income": 46.73,
+        "debt_to_assets": 0.0609,
+        "interest_income_ratio": 0.0047
+      },
+      {
+        "period": "FY 2025",
+        "debt": 310.9,
+        "assets": 8721.550000000001,
+        "revenue": 12076.869999999999,
+        "interest_other_income": 67.13,
+        "debt_to_assets": 0.0356,
+        "interest_income_ratio": 0.0056
+      }
+    ]
+  },
+  "COFORGE": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0872,
+      "interest_income_ratio": 0.011
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 22.500000000000004,
+        "assets": 2624.2999999999997,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.0086,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 13.599999999999998,
+        "assets": 2833.8999999999996,
+        "revenue": 3729.7,
+        "interest_other_income": 9.2,
+        "debt_to_assets": 0.0048,
+        "interest_income_ratio": 0.0025
+      },
+      {
+        "period": "FY 2020",
+        "debt": 35.199999999999996,
+        "assets": 3400.1,
+        "revenue": 4251.599999999999,
+        "interest_other_income": 15.5,
+        "debt_to_assets": 0.0104,
+        "interest_income_ratio": 0.0036
+      },
+      {
+        "period": "FY 2021",
+        "debt": 82.6,
+        "assets": 3483.9000000000005,
+        "revenue": 4695.400000000001,
+        "interest_other_income": 14.3,
+        "debt_to_assets": 0.0237,
+        "interest_income_ratio": 0.003
+      },
+      {
+        "period": "FY 2022",
+        "debt": 489.6,
+        "assets": 4877.8,
+        "revenue": 6483.8,
+        "interest_other_income": 65.0,
+        "debt_to_assets": 0.1004,
+        "interest_income_ratio": 0.01
+      },
+      {
+        "period": "FY 2023",
+        "debt": 562.2,
+        "assets": 5625.1,
+        "revenue": 8076.5,
+        "interest_other_income": 80.6,
+        "debt_to_assets": 0.0999,
+        "interest_income_ratio": 0.01
+      },
+      {
+        "period": "FY 2024",
+        "debt": 726.0000000000001,
+        "assets": 6061.099999999999,
+        "revenue": 9054.3,
+        "interest_other_income": 125.5,
+        "debt_to_assets": 0.1198,
+        "interest_income_ratio": 0.0139
+      },
+      {
+        "period": "FY 2025",
+        "debt": 1070.4,
+        "assets": 12272.3,
+        "revenue": 12215.400000000001,
+        "interest_other_income": 134.7,
+        "debt_to_assets": 0.0872,
+        "interest_income_ratio": 0.011
+      }
+    ]
+  },
+  "LTTS": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025",
+      "FY 2026"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0552,
+      "interest_income_ratio": 0.0057
+    },
+    "history": [
+      {
+        "period": "FY 2019",
+        "debt": 70.2,
+        "assets": 3351.7,
+        "revenue": 5301.1,
+        "interest_other_income": 1.9,
+        "debt_to_assets": 0.0209,
+        "interest_income_ratio": 0.0004
+      },
+      {
+        "period": "FY 2020",
+        "debt": 30.3,
+        "assets": 4303.299999999999,
+        "revenue": 5828.200000000001,
+        "interest_other_income": 36.5,
+        "debt_to_assets": 0.007,
+        "interest_income_ratio": 0.0063
+      },
+      {
+        "period": "FY 2021",
+        "debt": 480.5,
+        "assets": 5066.2,
+        "revenue": 5603.4,
+        "interest_other_income": 45.5,
+        "debt_to_assets": 0.0948,
+        "interest_income_ratio": 0.0081
+      },
+      {
+        "period": "FY 2022",
+        "debt": 477.1,
+        "assets": 6077.200000000001,
+        "revenue": 6722.099999999999,
+        "interest_other_income": 43.7,
+        "debt_to_assets": 0.0785,
+        "interest_income_ratio": 0.0065
+      },
+      {
+        "period": "FY 2023",
+        "debt": 454.20000000000005,
+        "assets": 8183.8,
+        "revenue": 9018.8,
+        "interest_other_income": 44.4,
+        "debt_to_assets": 0.0555,
+        "interest_income_ratio": 0.0049
+      },
+      {
+        "period": "FY 2024",
+        "debt": 658.8,
+        "assets": 8483.099999999999,
+        "revenue": 9854.599999999999,
+        "interest_other_income": 50.9,
+        "debt_to_assets": 0.0777,
+        "interest_income_ratio": 0.0052
+      },
+      {
+        "period": "FY 2025",
+        "debt": 577.6,
+        "assets": 9627.099999999999,
+        "revenue": 9925.1,
+        "interest_other_income": 56.5,
+        "debt_to_assets": 0.06,
+        "interest_income_ratio": 0.0057
+      },
+      {
+        "period": "FY 2026",
+        "debt": 578.5,
+        "assets": 10488.8,
+        "revenue": 11268.199999999999,
+        "interest_other_income": 64.1,
+        "debt_to_assets": 0.0552,
+        "interest_income_ratio": 0.0057
+      }
+    ]
+  },
+  "LTIM": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025",
+      "FY 2026"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0622,
+      "interest_income_ratio": 0.0064
+    },
+    "history": [
+      {
+        "period": "FY 2019",
+        "debt": 0.0,
+        "assets": 6663.6,
+        "revenue": 9748.099999999999,
+        "interest_other_income": 10.6,
+        "debt_to_assets": 0.0,
+        "interest_income_ratio": 0.0011
+      },
+      {
+        "period": "FY 2020",
+        "debt": 911.8999999999999,
+        "assets": 8814.8,
+        "revenue": 11207.800000000001,
+        "interest_other_income": 82.6,
+        "debt_to_assets": 0.1035,
+        "interest_income_ratio": 0.0074
+      },
+      {
+        "period": "FY 2021",
+        "debt": 798.3,
+        "assets": 10705.599999999999,
+        "revenue": 12644.199999999999,
+        "interest_other_income": 78.8,
+        "debt_to_assets": 0.0746,
+        "interest_income_ratio": 0.0062
+      },
+      {
+        "period": "FY 2022",
+        "debt": 257.5,
+        "assets": 20571.9,
+        "revenue": 26874.5,
+        "interest_other_income": 123.4,
+        "debt_to_assets": 0.0125,
+        "interest_income_ratio": 0.0046
+      },
+      {
+        "period": "FY 2023",
+        "debt": 354.0,
+        "assets": 23481.399999999998,
+        "revenue": 33739.9,
+        "interest_other_income": 150.4,
+        "debt_to_assets": 0.0151,
+        "interest_income_ratio": 0.0045
+      },
+      {
+        "period": "FY 2024",
+        "debt": 2070.6,
+        "assets": 27544.3,
+        "revenue": 36218.9,
+        "interest_other_income": 221.7,
+        "debt_to_assets": 0.0752,
+        "interest_income_ratio": 0.0061
+      },
+      {
+        "period": "FY 2025",
+        "debt": 2187.2999999999997,
+        "assets": 30598.100000000002,
+        "revenue": 38997.799999999996,
+        "interest_other_income": 278.9,
+        "debt_to_assets": 0.0715,
+        "interest_income_ratio": 0.0072
+      },
+      {
+        "period": "FY 2026",
+        "debt": 2310.0,
+        "assets": 37148.5,
+        "revenue": 43402.0,
+        "interest_other_income": 276.3,
+        "debt_to_assets": 0.0622,
+        "interest_income_ratio": 0.0064
+      }
+    ]
+  },
+  "AUROPHARMA": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.1669,
+      "interest_income_ratio": 0.0141
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 4769.93,
+        "assets": 20942.239999999998,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.2278,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 6966.76,
+        "assets": 26271.070000000007,
+        "revenue": 19721.57,
+        "interest_other_income": 262.6,
+        "debt_to_assets": 0.2652,
+        "interest_income_ratio": 0.0133
+      },
+      {
+        "period": "FY 2020",
+        "debt": 5826.38,
+        "assets": 28764.540000000005,
+        "revenue": 23290.379999999997,
+        "interest_other_income": 305.13,
+        "debt_to_assets": 0.2026,
+        "interest_income_ratio": 0.0131
+      },
+      {
+        "period": "FY 2021",
+        "debt": 5339.08,
+        "assets": 33415.92,
+        "revenue": 28404.969999999998,
+        "interest_other_income": 74.49,
+        "debt_to_assets": 0.1598,
+        "interest_income_ratio": 0.0026
+      },
+      {
+        "period": "FY 2022",
+        "debt": 2851.27,
+        "assets": 33638.36,
+        "revenue": 23891.870000000003,
+        "interest_other_income": 48.64,
+        "debt_to_assets": 0.0848,
+        "interest_income_ratio": 0.002
+      },
+      {
+        "period": "FY 2023",
+        "debt": 5286.21,
+        "assets": 39505.26,
+        "revenue": 25145.97,
+        "interest_other_income": 140.48,
+        "debt_to_assets": 0.1338,
+        "interest_income_ratio": 0.0056
+      },
+      {
+        "period": "FY 2024",
+        "debt": 6647.63,
+        "assets": 44717.19,
+        "revenue": 29559.25,
+        "interest_other_income": 289.71,
+        "debt_to_assets": 0.1487,
+        "interest_income_ratio": 0.0098
+      },
+      {
+        "period": "FY 2025",
+        "debt": 8260.6,
+        "assets": 49481.700000000004,
+        "revenue": 32345.579999999998,
+        "interest_other_income": 457.24,
+        "debt_to_assets": 0.1669,
+        "interest_income_ratio": 0.0141
+      }
+    ]
+  },
+  "TORNTPHARM": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025",
+      "FY 2026"
+    ],
+    "latest": {
+      "debt_to_assets": 0.3445,
+      "interest_income_ratio": 0.0201
+    },
+    "history": [
+      {
+        "period": "FY 2019",
+        "debt": 6038.0999999999985,
+        "assets": 14113.420000000002,
+        "revenue": 7729.85,
+        "interest_other_income": 503.75,
+        "debt_to_assets": 0.4278,
+        "interest_income_ratio": 0.0652
+      },
+      {
+        "period": "FY 2020",
+        "debt": 5784.349999999999,
+        "assets": 14009.739999999998,
+        "revenue": 8060.61,
+        "interest_other_income": 450.71,
+        "debt_to_assets": 0.4129,
+        "interest_income_ratio": 0.0559
+      },
+      {
+        "period": "FY 2021",
+        "debt": 4874.129999999999,
+        "assets": 14074.650000000001,
+        "revenue": 8061.48,
+        "interest_other_income": 352.94,
+        "debt_to_assets": 0.3463,
+        "interest_income_ratio": 0.0438
+      },
+      {
+        "period": "FY 2022",
+        "debt": 4069.6500000000005,
+        "assets": 12906.28,
+        "revenue": 8704.6,
+        "interest_other_income": 255.06,
+        "debt_to_assets": 0.3153,
+        "interest_income_ratio": 0.0293
+      },
+      {
+        "period": "FY 2023",
+        "debt": 5368.56,
+        "assets": 14609.91,
+        "revenue": 9665.289999999999,
+        "interest_other_income": 333.44,
+        "debt_to_assets": 0.3675,
+        "interest_income_ratio": 0.0345
+      },
+      {
+        "period": "FY 2024",
+        "debt": 4021.94,
+        "assets": 14505.449999999999,
+        "revenue": 10874.130000000001,
+        "interest_other_income": 353.56,
+        "debt_to_assets": 0.2773,
+        "interest_income_ratio": 0.0325
+      },
+      {
+        "period": "FY 2025",
+        "debt": 3202.32,
+        "assets": 14395.59,
+        "revenue": 11539.36,
+        "interest_other_income": 252.31,
+        "debt_to_assets": 0.2225,
+        "interest_income_ratio": 0.0219
+      },
+      {
+        "period": "FY 2026",
+        "debt": 15025.5,
+        "assets": 43613.69,
+        "revenue": 19180.809999999998,
+        "interest_other_income": 385.07,
+        "debt_to_assets": 0.3445,
+        "interest_income_ratio": 0.0201
+      }
+    ]
+  },
+  "LUPIN": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.188,
+      "interest_income_ratio": 0.0129
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 7142.8,
+        "assets": 26019.850000000002,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.2745,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 8496.07,
+        "assets": 27661.089999999997,
+        "revenue": 15095.779999999999,
+        "interest_other_income": 302.49,
+        "debt_to_assets": 0.3071,
+        "interest_income_ratio": 0.02
+      },
+      {
+        "period": "FY 2020",
+        "debt": 6305.32,
+        "assets": 24809.54,
+        "revenue": 15992.56,
+        "interest_other_income": 362.98,
+        "debt_to_assets": 0.2541,
+        "interest_income_ratio": 0.0227
+      },
+      {
+        "period": "FY 2021",
+        "debt": 5129.08,
+        "assets": 23430.230000000003,
+        "revenue": 15300.58,
+        "interest_other_income": 140.64,
+        "debt_to_assets": 0.2189,
+        "interest_income_ratio": 0.0092
+      },
+      {
+        "period": "FY 2022",
+        "debt": 4158.38,
+        "assets": 21651.489999999998,
+        "revenue": 16615.93,
+        "interest_other_income": 142.77,
+        "debt_to_assets": 0.1921,
+        "interest_income_ratio": 0.0086
+      },
+      {
+        "period": "FY 2023",
+        "debt": 4541.52,
+        "assets": 22800.28,
+        "revenue": 16792.57,
+        "interest_other_income": 274.3,
+        "debt_to_assets": 0.1992,
+        "interest_income_ratio": 0.0163
+      },
+      {
+        "period": "FY 2024",
+        "debt": 2921.77,
+        "assets": 23751.309999999998,
+        "revenue": 20141.5,
+        "interest_other_income": 311.61,
+        "debt_to_assets": 0.123,
+        "interest_income_ratio": 0.0155
+      },
+      {
+        "period": "FY 2025",
+        "debt": 5447.77,
+        "assets": 28978.47,
+        "revenue": 22909.510000000002,
+        "interest_other_income": 294.87,
+        "debt_to_assets": 0.188,
+        "interest_income_ratio": 0.0129
+      }
+    ]
+  },
+  "ALKEM": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0781,
+      "interest_income_ratio": 0.009
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 997.56,
+        "assets": 7663.96,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.1302,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 944.0699999999999,
+        "assets": 8207.89,
+        "revenue": 7444.889999999999,
+        "interest_other_income": 54.63,
+        "debt_to_assets": 0.115,
+        "interest_income_ratio": 0.0073
+      },
+      {
+        "period": "FY 2020",
+        "debt": 1615.52,
+        "assets": 9945.539999999999,
+        "revenue": 8448.58,
+        "interest_other_income": 65.06,
+        "debt_to_assets": 0.1624,
+        "interest_income_ratio": 0.0077
+      },
+      {
+        "period": "FY 2021",
+        "debt": 1707.04,
+        "assets": 11519.260000000002,
+        "revenue": 9098.22,
+        "interest_other_income": 58.92,
+        "debt_to_assets": 0.1482,
+        "interest_income_ratio": 0.0065
+      },
+      {
+        "period": "FY 2022",
+        "debt": 2668.1899999999996,
+        "assets": 14069.190000000002,
+        "revenue": 10796.84,
+        "interest_other_income": 52.37,
+        "debt_to_assets": 0.1896,
+        "interest_income_ratio": 0.0049
+      },
+      {
+        "period": "FY 2023",
+        "debt": 1396.6799999999998,
+        "assets": 13756.649999999998,
+        "revenue": 11815.34,
+        "interest_other_income": 107.36,
+        "debt_to_assets": 0.1015,
+        "interest_income_ratio": 0.0091
+      },
+      {
+        "period": "FY 2024",
+        "debt": 1418.4099999999999,
+        "assets": 15574.900000000001,
+        "revenue": 12978.42,
+        "interest_other_income": 112.41,
+        "debt_to_assets": 0.0911,
+        "interest_income_ratio": 0.0087
+      },
+      {
+        "period": "FY 2025",
+        "debt": 1380.9,
+        "assets": 17691.1,
+        "revenue": 13458.26,
+        "interest_other_income": 121.7,
+        "debt_to_assets": 0.0781,
+        "interest_income_ratio": 0.009
+      }
+    ]
+  },
+  "LALPATHLAB": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.058,
+      "interest_income_ratio": 0.0087
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 0.0,
+        "assets": 915.5600000000002,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.0,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 0.0,
+        "assets": 1090.5,
+        "revenue": 1249.3700000000001,
+        "interest_other_income": 0.84,
+        "debt_to_assets": 0.0,
+        "interest_income_ratio": 0.0007
+      },
+      {
+        "period": "FY 2020",
+        "debt": 0.0,
+        "assets": 1374.32,
+        "revenue": 1385.4099999999999,
+        "interest_other_income": 15.31,
+        "debt_to_assets": 0.0,
+        "interest_income_ratio": 0.0111
+      },
+      {
+        "period": "FY 2021",
+        "debt": 150.37,
+        "assets": 1660.56,
+        "revenue": 1632.6,
+        "interest_other_income": 16.0,
+        "debt_to_assets": 0.0906,
+        "interest_income_ratio": 0.0098
+      },
+      {
+        "period": "FY 2022",
+        "debt": 532.44,
+        "assets": 2342.71,
+        "revenue": 2139.96,
+        "interest_other_income": 30.18,
+        "debt_to_assets": 0.2273,
+        "interest_income_ratio": 0.0141
+      },
+      {
+        "period": "FY 2023",
+        "debt": 419.5,
+        "assets": 2382.6099999999997,
+        "revenue": 2058.6,
+        "interest_other_income": 37.53,
+        "debt_to_assets": 0.1761,
+        "interest_income_ratio": 0.0182
+      },
+      {
+        "period": "FY 2024",
+        "debt": 246.93,
+        "assets": 2453.5800000000004,
+        "revenue": 2295.81,
+        "interest_other_income": 29.36,
+        "debt_to_assets": 0.1006,
+        "interest_income_ratio": 0.0128
+      },
+      {
+        "period": "FY 2025",
+        "debt": 157.43,
+        "assets": 2713.4300000000003,
+        "revenue": 2554.83,
+        "interest_other_income": 22.31,
+        "debt_to_assets": 0.058,
+        "interest_income_ratio": 0.0087
+      }
+    ]
+  },
+  "MAXHEALTH": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.1982,
+      "interest_income_ratio": 0.023
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 980.5200000000001,
+        "assets": 3301.5200000000004,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.297,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 1002.75,
+        "assets": 3354.54,
+        "revenue": 1748.07,
+        "interest_other_income": 101.27,
+        "debt_to_assets": 0.2989,
+        "interest_income_ratio": 0.0579
+      },
+      {
+        "period": "FY 2020",
+        "debt": 874.74,
+        "assets": 3973.6600000000003,
+        "revenue": 1107.11,
+        "interest_other_income": 83.24,
+        "debt_to_assets": 0.2201,
+        "interest_income_ratio": 0.0752
+      },
+      {
+        "period": "FY 2021",
+        "debt": 1101.41,
+        "assets": 8543.460000000001,
+        "revenue": 2619.41,
+        "interest_other_income": 179.46,
+        "debt_to_assets": 0.1289,
+        "interest_income_ratio": 0.0685
+      },
+      {
+        "period": "FY 2022",
+        "debt": 913.3799999999999,
+        "assets": 9189.130000000001,
+        "revenue": 4290.790000000001,
+        "interest_other_income": 100.87,
+        "debt_to_assets": 0.0994,
+        "interest_income_ratio": 0.0235
+      },
+      {
+        "period": "FY 2023",
+        "debt": 688.96,
+        "assets": 10101.85,
+        "revenue": 4970.61,
+        "interest_other_income": 83.86,
+        "debt_to_assets": 0.0682,
+        "interest_income_ratio": 0.0169
+      },
+      {
+        "period": "FY 2024",
+        "debt": 1298.95,
+        "assets": 11999.94,
+        "revenue": 5582.96,
+        "interest_other_income": 59.89,
+        "debt_to_assets": 0.1082,
+        "interest_income_ratio": 0.0107
+      },
+      {
+        "period": "FY 2025",
+        "debt": 3010.29,
+        "assets": 15186.439999999999,
+        "revenue": 7184.1,
+        "interest_other_income": 165.02,
+        "debt_to_assets": 0.1982,
+        "interest_income_ratio": 0.023
+      }
+    ]
+  },
+  "METROPOLIS": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.1098,
+      "interest_income_ratio": 0.0177
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 0.73,
+        "assets": 525.89,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.0014,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 17.78,
+        "assets": 549.74,
+        "revenue": 769.39,
+        "interest_other_income": 4.12,
+        "debt_to_assets": 0.0323,
+        "interest_income_ratio": 0.0054
+      },
+      {
+        "period": "FY 2020",
+        "debt": 66.7,
+        "assets": 750.5,
+        "revenue": 864.98,
+        "interest_other_income": 12.65,
+        "debt_to_assets": 0.0889,
+        "interest_income_ratio": 0.0146
+      },
+      {
+        "period": "FY 2021",
+        "debt": 112.27,
+        "assets": 1000.26,
+        "revenue": 1010.04,
+        "interest_other_income": 11.56,
+        "debt_to_assets": 0.1122,
+        "interest_income_ratio": 0.0114
+      },
+      {
+        "period": "FY 2022",
+        "debt": 378.56,
+        "assets": 1520.52,
+        "revenue": 1261.9599999999998,
+        "interest_other_income": 25.02,
+        "debt_to_assets": 0.249,
+        "interest_income_ratio": 0.0198
+      },
+      {
+        "period": "FY 2023",
+        "debt": 266.38,
+        "assets": 1494.71,
+        "revenue": 1163.43,
+        "interest_other_income": 31.85,
+        "debt_to_assets": 0.1782,
+        "interest_income_ratio": 0.0274
+      },
+      {
+        "period": "FY 2024",
+        "debt": 197.06,
+        "assets": 1547.4199999999998,
+        "revenue": 1216.83,
+        "interest_other_income": 27.89,
+        "debt_to_assets": 0.1273,
+        "interest_income_ratio": 0.0229
+      },
+      {
+        "period": "FY 2025",
+        "debt": 204.12,
+        "assets": 1859.0900000000001,
+        "revenue": 1346.31,
+        "interest_other_income": 23.89,
+        "debt_to_assets": 0.1098,
+        "interest_income_ratio": 0.0177
+      }
+    ]
+  },
+  "ZYDUSLIFE": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0876,
+      "interest_income_ratio": 0.0071
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 5406.7,
+        "assets": 17783.2,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.304,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 7899.4,
+        "assets": 23230.800000000003,
+        "revenue": 13366.7,
+        "interest_other_income": 193.5,
+        "debt_to_assets": 0.34,
+        "interest_income_ratio": 0.0145
+      },
+      {
+        "period": "FY 2020",
+        "debt": 7986.4,
+        "assets": 23476.7,
+        "revenue": 14367.0,
+        "interest_other_income": 341.8,
+        "debt_to_assets": 0.3402,
+        "interest_income_ratio": 0.0238
+      },
+      {
+        "period": "FY 2021",
+        "debt": 4583.5,
+        "assets": 23765.0,
+        "revenue": 15139.400000000001,
+        "interest_other_income": 163.5,
+        "debt_to_assets": 0.1929,
+        "interest_income_ratio": 0.0108
+      },
+      {
+        "period": "FY 2022",
+        "debt": 4220.9,
+        "assets": 27641.6,
+        "revenue": 17848.3,
+        "interest_other_income": 127.0,
+        "debt_to_assets": 0.1527,
+        "interest_income_ratio": 0.0071
+      },
+      {
+        "period": "FY 2023",
+        "debt": 1194.9,
+        "assets": 25562.0,
+        "revenue": 17424.0,
+        "interest_other_income": 129.9,
+        "debt_to_assets": 0.0467,
+        "interest_income_ratio": 0.0075
+      },
+      {
+        "period": "FY 2024",
+        "debt": 804.2,
+        "assets": 28834.3,
+        "revenue": 19858.0,
+        "interest_other_income": 81.2,
+        "debt_to_assets": 0.0279,
+        "interest_income_ratio": 0.0041
+      },
+      {
+        "period": "FY 2025",
+        "debt": 3213.2000000000003,
+        "assets": 36689.1,
+        "revenue": 23511.0,
+        "interest_other_income": 165.9,
+        "debt_to_assets": 0.0876,
+        "interest_income_ratio": 0.0071
+      }
+    ]
+  },
+  "BAJAJ-AUTO": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.1731,
+      "interest_income_ratio": 0.0074
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 120.77,
+        "assets": 25141.0,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.0048,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 124.52,
+        "assets": 28834.409999999996,
+        "revenue": 32393.870000000003,
+        "interest_other_income": 4.48,
+        "debt_to_assets": 0.0043,
+        "interest_income_ratio": 0.0001
+      },
+      {
+        "period": "FY 2020",
+        "debt": 125.59,
+        "assets": 26510.02,
+        "revenue": 31764.730000000003,
+        "interest_other_income": 3.16,
+        "debt_to_assets": 0.0047,
+        "interest_income_ratio": 0.0001
+      },
+      {
+        "period": "FY 2021",
+        "debt": 121.46,
+        "assets": 33601.71,
+        "revenue": 29323.86,
+        "interest_other_income": 6.66,
+        "debt_to_assets": 0.0036,
+        "interest_income_ratio": 0.0002
+      },
+      {
+        "period": "FY 2022",
+        "debt": 122.77,
+        "assets": 35111.21,
+        "revenue": 35824.89,
+        "interest_other_income": 8.66,
+        "debt_to_assets": 0.0035,
+        "interest_income_ratio": 0.0002
+      },
+      {
+        "period": "FY 2023",
+        "debt": 124.23,
+        "assets": 35136.45,
+        "revenue": 38172.189999999995,
+        "interest_other_income": 39.51,
+        "debt_to_assets": 0.0035,
+        "interest_income_ratio": 0.001
+      },
+      {
+        "period": "FY 2024",
+        "debt": 1911.74,
+        "assets": 39343.69,
+        "revenue": 46574.04,
+        "interest_other_income": 60.36,
+        "debt_to_assets": 0.0486,
+        "interest_income_ratio": 0.0013
+      },
+      {
+        "period": "FY 2025",
+        "debt": 9364.16,
+        "assets": 54109.92,
+        "revenue": 52468.96000000001,
+        "interest_other_income": 388.9,
+        "debt_to_assets": 0.1731,
+        "interest_income_ratio": 0.0074
+      }
+    ]
+  },
+  "MOTHERSON": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.1875,
+      "interest_income_ratio": 0.0164
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 10373.599999999999,
+        "assets": 36974.1,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.2806,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 11534.2,
+        "assets": 42754.0,
+        "revenue": 63856.200000000004,
+        "interest_other_income": 423.2,
+        "debt_to_assets": 0.2698,
+        "interest_income_ratio": 0.0066
+      },
+      {
+        "period": "FY 2020",
+        "debt": 13136.400000000001,
+        "assets": 45033.1,
+        "revenue": 61371.3,
+        "interest_other_income": 592.8,
+        "debt_to_assets": 0.2917,
+        "interest_income_ratio": 0.0097
+      },
+      {
+        "period": "FY 2021",
+        "debt": 11929.599999999997,
+        "assets": 47748.7,
+        "revenue": 58010.8,
+        "interest_other_income": 511.5,
+        "debt_to_assets": 0.2498,
+        "interest_income_ratio": 0.0088
+      },
+      {
+        "period": "FY 2022",
+        "debt": 14129.699999999999,
+        "assets": 55725.600000000006,
+        "revenue": 64411.9,
+        "interest_other_income": 542.6,
+        "debt_to_assets": 0.2536,
+        "interest_income_ratio": 0.0084
+      },
+      {
+        "period": "FY 2023",
+        "debt": 13792.300000000001,
+        "assets": 61330.0,
+        "revenue": 78957.70000000001,
+        "interest_other_income": 780.9,
+        "debt_to_assets": 0.2249,
+        "interest_income_ratio": 0.0099
+      },
+      {
+        "period": "FY 2024",
+        "debt": 19921.9,
+        "assets": 84177.79999999999,
+        "revenue": 99116.9,
+        "interest_other_income": 1811.2,
+        "debt_to_assets": 0.2367,
+        "interest_income_ratio": 0.0183
+      },
+      {
+        "period": "FY 2025",
+        "debt": 17221.7,
+        "assets": 91869.59999999999,
+        "revenue": 114747.8,
+        "interest_other_income": 1882.4,
+        "debt_to_assets": 0.1875,
+        "interest_income_ratio": 0.0164
+      }
+    ]
+  },
+  "ENDURANCE": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.1034,
+      "interest_income_ratio": 0.004
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 814.0799999999999,
+        "assets": 4339.540000000001,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.1876,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 730.5,
+        "assets": 4769.91,
+        "revenue": 7537.55,
+        "interest_other_income": 25.73,
+        "debt_to_assets": 0.1531,
+        "interest_income_ratio": 0.0034
+      },
+      {
+        "period": "FY 2020",
+        "debt": 749.55,
+        "assets": 5062.03,
+        "revenue": 6965.31,
+        "interest_other_income": 17.54,
+        "debt_to_assets": 0.1481,
+        "interest_income_ratio": 0.0025
+      },
+      {
+        "period": "FY 2021",
+        "debt": 641.0899999999999,
+        "assets": 5747.06,
+        "revenue": 6577.7300000000005,
+        "interest_other_income": 13.76,
+        "debt_to_assets": 0.1116,
+        "interest_income_ratio": 0.0021
+      },
+      {
+        "period": "FY 2022",
+        "debt": 429.60999999999996,
+        "assets": 5856.99,
+        "revenue": 7590.18,
+        "interest_other_income": 6.35,
+        "debt_to_assets": 0.0733,
+        "interest_income_ratio": 0.0008
+      },
+      {
+        "period": "FY 2023",
+        "debt": 514.77,
+        "assets": 6801.929999999999,
+        "revenue": 8849.48,
+        "interest_other_income": 20.58,
+        "debt_to_assets": 0.0757,
+        "interest_income_ratio": 0.0023
+      },
+      {
+        "period": "FY 2024",
+        "debt": 765.34,
+        "assets": 7871.26,
+        "revenue": 10326.490000000002,
+        "interest_other_income": 42.66,
+        "debt_to_assets": 0.0972,
+        "interest_income_ratio": 0.0041
+      },
+      {
+        "period": "FY 2025",
+        "debt": 943.6800000000001,
+        "assets": 9125.93,
+        "revenue": 11689.96,
+        "interest_other_income": 46.81,
+        "debt_to_assets": 0.1034,
+        "interest_income_ratio": 0.004
+      }
+    ]
+  },
+  "ESCORTS": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.008,
+      "interest_income_ratio": 0.0027
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 51.09,
+        "assets": 3972.5299999999997,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.0129,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 280.96,
+        "assets": 4706.97,
+        "revenue": 6361.21,
+        "interest_other_income": 19.54,
+        "debt_to_assets": 0.0597,
+        "interest_income_ratio": 0.0031
+      },
+      {
+        "period": "FY 2020",
+        "debt": 47.669999999999995,
+        "assets": 5013.960000000001,
+        "revenue": 5907.6900000000005,
+        "interest_other_income": 17.23,
+        "debt_to_assets": 0.0095,
+        "interest_income_ratio": 0.0029
+      },
+      {
+        "period": "FY 2021",
+        "debt": 60.61,
+        "assets": 6878.17,
+        "revenue": 7174.8,
+        "interest_other_income": 13.34,
+        "debt_to_assets": 0.0088,
+        "interest_income_ratio": 0.0019
+      },
+      {
+        "period": "FY 2022",
+        "debt": 51.95,
+        "assets": 9107.740000000002,
+        "revenue": 7456.45,
+        "interest_other_income": 14.97,
+        "debt_to_assets": 0.0057,
+        "interest_income_ratio": 0.002
+      },
+      {
+        "period": "FY 2023",
+        "debt": 57.3,
+        "assets": 10084.82,
+        "revenue": 8709.62,
+        "interest_other_income": 13.27,
+        "debt_to_assets": 0.0057,
+        "interest_income_ratio": 0.0015
+      },
+      {
+        "period": "FY 2024",
+        "debt": 448.46,
+        "assets": 12400.36,
+        "revenue": 10328.960000000001,
+        "interest_other_income": 41.66,
+        "debt_to_assets": 0.0362,
+        "interest_income_ratio": 0.004
+      },
+      {
+        "period": "FY 2025",
+        "debt": 105.18,
+        "assets": 13094.69,
+        "revenue": 10846.08,
+        "interest_other_income": 29.17,
+        "debt_to_assets": 0.008,
+        "interest_income_ratio": 0.0027
+      }
+    ]
+  },
+  "CEATLTD": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.1905,
+      "interest_income_ratio": 0.0209
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 871.6700000000001,
+        "assets": 5146.4400000000005,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.1694,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 1498.0200000000002,
+        "assets": 6404.33,
+        "revenue": 7043.71,
+        "interest_other_income": 92.87,
+        "debt_to_assets": 0.2339,
+        "interest_income_ratio": 0.0132
+      },
+      {
+        "period": "FY 2020",
+        "debt": 2035.04,
+        "assets": 7365.52,
+        "revenue": 6816.5599999999995,
+        "interest_other_income": 153.92,
+        "debt_to_assets": 0.2763,
+        "interest_income_ratio": 0.0226
+      },
+      {
+        "period": "FY 2021",
+        "debt": 1532.53,
+        "assets": 8133.17,
+        "revenue": 7659.72,
+        "interest_other_income": 178.76,
+        "debt_to_assets": 0.1884,
+        "interest_income_ratio": 0.0233
+      },
+      {
+        "period": "FY 2022",
+        "debt": 2228.87,
+        "assets": 9159.539999999999,
+        "revenue": 9403.56,
+        "interest_other_income": 210.13,
+        "debt_to_assets": 0.2433,
+        "interest_income_ratio": 0.0223
+      },
+      {
+        "period": "FY 2023",
+        "debt": 2295.4699999999993,
+        "assets": 9626.56,
+        "revenue": 11340.039999999999,
+        "interest_other_income": 242.1,
+        "debt_to_assets": 0.2385,
+        "interest_income_ratio": 0.0213
+      },
+      {
+        "period": "FY 2024",
+        "debt": 1791.5,
+        "assets": 9994.5,
+        "revenue": 11984.01,
+        "interest_other_income": 269.06,
+        "debt_to_assets": 0.1792,
+        "interest_income_ratio": 0.0225
+      },
+      {
+        "period": "FY 2025",
+        "debt": 2136.38,
+        "assets": 11212.39,
+        "revenue": 13268.720000000001,
+        "interest_other_income": 277.79,
+        "debt_to_assets": 0.1905,
+        "interest_income_ratio": 0.0209
+      }
+    ]
+  },
+  "TIINDIA": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0443,
+      "interest_income_ratio": 0.0042
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 776.36,
+        "assets": 3311.61,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.2344,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 611.29,
+        "assets": 3349.39,
+        "revenue": 5829.96,
+        "interest_other_income": 56.0,
+        "debt_to_assets": 0.1825,
+        "interest_income_ratio": 0.0096
+      },
+      {
+        "period": "FY 2020",
+        "debt": 414.23999999999995,
+        "assets": 3080.2700000000004,
+        "revenue": 4812.71,
+        "interest_other_income": 33.65,
+        "debt_to_assets": 0.1345,
+        "interest_income_ratio": 0.007
+      },
+      {
+        "period": "FY 2021",
+        "debt": 1972.4,
+        "assets": 8633.57,
+        "revenue": 6151.5,
+        "interest_other_income": 51.93,
+        "debt_to_assets": 0.2285,
+        "interest_income_ratio": 0.0084
+      },
+      {
+        "period": "FY 2022",
+        "debt": 870.9099999999999,
+        "assets": 8874.259999999998,
+        "revenue": 12595.51,
+        "interest_other_income": 98.92,
+        "debt_to_assets": 0.0981,
+        "interest_income_ratio": 0.0079
+      },
+      {
+        "period": "FY 2023",
+        "debt": 726.0699999999999,
+        "assets": 10259.789999999999,
+        "revenue": 15328.539999999999,
+        "interest_other_income": 57.78,
+        "debt_to_assets": 0.0708,
+        "interest_income_ratio": 0.0038
+      },
+      {
+        "period": "FY 2024",
+        "debt": 896.33,
+        "assets": 13105.09,
+        "revenue": 17735.47,
+        "interest_other_income": 72.59,
+        "debt_to_assets": 0.0684,
+        "interest_income_ratio": 0.0041
+      },
+      {
+        "period": "FY 2025",
+        "debt": 703.28,
+        "assets": 15879.41,
+        "revenue": 19835.710000000003,
+        "interest_other_income": 82.61,
+        "debt_to_assets": 0.0443,
+        "interest_income_ratio": 0.0042
+      }
+    ]
+  },
+  "ASHOKLEY": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.6127,
+      "interest_income_ratio": 0.0786
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 15791.04,
+        "assets": 33382.86,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.473,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 19167.91,
+        "assets": 39125.6,
+        "revenue": 33795.770000000004,
+        "interest_other_income": 1502.24,
+        "debt_to_assets": 0.4899,
+        "interest_income_ratio": 0.0445
+      },
+      {
+        "period": "FY 2020",
+        "debt": 22417.190000000002,
+        "assets": 38129.97,
+        "revenue": 22522.69,
+        "interest_other_income": 1801.65,
+        "debt_to_assets": 0.5879,
+        "interest_income_ratio": 0.08
+      },
+      {
+        "period": "FY 2021",
+        "debt": 24077.17,
+        "assets": 42057.96,
+        "revenue": 20047.68,
+        "interest_other_income": 1900.64,
+        "debt_to_assets": 0.5725,
+        "interest_income_ratio": 0.0948
+      },
+      {
+        "period": "FY 2022",
+        "debt": 24145.019999999997,
+        "assets": 43573.65000000001,
+        "revenue": 26741.54,
+        "interest_other_income": 1869.05,
+        "debt_to_assets": 0.5541,
+        "interest_income_ratio": 0.0699
+      },
+      {
+        "period": "FY 2023",
+        "debt": 31160.93,
+        "assets": 54696.92999999999,
+        "revenue": 42499.329999999994,
+        "interest_other_income": 2093.5,
+        "debt_to_assets": 0.5697,
+        "interest_income_ratio": 0.0493
+      },
+      {
+        "period": "FY 2024",
+        "debt": 40802.18,
+        "assets": 67595.11,
+        "revenue": 46766.700000000004,
+        "interest_other_income": 2982.25,
+        "debt_to_assets": 0.6036,
+        "interest_income_ratio": 0.0638
+      },
+      {
+        "period": "FY 2025",
+        "debt": 49962.10999999999,
+        "assets": 81546.31,
+        "revenue": 49976.21,
+        "interest_other_income": 3930.21,
+        "debt_to_assets": 0.6127,
+        "interest_income_ratio": 0.0786
+      }
+    ]
+  },
+  "MARICO": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0669,
+      "interest_income_ratio": 0.0042
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 312.0,
+        "assets": 4072.0,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.0766,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 352.0,
+        "assets": 4896.0,
+        "revenue": 8044.0,
+        "interest_other_income": 40.0,
+        "debt_to_assets": 0.0719,
+        "interest_income_ratio": 0.005
+      },
+      {
+        "period": "FY 2020",
+        "debt": 338.0,
+        "assets": 4964.0,
+        "revenue": 8181.0,
+        "interest_other_income": 50.0,
+        "debt_to_assets": 0.0681,
+        "interest_income_ratio": 0.0061
+      },
+      {
+        "period": "FY 2021",
+        "debt": 511.0,
+        "assets": 5426.0,
+        "revenue": 8956.0,
+        "interest_other_income": 34.0,
+        "debt_to_assets": 0.0942,
+        "interest_income_ratio": 0.0038
+      },
+      {
+        "period": "FY 2022",
+        "debt": 479.0,
+        "assets": 5677.0,
+        "revenue": 10647.0,
+        "interest_other_income": 39.0,
+        "debt_to_assets": 0.0844,
+        "interest_income_ratio": 0.0037
+      },
+      {
+        "period": "FY 2023",
+        "debt": 608.0,
+        "assets": 6800.0,
+        "revenue": 11168.0,
+        "interest_other_income": 56.0,
+        "debt_to_assets": 0.0894,
+        "interest_income_ratio": 0.005
+      },
+      {
+        "period": "FY 2024",
+        "debt": 528.0,
+        "assets": 7353.0,
+        "revenue": 11317.0,
+        "interest_other_income": 73.0,
+        "debt_to_assets": 0.0718,
+        "interest_income_ratio": 0.0065
+      },
+      {
+        "period": "FY 2025",
+        "debt": 554.0,
+        "assets": 8281.0,
+        "revenue": 12753.0,
+        "interest_other_income": 53.0,
+        "debt_to_assets": 0.0669,
+        "interest_income_ratio": 0.0042
+      }
+    ]
+  },
+  "DABUR": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0586,
+      "interest_income_ratio": 0.0125
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 937.59,
+        "assets": 8701.630000000001,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.1077,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 699.37,
+        "assets": 8436.64,
+        "revenue": 8812.119999999999,
+        "interest_other_income": 59.58,
+        "debt_to_assets": 0.0829,
+        "interest_income_ratio": 0.0068
+      },
+      {
+        "period": "FY 2020",
+        "debt": 521.99,
+        "assets": 9336.58,
+        "revenue": 8989.93,
+        "interest_other_income": 49.54,
+        "debt_to_assets": 0.0559,
+        "interest_income_ratio": 0.0055
+      },
+      {
+        "period": "FY 2021",
+        "debt": 509.06000000000006,
+        "assets": 10833.220000000001,
+        "revenue": 9886.94,
+        "interest_other_income": 30.81,
+        "debt_to_assets": 0.047,
+        "interest_income_ratio": 0.0031
+      },
+      {
+        "period": "FY 2022",
+        "debt": 1030.1,
+        "assets": 12283.86,
+        "revenue": 11281.84,
+        "interest_other_income": 38.6,
+        "debt_to_assets": 0.0839,
+        "interest_income_ratio": 0.0034
+      },
+      {
+        "period": "FY 2023",
+        "debt": 1173.79,
+        "assets": 13652.279999999999,
+        "revenue": 11975.279999999999,
+        "interest_other_income": 78.24,
+        "debt_to_assets": 0.086,
+        "interest_income_ratio": 0.0065
+      },
+      {
+        "period": "FY 2024",
+        "debt": 1365.0900000000001,
+        "assets": 15116.36,
+        "revenue": 12886.42,
+        "interest_other_income": 124.18,
+        "debt_to_assets": 0.0903,
+        "interest_income_ratio": 0.0096
+      },
+      {
+        "period": "FY 2025",
+        "debt": 950.37,
+        "assets": 16229.75,
+        "revenue": 13113.74,
+        "interest_other_income": 163.5,
+        "debt_to_assets": 0.0586,
+        "interest_income_ratio": 0.0125
+      }
+    ]
+  },
+  "COLPAL": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0202,
+      "interest_income_ratio": 0.0007
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 0.0,
+        "assets": 2563.87,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.0,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 83.14000000000001,
+        "assets": 2626.4800000000005,
+        "revenue": 4530.59,
+        "interest_other_income": 2.5,
+        "debt_to_assets": 0.0317,
+        "interest_income_ratio": 0.0006
+      },
+      {
+        "period": "FY 2020",
+        "debt": 101.5,
+        "assets": 2603.97,
+        "revenue": 4574.32,
+        "interest_other_income": 9.62,
+        "debt_to_assets": 0.039,
+        "interest_income_ratio": 0.0021
+      },
+      {
+        "period": "FY 2021",
+        "debt": 91.18,
+        "assets": 2894.01,
+        "revenue": 4871.570000000001,
+        "interest_other_income": 7.26,
+        "debt_to_assets": 0.0315,
+        "interest_income_ratio": 0.0015
+      },
+      {
+        "period": "FY 2022",
+        "debt": 83.04999999999998,
+        "assets": 2901.83,
+        "revenue": 5126.04,
+        "interest_other_income": 5.89,
+        "debt_to_assets": 0.0286,
+        "interest_income_ratio": 0.0011
+      },
+      {
+        "period": "FY 2023",
+        "debt": 68.96,
+        "assets": 2883.0,
+        "revenue": 5279.78,
+        "interest_other_income": 4.91,
+        "debt_to_assets": 0.0239,
+        "interest_income_ratio": 0.0009
+      },
+      {
+        "period": "FY 2024",
+        "debt": 71.75,
+        "assets": 3196.53,
+        "revenue": 5756.950000000001,
+        "interest_other_income": 5.0,
+        "debt_to_assets": 0.0224,
+        "interest_income_ratio": 0.0009
+      },
+      {
+        "period": "FY 2025",
+        "debt": 60.84,
+        "assets": 3018.55,
+        "revenue": 6179.01,
+        "interest_other_income": 4.32,
+        "debt_to_assets": 0.0202,
+        "interest_income_ratio": 0.0007
+      }
+    ]
+  },
+  "EMAMILTD": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0255,
+      "interest_income_ratio": 0.0024
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 325.92,
+        "assets": 2797.8500000000004,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.1165,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 109.87,
+        "assets": 2818.52,
+        "revenue": 2729.53,
+        "interest_other_income": 21.4,
+        "debt_to_assets": 0.039,
+        "interest_income_ratio": 0.0078
+      },
+      {
+        "period": "FY 2020",
+        "debt": 210.24,
+        "assets": 2678.49,
+        "revenue": 2711.9500000000003,
+        "interest_other_income": 21.01,
+        "debt_to_assets": 0.0785,
+        "interest_income_ratio": 0.0077
+      },
+      {
+        "period": "FY 2021",
+        "debt": 100.74000000000001,
+        "assets": 2519.6800000000003,
+        "revenue": 2950.8,
+        "interest_other_income": 13.27,
+        "debt_to_assets": 0.04,
+        "interest_income_ratio": 0.0045
+      },
+      {
+        "period": "FY 2022",
+        "debt": 281.55,
+        "assets": 3049.9399999999996,
+        "revenue": 3287.28,
+        "interest_other_income": 5.07,
+        "debt_to_assets": 0.0923,
+        "interest_income_ratio": 0.0015
+      },
+      {
+        "period": "FY 2023",
+        "debt": 90.50999999999999,
+        "assets": 3096.41,
+        "revenue": 3474.66,
+        "interest_other_income": 7.39,
+        "debt_to_assets": 0.0292,
+        "interest_income_ratio": 0.0021
+      },
+      {
+        "period": "FY 2024",
+        "debt": 93.95,
+        "assets": 3268.81,
+        "revenue": 3624.8900000000003,
+        "interest_other_income": 9.98,
+        "debt_to_assets": 0.0287,
+        "interest_income_ratio": 0.0028
+      },
+      {
+        "period": "FY 2025",
+        "debt": 89.79,
+        "assets": 3525.21,
+        "revenue": 3877.3,
+        "interest_other_income": 9.34,
+        "debt_to_assets": 0.0255,
+        "interest_income_ratio": 0.0024
+      }
+    ]
+  },
+  "GODREJCP": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.2075,
+      "interest_income_ratio": 0.0225
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 3507.57,
+        "assets": 13863.77,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.253,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 3382.05,
+        "assets": 14093.55,
+        "revenue": 10694.32,
+        "interest_other_income": 238.21,
+        "debt_to_assets": 0.24,
+        "interest_income_ratio": 0.0223
+      },
+      {
+        "period": "FY 2020",
+        "debt": 3574.9700000000003,
+        "assets": 14880.279999999999,
+        "revenue": 10033.42,
+        "interest_other_income": 228.13,
+        "debt_to_assets": 0.2402,
+        "interest_income_ratio": 0.0227
+      },
+      {
+        "period": "FY 2021",
+        "debt": 1863.9700000000003,
+        "assets": 14243.79,
+        "revenue": 11137.78,
+        "interest_other_income": 137.65,
+        "debt_to_assets": 0.1309,
+        "interest_income_ratio": 0.0124
+      },
+      {
+        "period": "FY 2022",
+        "debt": 1704.3399999999997,
+        "assets": 16082.12,
+        "revenue": 12421.66,
+        "interest_other_income": 122.26,
+        "debt_to_assets": 0.106,
+        "interest_income_ratio": 0.0098
+      },
+      {
+        "period": "FY 2023",
+        "debt": 1129.5800000000002,
+        "assets": 17437.26,
+        "revenue": 13484.38,
+        "interest_other_income": 188.48,
+        "debt_to_assets": 0.0648,
+        "interest_income_ratio": 0.014
+      },
+      {
+        "period": "FY 2024",
+        "debt": 3222.2000000000003,
+        "assets": 18392.08,
+        "revenue": 14365.060000000001,
+        "interest_other_income": 309.57,
+        "debt_to_assets": 0.1752,
+        "interest_income_ratio": 0.0216
+      },
+      {
+        "period": "FY 2025",
+        "debt": 4004.4900000000002,
+        "assets": 19297.5,
+        "revenue": 16079.79,
+        "interest_other_income": 361.05,
+        "debt_to_assets": 0.2075,
+        "interest_income_ratio": 0.0225
+      }
+    ]
+  },
+  "AMBUJACEM": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2023",
+      "FY 2024",
+      "FY 2025",
+      "FY 2026"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0097,
+      "interest_income_ratio": 0.0054
+    },
+    "history": [
+      {
+        "period": "FY 2023",
+        "debt": 522.73,
+        "assets": 51721.46000000001,
+        "revenue": 44822.920000000006,
+        "interest_other_income": 194.9,
+        "debt_to_assets": 0.0101,
+        "interest_income_ratio": 0.0043
+      },
+      {
+        "period": "FY 2024",
+        "debt": 699.01,
+        "assets": 65066.740000000005,
+        "revenue": 38702.549999999996,
+        "interest_other_income": 276.38,
+        "debt_to_assets": 0.0107,
+        "interest_income_ratio": 0.0071
+      },
+      {
+        "period": "FY 2025",
+        "debt": 788.5,
+        "assets": 81101.98999999999,
+        "revenue": 38003.91,
+        "interest_other_income": 215.94,
+        "debt_to_assets": 0.0097,
+        "interest_income_ratio": 0.0057
+      },
+      {
+        "period": "FY 2026",
+        "debt": 865.93,
+        "assets": 89573.94,
+        "revenue": 41510.07,
+        "interest_other_income": 223.61,
+        "debt_to_assets": 0.0097,
+        "interest_income_ratio": 0.0054
+      }
+    ]
+  },
+  "SIEMENS": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2017",
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024"
+    ],
+    "latest": {
+      "debt_to_assets": 0.011,
+      "interest_income_ratio": 0.0026
+    },
+    "history": [
+      {
+        "period": "FY 2017",
+        "debt": 0.0,
+        "assets": 13138.2,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.0,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2018",
+        "debt": 0.0,
+        "assets": 14336.300000000001,
+        "revenue": 13075.4,
+        "interest_other_income": 8.2,
+        "debt_to_assets": 0.0,
+        "interest_income_ratio": 0.0006
+      },
+      {
+        "period": "FY 2019",
+        "debt": 0.0,
+        "assets": 15358.3,
+        "revenue": 13482.3,
+        "interest_other_income": 11.5,
+        "debt_to_assets": 0.0,
+        "interest_income_ratio": 0.0009
+      },
+      {
+        "period": "FY 2020",
+        "debt": 0.0,
+        "assets": 15860.2,
+        "revenue": 10261.4,
+        "interest_other_income": 29.5,
+        "debt_to_assets": 0.0,
+        "interest_income_ratio": 0.0029
+      },
+      {
+        "period": "FY 2021",
+        "debt": 4.1,
+        "assets": 18015.2,
+        "revenue": 13519.4,
+        "interest_other_income": 24.3,
+        "debt_to_assets": 0.0002,
+        "interest_income_ratio": 0.0018
+      },
+      {
+        "period": "FY 2022",
+        "debt": 182.1,
+        "assets": 20109.0,
+        "revenue": 16624.399999999998,
+        "interest_other_income": 36.3,
+        "debt_to_assets": 0.0091,
+        "interest_income_ratio": 0.0022
+      },
+      {
+        "period": "FY 2023",
+        "debt": 175.2,
+        "assets": 21646.000000000004,
+        "revenue": 20050.0,
+        "interest_other_income": 22.8,
+        "debt_to_assets": 0.0081,
+        "interest_income_ratio": 0.0011
+      },
+      {
+        "period": "FY 2024",
+        "debt": 279.4,
+        "assets": 25299.3,
+        "revenue": 23165.0,
+        "interest_other_income": 60.5,
+        "debt_to_assets": 0.011,
+        "interest_income_ratio": 0.0026
+      }
+    ]
+  },
+  "HAVELLS": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025",
+      "FY 2026"
+    ],
+    "latest": {
+      "debt_to_assets": 0.018,
+      "interest_income_ratio": 0.0034
+    },
+    "history": [
+      {
+        "period": "FY 2019",
+        "debt": 94.5,
+        "assets": 7148.35,
+        "revenue": 10202.08,
+        "interest_other_income": 16.25,
+        "debt_to_assets": 0.0132,
+        "interest_income_ratio": 0.0016
+      },
+      {
+        "period": "FY 2020",
+        "debt": 72.37,
+        "assets": 7073.450000000001,
+        "revenue": 9553.67,
+        "interest_other_income": 51.36,
+        "debt_to_assets": 0.0102,
+        "interest_income_ratio": 0.0054
+      },
+      {
+        "period": "FY 2021",
+        "debt": 521.35,
+        "assets": 8852.259999999998,
+        "revenue": 10644.66,
+        "interest_other_income": 90.09,
+        "debt_to_assets": 0.0589,
+        "interest_income_ratio": 0.0085
+      },
+      {
+        "period": "FY 2022",
+        "debt": 616.3999999999999,
+        "assets": 10523.21,
+        "revenue": 14098.92,
+        "interest_other_income": 66.92,
+        "debt_to_assets": 0.0586,
+        "interest_income_ratio": 0.0047
+      },
+      {
+        "period": "FY 2023",
+        "debt": 223.1,
+        "assets": 11157.439999999999,
+        "revenue": 17200.96,
+        "interest_other_income": 55.06,
+        "debt_to_assets": 0.02,
+        "interest_income_ratio": 0.0032
+      },
+      {
+        "period": "FY 2024",
+        "debt": 303.16,
+        "assets": 12432.689999999999,
+        "revenue": 18838.969999999998,
+        "interest_other_income": 84.21,
+        "debt_to_assets": 0.0244,
+        "interest_income_ratio": 0.0045
+      },
+      {
+        "period": "FY 2025",
+        "debt": 318.54,
+        "assets": 13809.41,
+        "revenue": 22081.33,
+        "interest_other_income": 72.01,
+        "debt_to_assets": 0.0231,
+        "interest_income_ratio": 0.0033
+      },
+      {
+        "period": "FY 2026",
+        "debt": 265.2,
+        "assets": 14746.25,
+        "revenue": 23051.94,
+        "interest_other_income": 78.97,
+        "debt_to_assets": 0.018,
+        "interest_income_ratio": 0.0034
+      }
+    ]
+  },
+  "CROMPTON": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0756,
+      "interest_income_ratio": 0.006
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 648.55,
+        "assets": 2424.99,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.2674,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 649.26,
+        "assets": 2669.65,
+        "revenue": 4526.92,
+        "interest_other_income": 59.6,
+        "debt_to_assets": 0.2432,
+        "interest_income_ratio": 0.0132
+      },
+      {
+        "period": "FY 2020",
+        "debt": 349.72,
+        "assets": 2751.82,
+        "revenue": 4579.31,
+        "interest_other_income": 40.67,
+        "debt_to_assets": 0.1271,
+        "interest_income_ratio": 0.0089
+      },
+      {
+        "period": "FY 2021",
+        "debt": 518.11,
+        "assets": 3597.43,
+        "revenue": 4879.26,
+        "interest_other_income": 42.91,
+        "debt_to_assets": 0.144,
+        "interest_income_ratio": 0.0088
+      },
+      {
+        "period": "FY 2022",
+        "debt": 1685.73,
+        "assets": 6448.59,
+        "revenue": 5466.759999999999,
+        "interest_other_income": 35.31,
+        "debt_to_assets": 0.2614,
+        "interest_income_ratio": 0.0065
+      },
+      {
+        "period": "FY 2023",
+        "debt": 1005.1099999999999,
+        "assets": 5654.43,
+        "revenue": 6936.389999999999,
+        "interest_other_income": 109.18,
+        "debt_to_assets": 0.1778,
+        "interest_income_ratio": 0.0157
+      },
+      {
+        "period": "FY 2024",
+        "debt": 683.1899999999999,
+        "assets": 6081.7,
+        "revenue": 7380.200000000001,
+        "interest_other_income": 79.19,
+        "debt_to_assets": 0.1123,
+        "interest_income_ratio": 0.0107
+      },
+      {
+        "period": "FY 2025",
+        "debt": 478.59000000000003,
+        "assets": 6329.78,
+        "revenue": 7932.38,
+        "interest_other_income": 47.98,
+        "debt_to_assets": 0.0756,
+        "interest_income_ratio": 0.006
+      }
+    ]
+  },
+  "ABB": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0062,
+      "interest_income_ratio": 0.0015
+    },
+    "history": [
+      {
+        "period": "FY 2024",
+        "debt": 51.88,
+        "assets": 12391.329999999998,
+        "revenue": 12541.71,
+        "interest_other_income": 16.45,
+        "debt_to_assets": 0.0042,
+        "interest_income_ratio": 0.0013
+      },
+      {
+        "period": "FY 2025",
+        "debt": 84.82,
+        "assets": 13638.480000000001,
+        "revenue": 13555.09,
+        "interest_other_income": 19.89,
+        "debt_to_assets": 0.0062,
+        "interest_income_ratio": 0.0015
+      }
+    ]
+  },
+  "THERMAX": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.143,
+      "interest_income_ratio": 0.011
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 233.72,
+        "assets": 5928.5599999999995,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.0394,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 240.26,
+        "assets": 6790.04,
+        "revenue": 6123.05,
+        "interest_other_income": 14.32,
+        "debt_to_assets": 0.0354,
+        "interest_income_ratio": 0.0023
+      },
+      {
+        "period": "FY 2020",
+        "debt": 230.29000000000002,
+        "assets": 5951.48,
+        "revenue": 5831.31,
+        "interest_other_income": 15.02,
+        "debt_to_assets": 0.0387,
+        "interest_income_ratio": 0.0026
+      },
+      {
+        "period": "FY 2021",
+        "debt": 327.89,
+        "assets": 6499.860000000001,
+        "revenue": 4898.99,
+        "interest_other_income": 20.64,
+        "debt_to_assets": 0.0504,
+        "interest_income_ratio": 0.0042
+      },
+      {
+        "period": "FY 2022",
+        "debt": 367.71,
+        "assets": 7458.02,
+        "revenue": 6255.47,
+        "interest_other_income": 25.17,
+        "debt_to_assets": 0.0493,
+        "interest_income_ratio": 0.004
+      },
+      {
+        "period": "FY 2023",
+        "debt": 830.53,
+        "assets": 8835.7,
+        "revenue": 8249.99,
+        "interest_other_income": 37.59,
+        "debt_to_assets": 0.094,
+        "interest_income_ratio": 0.0046
+      },
+      {
+        "period": "FY 2024",
+        "debt": 1277.43,
+        "assets": 10140.73,
+        "revenue": 9682.15,
+        "interest_other_income": 87.59,
+        "debt_to_assets": 0.126,
+        "interest_income_ratio": 0.009
+      },
+      {
+        "period": "FY 2025",
+        "debt": 1717.6599999999999,
+        "assets": 12007.98,
+        "revenue": 10640.91,
+        "interest_other_income": 116.78,
+        "debt_to_assets": 0.143,
+        "interest_income_ratio": 0.011
+      }
+    ]
+  },
+  "CUMMINSIND": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0029,
+      "interest_income_ratio": 0.0014
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 256.84,
+        "assets": 5714.780000000001,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.0449,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 312.59,
+        "assets": 6060.27,
+        "revenue": 6025.02,
+        "interest_other_income": 16.77,
+        "debt_to_assets": 0.0516,
+        "interest_income_ratio": 0.0028
+      },
+      {
+        "period": "FY 2020",
+        "debt": 511.77,
+        "assets": 6196.07,
+        "revenue": 5571.2,
+        "interest_other_income": 21.02,
+        "debt_to_assets": 0.0826,
+        "interest_income_ratio": 0.0038
+      },
+      {
+        "period": "FY 2021",
+        "debt": 39.71,
+        "assets": 5956.21,
+        "revenue": 4746.98,
+        "interest_other_income": 16.76,
+        "debt_to_assets": 0.0067,
+        "interest_income_ratio": 0.0035
+      },
+      {
+        "period": "FY 2022",
+        "debt": 417.53,
+        "assets": 7111.99,
+        "revenue": 6637.62,
+        "interest_other_income": 12.16,
+        "debt_to_assets": 0.0587,
+        "interest_income_ratio": 0.0018
+      },
+      {
+        "period": "FY 2023",
+        "debt": 376.09,
+        "assets": 7918.64,
+        "revenue": 8288.22,
+        "interest_other_income": 16.24,
+        "debt_to_assets": 0.0475,
+        "interest_income_ratio": 0.002
+      },
+      {
+        "period": "FY 2024",
+        "debt": 126.98,
+        "assets": 8970.509999999998,
+        "revenue": 9623.43,
+        "interest_other_income": 27.4,
+        "debt_to_assets": 0.0142,
+        "interest_income_ratio": 0.0028
+      },
+      {
+        "period": "FY 2025",
+        "debt": 29.660000000000004,
+        "assets": 10168.49,
+        "revenue": 11104.380000000001,
+        "interest_other_income": 15.85,
+        "debt_to_assets": 0.0029,
+        "interest_income_ratio": 0.0014
+      }
+    ]
+  },
+  "OBEROIRLTY": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025",
+      "FY 2026"
+    ],
+    "latest": {
+      "debt_to_assets": 0.1116,
+      "interest_income_ratio": 0.0381
+    },
+    "history": [
+      {
+        "period": "FY 2019",
+        "debt": 1585.8400000000001,
+        "assets": 11097.7,
+        "revenue": 2668.24,
+        "interest_other_income": 19.36,
+        "debt_to_assets": 0.1429,
+        "interest_income_ratio": 0.0073
+      },
+      {
+        "period": "FY 2020",
+        "debt": 1518.84,
+        "assets": 11192.99,
+        "revenue": 2291.8900000000003,
+        "interest_other_income": 88.47,
+        "debt_to_assets": 0.1357,
+        "interest_income_ratio": 0.0386
+      },
+      {
+        "period": "FY 2021",
+        "debt": 1533.8,
+        "assets": 12018.79,
+        "revenue": 2093.84,
+        "interest_other_income": 76.04,
+        "debt_to_assets": 0.1276,
+        "interest_income_ratio": 0.0363
+      },
+      {
+        "period": "FY 2022",
+        "debt": 2855.4700000000003,
+        "assets": 15665.84,
+        "revenue": 2992.0199999999995,
+        "interest_other_income": 86.03,
+        "debt_to_assets": 0.1823,
+        "interest_income_ratio": 0.0288
+      },
+      {
+        "period": "FY 2023",
+        "debt": 3944.09,
+        "assets": 18625.519999999997,
+        "revenue": 4513.61,
+        "interest_other_income": 169.05,
+        "debt_to_assets": 0.2118,
+        "interest_income_ratio": 0.0375
+      },
+      {
+        "period": "FY 2024",
+        "debt": 2495.22,
+        "assets": 19632.979999999996,
+        "revenue": 4827.62,
+        "interest_other_income": 218.44,
+        "debt_to_assets": 0.1271,
+        "interest_income_ratio": 0.0452
+      },
+      {
+        "period": "FY 2025",
+        "debt": 3300.4,
+        "assets": 22715.29,
+        "revenue": 5481.81,
+        "interest_other_income": 265.23,
+        "debt_to_assets": 0.1453,
+        "interest_income_ratio": 0.0484
+      },
+      {
+        "period": "FY 2026",
+        "debt": 2825.3999999999996,
+        "assets": 25327.129999999997,
+        "revenue": 6321.040000000001,
+        "interest_other_income": 240.63,
+        "debt_to_assets": 0.1116,
+        "interest_income_ratio": 0.0381
+      }
+    ]
+  },
+  "PRESTIGE": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.2263,
+      "interest_income_ratio": 0.1724
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 7415.5,
+        "assets": 18902.5,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.3923,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 8486.9,
+        "assets": 28433.1,
+        "revenue": 5404.2,
+        "interest_other_income": 722.8,
+        "debt_to_assets": 0.2985,
+        "interest_income_ratio": 0.1337
+      },
+      {
+        "period": "FY 2020",
+        "debt": 9271.5,
+        "assets": 29476.1,
+        "revenue": 8285.7,
+        "interest_other_income": 1023.3,
+        "debt_to_assets": 0.3145,
+        "interest_income_ratio": 0.1235
+      },
+      {
+        "period": "FY 2021",
+        "debt": 4754.900000000001,
+        "assets": 25099.6,
+        "revenue": 10278.0,
+        "interest_other_income": 979.3,
+        "debt_to_assets": 0.1894,
+        "interest_income_ratio": 0.0953
+      },
+      {
+        "period": "FY 2022",
+        "debt": 7250.0,
+        "assets": 30171.0,
+        "revenue": 7408.1,
+        "interest_other_income": 555.3,
+        "debt_to_assets": 0.2403,
+        "interest_income_ratio": 0.075
+      },
+      {
+        "period": "FY 2023",
+        "debt": 9419.899999999998,
+        "assets": 36271.1,
+        "revenue": 9096.7,
+        "interest_other_income": 806.6,
+        "debt_to_assets": 0.2597,
+        "interest_income_ratio": 0.0887
+      },
+      {
+        "period": "FY 2024",
+        "debt": 13458.0,
+        "assets": 47974.0,
+        "revenue": 9436.6,
+        "interest_other_income": 1219.1,
+        "debt_to_assets": 0.2805,
+        "interest_income_ratio": 0.1292
+      },
+      {
+        "period": "FY 2025",
+        "debt": 13179.9,
+        "assets": 58236.899999999994,
+        "revenue": 7735.500000000001,
+        "interest_other_income": 1333.8,
+        "debt_to_assets": 0.2263,
+        "interest_income_ratio": 0.1724
+      }
+    ]
+  },
+  "DLF": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0599,
+      "interest_income_ratio": 0.0442
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 17490.800000000003,
+        "assets": 60584.53,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.2887,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 17222.46,
+        "assets": 66482.73,
+        "revenue": 9156.73,
+        "interest_other_income": 2061.87,
+        "debt_to_assets": 0.2591,
+        "interest_income_ratio": 0.2252
+      },
+      {
+        "period": "FY 2020",
+        "debt": 8102.51,
+        "assets": 55890.45,
+        "revenue": 7228.47,
+        "interest_other_income": 1426.94,
+        "debt_to_assets": 0.145,
+        "interest_income_ratio": 0.1974
+      },
+      {
+        "period": "FY 2021",
+        "debt": 6785.410000000001,
+        "assets": 53487.649999999994,
+        "revenue": 5944.89,
+        "interest_other_income": 853.36,
+        "debt_to_assets": 0.1269,
+        "interest_income_ratio": 0.1435
+      },
+      {
+        "period": "FY 2022",
+        "debt": 4181.84,
+        "assets": 51166.85,
+        "revenue": 6137.85,
+        "interest_other_income": 624.55,
+        "debt_to_assets": 0.0817,
+        "interest_income_ratio": 0.1018
+      },
+      {
+        "period": "FY 2023",
+        "debt": 3333.99,
+        "assets": 52572.24,
+        "revenue": 6012.14,
+        "interest_other_income": 392.14,
+        "debt_to_assets": 0.0634,
+        "interest_income_ratio": 0.0652
+      },
+      {
+        "period": "FY 2024",
+        "debt": 4833.86,
+        "assets": 59068.94,
+        "revenue": 6958.34,
+        "interest_other_income": 356.45,
+        "debt_to_assets": 0.0818,
+        "interest_income_ratio": 0.0512
+      },
+      {
+        "period": "FY 2025",
+        "debt": 4102.73,
+        "assets": 68472.39,
+        "revenue": 8995.89,
+        "interest_other_income": 397.2,
+        "debt_to_assets": 0.0599,
+        "interest_income_ratio": 0.0442
+      }
+    ]
+  },
+  "TATAPOWER": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025",
+      "FY 2026"
+    ],
+    "latest": {
+      "debt_to_assets": 0.4362,
+      "interest_income_ratio": 0.0795
+    },
+    "history": [
+      {
+        "period": "FY 2019",
+        "debt": 48506.04000000001,
+        "assets": 84073.44,
+        "revenue": 33735.48,
+        "interest_other_income": 4170.0,
+        "debt_to_assets": 0.5769,
+        "interest_income_ratio": 0.1236
+      },
+      {
+        "period": "FY 2020",
+        "debt": 51936.15,
+        "assets": 89673.91,
+        "revenue": 31438.35,
+        "interest_other_income": 4493.73,
+        "debt_to_assets": 0.5792,
+        "interest_income_ratio": 0.1429
+      },
+      {
+        "period": "FY 2021",
+        "debt": 46707.95,
+        "assets": 98654.84,
+        "revenue": 34551.96,
+        "interest_other_income": 4010.39,
+        "debt_to_assets": 0.4734,
+        "interest_income_ratio": 0.1161
+      },
+      {
+        "period": "FY 2022",
+        "debt": 51195.12,
+        "assets": 112549.98999999999,
+        "revenue": 45819.409999999996,
+        "interest_other_income": 3859.02,
+        "debt_to_assets": 0.4549,
+        "interest_income_ratio": 0.0842
+      },
+      {
+        "period": "FY 2023",
+        "debt": 52923.0,
+        "assets": 128096.14000000001,
+        "revenue": 60679.14,
+        "interest_other_income": 4371.65,
+        "debt_to_assets": 0.4132,
+        "interest_income_ratio": 0.072
+      },
+      {
+        "period": "FY 2024",
+        "debt": 53689.45,
+        "assets": 139054.4,
+        "revenue": 64928.89,
+        "interest_other_income": 4633.22,
+        "debt_to_assets": 0.3861,
+        "interest_income_ratio": 0.0714
+      },
+      {
+        "period": "FY 2025",
+        "debt": 62865.80000000001,
+        "assets": 156193.3,
+        "revenue": 68451.56999999999,
+        "interest_other_income": 4702.44,
+        "debt_to_assets": 0.4025,
+        "interest_income_ratio": 0.0687
+      },
+      {
+        "period": "FY 2026",
+        "debt": 76141.27,
+        "assets": 174564.24,
+        "revenue": 66162.09,
+        "interest_other_income": 5256.79,
+        "debt_to_assets": 0.4362,
+        "interest_income_ratio": 0.0795
+      }
+    ]
+  },
+  "TORNTPOWER": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.2425,
+      "interest_income_ratio": 0.0352
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 9298.089999999998,
+        "assets": 22589.029999999995,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.4116,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 9715.15,
+        "assets": 24550.47,
+        "revenue": 13358.79,
+        "interest_other_income": 898.93,
+        "debt_to_assets": 0.3957,
+        "interest_income_ratio": 0.0673
+      },
+      {
+        "period": "FY 2020",
+        "debt": 8908.42,
+        "assets": 23603.18,
+        "revenue": 13842.49,
+        "interest_other_income": 954.55,
+        "debt_to_assets": 0.3774,
+        "interest_income_ratio": 0.069
+      },
+      {
+        "period": "FY 2021",
+        "debt": 7816.5599999999995,
+        "assets": 23514.22,
+        "revenue": 12332.199999999999,
+        "interest_other_income": 775.73,
+        "debt_to_assets": 0.3324,
+        "interest_income_ratio": 0.0629
+      },
+      {
+        "period": "FY 2022",
+        "debt": 9142.630000000001,
+        "assets": 24987.58,
+        "revenue": 14513.44,
+        "interest_other_income": 628.21,
+        "debt_to_assets": 0.3659,
+        "interest_income_ratio": 0.0433
+      },
+      {
+        "period": "FY 2023",
+        "debt": 10541.41,
+        "assets": 29871.53,
+        "revenue": 26107.219999999998,
+        "interest_other_income": 818.2,
+        "debt_to_assets": 0.3529,
+        "interest_income_ratio": 0.0313
+      },
+      {
+        "period": "FY 2024",
+        "debt": 11631.800000000001,
+        "assets": 33326.100000000006,
+        "revenue": 27564.05,
+        "interest_other_income": 943.4,
+        "debt_to_assets": 0.349,
+        "interest_income_ratio": 0.0342
+      },
+      {
+        "period": "FY 2025",
+        "debt": 8839.74,
+        "assets": 36458.71,
+        "revenue": 29694.94,
+        "interest_other_income": 1044.87,
+        "debt_to_assets": 0.2425,
+        "interest_income_ratio": 0.0352
+      }
+    ]
+  },
+  "GAIL": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.1622,
+      "interest_income_ratio": 0.0051
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 3876.42,
+        "assets": 61352.68,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.0632,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 2223.73,
+        "assets": 68426.37,
+        "revenue": 78181.88,
+        "interest_other_income": 159.2,
+        "debt_to_assets": 0.0325,
+        "interest_income_ratio": 0.002
+      },
+      {
+        "period": "FY 2020",
+        "debt": 6911.51,
+        "assets": 74933.78,
+        "revenue": 76313.41,
+        "interest_other_income": 308.94,
+        "debt_to_assets": 0.0922,
+        "interest_income_ratio": 0.004
+      },
+      {
+        "period": "FY 2021",
+        "debt": 7872.610000000001,
+        "assets": 81030.4,
+        "revenue": 60210.920000000006,
+        "interest_other_income": 179.27,
+        "debt_to_assets": 0.0972,
+        "interest_income_ratio": 0.003
+      },
+      {
+        "period": "FY 2022",
+        "debt": 9215.72,
+        "assets": 96584.20999999999,
+        "revenue": 95706.73,
+        "interest_other_income": 202.48,
+        "debt_to_assets": 0.0954,
+        "interest_income_ratio": 0.0021
+      },
+      {
+        "period": "FY 2023",
+        "debt": 17816.18,
+        "assets": 107805.29,
+        "revenue": 148512.0,
+        "interest_other_income": 364.78,
+        "debt_to_assets": 0.1653,
+        "interest_income_ratio": 0.0025
+      },
+      {
+        "period": "FY 2024",
+        "debt": 21793.77,
+        "assets": 124735.01000000001,
+        "revenue": 135927.47000000003,
+        "interest_other_income": 719.2,
+        "debt_to_assets": 0.1747,
+        "interest_income_ratio": 0.0053
+      },
+      {
+        "period": "FY 2025",
+        "debt": 21595.38,
+        "assets": 133175.8,
+        "revenue": 147124.42,
+        "interest_other_income": 747.99,
+        "debt_to_assets": 0.1622,
+        "interest_income_ratio": 0.0051
+      }
+    ]
+  },
+  "IGL": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.006,
+      "interest_income_ratio": 0.0017
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 0.0,
+        "assets": 5100.139999999999,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.0,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 0.0,
+        "assets": 6186.9400000000005,
+        "revenue": 5980.25,
+        "interest_other_income": 2.05,
+        "debt_to_assets": 0.0,
+        "interest_income_ratio": 0.0003
+      },
+      {
+        "period": "FY 2020",
+        "debt": 96.19,
+        "assets": 7547.73,
+        "revenue": 6782.499999999999,
+        "interest_other_income": 20.31,
+        "debt_to_assets": 0.0127,
+        "interest_income_ratio": 0.003
+      },
+      {
+        "period": "FY 2021",
+        "debt": 113.03999999999999,
+        "assets": 9053.920000000002,
+        "revenue": 5181.4400000000005,
+        "interest_other_income": 22.02,
+        "debt_to_assets": 0.0125,
+        "interest_income_ratio": 0.0042
+      },
+      {
+        "period": "FY 2022",
+        "debt": 107.64,
+        "assets": 11106.6,
+        "revenue": 8112.32,
+        "interest_other_income": 24.76,
+        "debt_to_assets": 0.0097,
+        "interest_income_ratio": 0.0031
+      },
+      {
+        "period": "FY 2023",
+        "debt": 82.77,
+        "assets": 12627.95,
+        "revenue": 14603.49,
+        "interest_other_income": 26.84,
+        "debt_to_assets": 0.0066,
+        "interest_income_ratio": 0.0018
+      },
+      {
+        "period": "FY 2024",
+        "debt": 81.17,
+        "assets": 14224.630000000001,
+        "revenue": 14601.99,
+        "interest_other_income": 27.55,
+        "debt_to_assets": 0.0057,
+        "interest_income_ratio": 0.0019
+      },
+      {
+        "period": "FY 2025",
+        "debt": 93.49,
+        "assets": 15589.62,
+        "revenue": 15623.21,
+        "interest_other_income": 26.34,
+        "debt_to_assets": 0.006,
+        "interest_income_ratio": 0.0017
+      }
+    ]
+  },
+  "ATGL": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025",
+      "FY 2026"
+    ],
+    "latest": {
+      "debt_to_assets": 0.2362,
+      "interest_income_ratio": 0.0217
+    },
+    "history": [
+      {
+        "period": "FY 2019",
+        "debt": 393.92,
+        "assets": 2048.11,
+        "revenue": 1805.64,
+        "interest_other_income": 89.85,
+        "debt_to_assets": 0.1923,
+        "interest_income_ratio": 0.0498
+      },
+      {
+        "period": "FY 2020",
+        "debt": 428.22,
+        "assets": 2476.3199999999997,
+        "revenue": 1918.9400000000003,
+        "interest_other_income": 41.05,
+        "debt_to_assets": 0.1729,
+        "interest_income_ratio": 0.0214
+      },
+      {
+        "period": "FY 2021",
+        "debt": 529.07,
+        "assets": 3203.64,
+        "revenue": 1739.96,
+        "interest_other_income": 40.48,
+        "debt_to_assets": 0.1651,
+        "interest_income_ratio": 0.0233
+      },
+      {
+        "period": "FY 2022",
+        "debt": 1035.16,
+        "assets": 4415.25,
+        "revenue": 3084.0499999999997,
+        "interest_other_income": 52.73,
+        "debt_to_assets": 0.2345,
+        "interest_income_ratio": 0.0171
+      },
+      {
+        "period": "FY 2023",
+        "debt": 1422.0900000000001,
+        "assets": 5645.3,
+        "revenue": 4432.39,
+        "interest_other_income": 78.43,
+        "debt_to_assets": 0.2519,
+        "interest_income_ratio": 0.0177
+      },
+      {
+        "period": "FY 2024",
+        "debt": 1557.25,
+        "assets": 6591.86,
+        "revenue": 4536.66,
+        "interest_other_income": 111.45,
+        "debt_to_assets": 0.2362,
+        "interest_income_ratio": 0.0246
+      },
+      {
+        "period": "FY 2025",
+        "debt": 1834.1000000000001,
+        "assets": 7664.710000000001,
+        "revenue": 5045.6900000000005,
+        "interest_other_income": 100.65,
+        "debt_to_assets": 0.2393,
+        "interest_income_ratio": 0.0199
+      },
+      {
+        "period": "FY 2026",
+        "debt": 2255.45,
+        "assets": 9548.619999999999,
+        "revenue": 5954.2699999999995,
+        "interest_other_income": 129.43,
+        "debt_to_assets": 0.2362,
+        "interest_income_ratio": 0.0217
+      }
+    ]
+  },
+  "PETRONET": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0972,
+      "interest_income_ratio": 0.005
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 1453.05,
+        "assets": 15744.530000000002,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.0923,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 733.4,
+        "assets": 15249.34,
+        "revenue": 38920.85,
+        "interest_other_income": 98.92,
+        "debt_to_assets": 0.0481,
+        "interest_income_ratio": 0.0025
+      },
+      {
+        "period": "FY 2020",
+        "debt": 3689.7099999999996,
+        "assets": 18866.899999999998,
+        "revenue": 35830.32,
+        "interest_other_income": 403.2,
+        "debt_to_assets": 0.1956,
+        "interest_income_ratio": 0.0113
+      },
+      {
+        "period": "FY 2021",
+        "debt": 3652.93,
+        "assets": 19090.04,
+        "revenue": 26400.91,
+        "interest_other_income": 335.95,
+        "debt_to_assets": 0.1914,
+        "interest_income_ratio": 0.0127
+      },
+      {
+        "period": "FY 2022",
+        "debt": 3438.5,
+        "assets": 21364.79,
+        "revenue": 43564.95,
+        "interest_other_income": 317.33,
+        "debt_to_assets": 0.1609,
+        "interest_income_ratio": 0.0073
+      },
+      {
+        "period": "FY 2023",
+        "debt": 3345.01,
+        "assets": 22819.5,
+        "revenue": 60422.43,
+        "interest_other_income": 330.51,
+        "debt_to_assets": 0.1466,
+        "interest_income_ratio": 0.0055
+      },
+      {
+        "period": "FY 2024",
+        "debt": 3008.1,
+        "assets": 25548.76,
+        "revenue": 53337.79,
+        "interest_other_income": 289.67,
+        "debt_to_assets": 0.1177,
+        "interest_income_ratio": 0.0054
+      },
+      {
+        "period": "FY 2025",
+        "debt": 2656.58,
+        "assets": 27324.42,
+        "revenue": 51755.0,
+        "interest_other_income": 258.04,
+        "debt_to_assets": 0.0972,
+        "interest_income_ratio": 0.005
+      }
+    ]
+  },
+  "IRCTC": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0132,
+      "interest_income_ratio": 0.0034
+    },
+    "history": [
+      {
+        "period": "FY 2023",
+        "debt": 84.16,
+        "assets": 5088.759999999999,
+        "revenue": 3689.1,
+        "interest_other_income": 16.11,
+        "debt_to_assets": 0.0165,
+        "interest_income_ratio": 0.0044
+      },
+      {
+        "period": "FY 2024",
+        "debt": 60.349999999999994,
+        "assets": 6091.18,
+        "revenue": 4431.93,
+        "interest_other_income": 18.64,
+        "debt_to_assets": 0.0099,
+        "interest_income_ratio": 0.0042
+      },
+      {
+        "period": "FY 2025",
+        "debt": 89.8,
+        "assets": 6799.45,
+        "revenue": 4951.740000000001,
+        "interest_other_income": 16.89,
+        "debt_to_assets": 0.0132,
+        "interest_income_ratio": 0.0034
+      }
+    ]
+  },
+  "INDIGO": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.5767,
+      "interest_income_ratio": 0.0609
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 2254.3,
+        "assets": 21129.3,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.1067,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 2429.17,
+        "assets": 25025.88,
+        "revenue": 29821.37,
+        "interest_other_income": 563.4,
+        "debt_to_assets": 0.0971,
+        "interest_income_ratio": 0.0189
+      },
+      {
+        "period": "FY 2020",
+        "debt": 22719.17,
+        "assets": 42101.08,
+        "revenue": 37291.51,
+        "interest_other_income": 1901.86,
+        "debt_to_assets": 0.5396,
+        "interest_income_ratio": 0.051
+      },
+      {
+        "period": "FY 2021",
+        "debt": 29859.649999999998,
+        "assets": 43051.17,
+        "revenue": 15677.59,
+        "interest_other_income": 2169.84,
+        "debt_to_assets": 0.6936,
+        "interest_income_ratio": 0.1384
+      },
+      {
+        "period": "FY 2022",
+        "debt": 36877.84,
+        "assets": 45962.590000000004,
+        "revenue": 26656.53,
+        "interest_other_income": 2385.93,
+        "debt_to_assets": 0.8023,
+        "interest_income_ratio": 0.0895
+      },
+      {
+        "period": "FY 2023",
+        "debt": 44854.22,
+        "assets": 59169.83,
+        "revenue": 55881.42,
+        "interest_other_income": 3167.68,
+        "debt_to_assets": 0.7581,
+        "interest_income_ratio": 0.0567
+      },
+      {
+        "period": "FY 2024",
+        "debt": 51280.1,
+        "assets": 82224.5,
+        "revenue": 71231.2,
+        "interest_other_income": 4208.1,
+        "debt_to_assets": 0.6237,
+        "interest_income_ratio": 0.0591
+      },
+      {
+        "period": "FY 2025",
+        "debt": 66809.8,
+        "assets": 115843.5,
+        "revenue": 84098.2,
+        "interest_other_income": 5123.8,
+        "debt_to_assets": 0.5767,
+        "interest_income_ratio": 0.0609
+      }
+    ]
+  },
+  "DELHIVERY": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.1178,
+      "interest_income_ratio": 0.0134
+    },
+    "history": [
+      {
+        "period": "FY 2019",
+        "debt": 410.59000000000003,
+        "assets": 4062.55,
+        "revenue": 1694.88,
+        "interest_other_income": 35.81,
+        "debt_to_assets": 0.1011,
+        "interest_income_ratio": 0.0211
+      },
+      {
+        "period": "FY 2020",
+        "debt": 754.65,
+        "assets": 4357.3,
+        "revenue": 2988.63,
+        "interest_other_income": 49.22,
+        "debt_to_assets": 0.1732,
+        "interest_income_ratio": 0.0165
+      },
+      {
+        "period": "FY 2021",
+        "debt": 1098.4199999999998,
+        "assets": 4597.789999999999,
+        "revenue": 3838.29,
+        "interest_other_income": 88.63,
+        "debt_to_assets": 0.2389,
+        "interest_income_ratio": 0.0231
+      },
+      {
+        "period": "FY 2022",
+        "debt": 1101.52,
+        "assets": 8250.8,
+        "revenue": 7038.43,
+        "interest_other_income": 99.53,
+        "debt_to_assets": 0.1335,
+        "interest_income_ratio": 0.0141
+      },
+      {
+        "period": "FY 2023",
+        "debt": 923.44,
+        "assets": 11190.54,
+        "revenue": 7543.82,
+        "interest_other_income": 88.83,
+        "debt_to_assets": 0.0825,
+        "interest_income_ratio": 0.0118
+      },
+      {
+        "period": "FY 2024",
+        "debt": 1169.34,
+        "assets": 11453.029999999999,
+        "revenue": 8602.93,
+        "interest_other_income": 88.52,
+        "debt_to_assets": 0.1021,
+        "interest_income_ratio": 0.0103
+      },
+      {
+        "period": "FY 2025",
+        "debt": 1421.6000000000004,
+        "assets": 12063.149999999998,
+        "revenue": 9379.039999999999,
+        "interest_other_income": 125.79,
+        "debt_to_assets": 0.1178,
+        "interest_income_ratio": 0.0134
+      }
+    ]
+  },
+  "CONCOR": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0578,
+      "interest_income_ratio": 0.0077
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 62.0,
+        "assets": 10917.699999999999,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.0057,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 770.65,
+        "assets": 12797.619999999999,
+        "revenue": 7424.900000000001,
+        "interest_other_income": 6.85,
+        "debt_to_assets": 0.0602,
+        "interest_income_ratio": 0.0009
+      },
+      {
+        "period": "FY 2020",
+        "debt": 70.0,
+        "assets": 11788.760000000002,
+        "revenue": 6926.01,
+        "interest_other_income": 46.44,
+        "debt_to_assets": 0.0059,
+        "interest_income_ratio": 0.0067
+      },
+      {
+        "period": "FY 2021",
+        "debt": 718.4,
+        "assets": 12410.45,
+        "revenue": 6826.63,
+        "interest_other_income": 43.41,
+        "debt_to_assets": 0.0579,
+        "interest_income_ratio": 0.0064
+      },
+      {
+        "period": "FY 2022",
+        "debt": 730.72,
+        "assets": 13001.759999999998,
+        "revenue": 8041.05,
+        "interest_other_income": 62.84,
+        "debt_to_assets": 0.0562,
+        "interest_income_ratio": 0.0078
+      },
+      {
+        "period": "FY 2023",
+        "debt": 773.56,
+        "assets": 13465.32,
+        "revenue": 8644.980000000001,
+        "interest_other_income": 64.68,
+        "debt_to_assets": 0.0574,
+        "interest_income_ratio": 0.0075
+      },
+      {
+        "period": "FY 2024",
+        "debt": 914.48,
+        "assets": 14038.16,
+        "revenue": 9212.72,
+        "interest_other_income": 71.73,
+        "debt_to_assets": 0.0651,
+        "interest_income_ratio": 0.0078
+      },
+      {
+        "period": "FY 2025",
+        "debt": 837.21,
+        "assets": 14475.99,
+        "revenue": 9524.32,
+        "interest_other_income": 73.56,
+        "debt_to_assets": 0.0578,
+        "interest_income_ratio": 0.0077
+      }
+    ]
+  },
+  "DMART": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0337,
+      "interest_income_ratio": 0.0012
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 439.25,
+        "assets": 5648.22,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.0778,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 700.15,
+        "assets": 7005.500000000001,
+        "revenue": 20052.87,
+        "interest_other_income": 47.21,
+        "debt_to_assets": 0.0999,
+        "interest_income_ratio": 0.0024
+      },
+      {
+        "period": "FY 2020",
+        "debt": 333.18999999999994,
+        "assets": 12076.16,
+        "revenue": 24930.190000000002,
+        "interest_other_income": 69.12,
+        "debt_to_assets": 0.0276,
+        "interest_income_ratio": 0.0028
+      },
+      {
+        "period": "FY 2021",
+        "debt": 392.71,
+        "assets": 13655.05,
+        "revenue": 24339.269999999997,
+        "interest_other_income": 41.65,
+        "debt_to_assets": 0.0288,
+        "interest_income_ratio": 0.0017
+      },
+      {
+        "period": "FY 2022",
+        "debt": 646.94,
+        "assets": 15470.980000000001,
+        "revenue": 31093.75999999999,
+        "interest_other_income": 53.79,
+        "debt_to_assets": 0.0418,
+        "interest_income_ratio": 0.0017
+      },
+      {
+        "period": "FY 2023",
+        "debt": 642.98,
+        "assets": 18104.519999999997,
+        "revenue": 42968.899999999994,
+        "interest_other_income": 67.41,
+        "debt_to_assets": 0.0355,
+        "interest_income_ratio": 0.0016
+      },
+      {
+        "period": "FY 2024",
+        "debt": 592.16,
+        "assets": 21172.48,
+        "revenue": 50935.27999999999,
+        "interest_other_income": 58.13,
+        "debt_to_assets": 0.028,
+        "interest_income_ratio": 0.0011
+      },
+      {
+        "period": "FY 2025",
+        "debt": 819.6199999999999,
+        "assets": 24312.78,
+        "revenue": 59482.36000000001,
+        "interest_other_income": 69.45,
+        "debt_to_assets": 0.0337,
+        "interest_income_ratio": 0.0012
+      }
+    ]
+  },
+  "ASIANPAINT": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025",
+      "FY 2026"
+    ],
+    "latest": {
+      "debt_to_assets": 0.1138,
+      "interest_income_ratio": 0.0054
+    },
+    "history": [
+      {
+        "period": "FY 2019",
+        "debt": 1319.6,
+        "assets": 16248.840000000002,
+        "revenue": 19513.9,
+        "interest_other_income": 110.47,
+        "debt_to_assets": 0.0812,
+        "interest_income_ratio": 0.0057
+      },
+      {
+        "period": "FY 2020",
+        "debt": 1118.5,
+        "assets": 16137.970000000001,
+        "revenue": 20566.3,
+        "interest_other_income": 102.33,
+        "debt_to_assets": 0.0693,
+        "interest_income_ratio": 0.005
+      },
+      {
+        "period": "FY 2021",
+        "debt": 1093.12,
+        "assets": 20355.339999999997,
+        "revenue": 22044.440000000002,
+        "interest_other_income": 91.63,
+        "debt_to_assets": 0.0537,
+        "interest_income_ratio": 0.0042
+      },
+      {
+        "period": "FY 2022",
+        "debt": 1586.88,
+        "assets": 22958.429999999997,
+        "revenue": 29512.86,
+        "interest_other_income": 95.41,
+        "debt_to_assets": 0.0691,
+        "interest_income_ratio": 0.0032
+      },
+      {
+        "period": "FY 2023",
+        "debt": 1932.62,
+        "assets": 25779.33,
+        "revenue": 34968.92,
+        "interest_other_income": 144.45,
+        "debt_to_assets": 0.075,
+        "interest_income_ratio": 0.0041
+      },
+      {
+        "period": "FY 2024",
+        "debt": 2474.38,
+        "assets": 29900.770000000004,
+        "revenue": 36315.69,
+        "interest_other_income": 205.17,
+        "debt_to_assets": 0.0828,
+        "interest_income_ratio": 0.0056
+      },
+      {
+        "period": "FY 2025",
+        "debt": 2290.29,
+        "assets": 30355.25,
+        "revenue": 34618.94,
+        "interest_other_income": 227.02,
+        "debt_to_assets": 0.0754,
+        "interest_income_ratio": 0.0066
+      },
+      {
+        "period": "FY 2026",
+        "debt": 3928.93,
+        "assets": 34518.75,
+        "revenue": 36472.93,
+        "interest_other_income": 195.41,
+        "debt_to_assets": 0.1138,
+        "interest_income_ratio": 0.0054
+      }
+    ]
+  },
+  "PIDILITIND": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0325,
+      "interest_income_ratio": 0.0038
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 124.57,
+        "assets": 5198.6,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.024,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 112.74000000000001,
+        "assets": 5903.790000000001,
+        "revenue": 7228.2,
+        "interest_other_income": 26.07,
+        "debt_to_assets": 0.0191,
+        "interest_income_ratio": 0.0036
+      },
+      {
+        "period": "FY 2020",
+        "debt": 287.69000000000005,
+        "assets": 6522.700000000001,
+        "revenue": 7446.93,
+        "interest_other_income": 33.6,
+        "debt_to_assets": 0.0441,
+        "interest_income_ratio": 0.0045
+      },
+      {
+        "period": "FY 2021",
+        "debt": 331.0,
+        "assets": 8813.83,
+        "revenue": 7376.09,
+        "interest_other_income": 37.23,
+        "debt_to_assets": 0.0376,
+        "interest_income_ratio": 0.005
+      },
+      {
+        "period": "FY 2022",
+        "debt": 415.83000000000004,
+        "assets": 9494.34,
+        "revenue": 9969.14,
+        "interest_other_income": 42.08,
+        "debt_to_assets": 0.0438,
+        "interest_income_ratio": 0.0042
+      },
+      {
+        "period": "FY 2023",
+        "debt": 390.61,
+        "assets": 10504.869999999999,
+        "revenue": 11855.35,
+        "interest_other_income": 47.64,
+        "debt_to_assets": 0.0372,
+        "interest_income_ratio": 0.004
+      },
+      {
+        "period": "FY 2024",
+        "debt": 382.46999999999997,
+        "assets": 12075.61,
+        "revenue": 12522.64,
+        "interest_other_income": 51.19,
+        "debt_to_assets": 0.0317,
+        "interest_income_ratio": 0.0041
+      },
+      {
+        "period": "FY 2025",
+        "debt": 454.14000000000004,
+        "assets": 13983.689999999999,
+        "revenue": 13387.529999999999,
+        "interest_other_income": 50.35,
+        "debt_to_assets": 0.0325,
+        "interest_income_ratio": 0.0038
+      }
+    ]
+  },
+  "BERGEPAINT": {
+    "fetched_at": "2026-06-19",
+    "source": "tickertape",
+    "periods": [
+      "FY 2018",
+      "FY 2019",
+      "FY 2020",
+      "FY 2021",
+      "FY 2022",
+      "FY 2023",
+      "FY 2024",
+      "FY 2025"
+    ],
+    "latest": {
+      "debt_to_assets": 0.0735,
+      "interest_income_ratio": 0.0054
+    },
+    "history": [
+      {
+        "period": "FY 2018",
+        "debt": 422.17,
+        "assets": 3942.6500000000005,
+        "revenue": null,
+        "interest_other_income": null,
+        "debt_to_assets": 0.1071,
+        "interest_income_ratio": null
+      },
+      {
+        "period": "FY 2019",
+        "debt": 752.94,
+        "assets": 4556.67,
+        "revenue": 6121.889999999999,
+        "interest_other_income": 47.24,
+        "debt_to_assets": 0.1652,
+        "interest_income_ratio": 0.0077
+      },
+      {
+        "period": "FY 2020",
+        "debt": 766.9,
+        "assets": 4899.5,
+        "revenue": 6434.34,
+        "interest_other_income": 47.04,
+        "debt_to_assets": 0.1565,
+        "interest_income_ratio": 0.0073
+      },
+      {
+        "period": "FY 2021",
+        "debt": 633.76,
+        "assets": 5917.64,
+        "revenue": 6869.08,
+        "interest_other_income": 44.1,
+        "debt_to_assets": 0.1071,
+        "interest_income_ratio": 0.0064
+      },
+      {
+        "period": "FY 2022",
+        "debt": 1013.53,
+        "assets": 7211.490000000001,
+        "revenue": 8830.230000000001,
+        "interest_other_income": 50.72,
+        "debt_to_assets": 0.1405,
+        "interest_income_ratio": 0.0057
+      },
+      {
+        "period": "FY 2023",
+        "debt": 1188.97,
+        "assets": 7966.41,
+        "revenue": 10619.41,
+        "interest_other_income": 99.23,
+        "debt_to_assets": 0.1492,
+        "interest_income_ratio": 0.0093
+      },
+      {
+        "period": "FY 2024",
+        "debt": 753.2900000000001,
+        "assets": 8367.8,
+        "revenue": 11303.62,
+        "interest_other_income": 78.25,
+        "debt_to_assets": 0.09,
+        "interest_income_ratio": 0.0069
+      },
+      {
+        "period": "FY 2025",
+        "debt": 670.27,
+        "assets": 9124.82,
+        "revenue": 11674.55,
+        "interest_other_income": 63.27,
+        "debt_to_assets": 0.0735,
+        "interest_income_ratio": 0.0054
+      }
+    ]
+  }
+}

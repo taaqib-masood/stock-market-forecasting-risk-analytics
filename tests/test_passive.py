@@ -10,6 +10,7 @@ import pytest
 
 from src.passive import (
     basket_daily_returns, regime_exposure, apply_overlay, summarize_nav,
+    drawdown_exposure,
 )
 
 
@@ -69,3 +70,20 @@ def test_basket_ignores_sparse_out_of_window_days():
     r = basket_daily_returns(panel, min_coverage=0.5)
     # days 5-7 have only ROGUE (coverage 1/4 = 0.25 < 0.5) -> excluded
     assert r.index.max() <= idx[4]
+
+
+def test_drawdown_exposure_grades_with_drawdown():
+    # peak 100; drawdowns 0, 0, -8%, -14%, -20%, back to peak
+    close = pd.Series([100, 100, 92, 86, 80, 100], index=_idx(6))
+    exp = drawdown_exposure(close, dd_start=-0.08, dd_full=-0.20, floor=0.3, lag=0)
+    assert exp.iloc[0] == pytest.approx(1.0)    # at peak -> fully invested
+    assert exp.iloc[2] == pytest.approx(1.0)    # -8% (ordinary dip) -> still full
+    assert exp.iloc[3] == pytest.approx(0.65)   # -14% -> 1 - 0.5*0.7
+    assert exp.iloc[4] == pytest.approx(0.3)    # -20% (catastrophic) -> floor
+    assert exp.iloc[5] == pytest.approx(1.0)    # recovered -> full
+
+
+def test_drawdown_exposure_is_lagged_by_default():
+    close = pd.Series([100, 90, 80, 100], index=_idx(4))
+    exp = drawdown_exposure(close, lag=1)
+    assert exp.iloc[0] == 1.0                    # no prior bar -> default fully invested

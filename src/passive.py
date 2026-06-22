@@ -51,8 +51,28 @@ def regime_exposure(benchmark_close: pd.Series, sma_window: int = 200, lag: int 
 
 def apply_overlay(returns: pd.Series, exposure: pd.Series) -> pd.Series:
     """Scale basket returns by exposure (aligned on the date index)."""
-    exp = exposure.reindex(returns.index).fillna(0.0)
+    exp = exposure.reindex(returns.index).ffill().fillna(1.0)
     return returns * exp
+
+
+def drawdown_exposure(benchmark_close: pd.Series, dd_start: float = -0.08,
+                      dd_full: float = -0.20, floor: float = 0.3, lag: int = 1) -> pd.Series:
+    """
+    Graded exposure based on the benchmark's drawdown from its trailing peak.
+
+    Fixes the binary 200-SMA overlay's whipsaw: stay FULLY invested through ordinary
+    dips (drawdown shallower than `dd_start`) so recoveries aren't missed, and scale
+    exposure down toward `floor` only as a catastrophic drawdown deepens (reaching
+    `floor` at `dd_full`) — keeping the crash insurance without the chop cost.
+    Lagged to avoid look-ahead.
+    """
+    # Rolling (not all-time) peak: robust to a single spurious high price, and
+    # measures drawdown from the recent high — the relevant crash signal.
+    peak = benchmark_close.rolling(252, min_periods=1).max()
+    dd = benchmark_close / peak - 1.0                       # <= 0
+    frac = ((dd - dd_start) / (dd_full - dd_start)).clip(0, 1)
+    exp = 1.0 - frac * (1.0 - floor)
+    return exp.shift(lag).fillna(1.0)
 
 
 def summarize_nav(returns: pd.Series, periods: int = 252) -> dict:
@@ -133,20 +153,35 @@ def run_passive_overlay(
             if s is not None and len(s) > sma_window:
                 series.append(s)
     panel = pd.concat(series, axis=1).sort_index()
+    basket_ret = basket_daily_returns(panel)
 
-    bench = _fetch_benchmark(benchmark, years, start, end)
+    # Fetch the benchmark to span the ACTUAL basket window + SMA lead-time. Deriving
+    # it from basket dates (rather than a `period=Ny` call) guarantees full coverage
+    # despite yfinance's non-deterministic period lengths — otherwise missing dates
+    # would be filled and corrupt the exposure.
+    b_start = (basket_ret.index.min() - pd.Timedelta(days=2 * sma_window)).strftime("%Y-%m-%d")
+    b_end = (basket_ret.index.max() + pd.Timedelta(days=2)).strftime("%Y-%m-%d")
+    bench = _fetch_benchmark(benchmark, years, b_start, b_end)
     exposure = regime_exposure(bench, sma_window=sma_window)
 
-    basket_ret = basket_daily_returns(panel)
     bh = summarize_nav(basket_ret)
-    overlay_ret = apply_overlay(basket_ret, exposure)
-    overlay = summarize_nav(overlay_ret)
+    ones = pd.Series(1.0, index=basket_ret.index)
 
-    invested = float(apply_overlay(pd.Series(1.0, index=basket_ret.index), exposure).mean())
+    # Binary 200-SMA overlay
+    overlay = summarize_nav(apply_overlay(basket_ret, exposure))
+    invested = float(apply_overlay(ones, exposure).mean())
+
+    # Graded drawdown overlay (refined — avoids whipsaw, keeps crash insurance)
+    dd_exp = drawdown_exposure(bench)
+    overlay_dd = summarize_nav(apply_overlay(basket_ret, dd_exp))
+    dd_invested = float(apply_overlay(ones, dd_exp).mean())
+
     return {
         "n_stocks": panel.shape[1],
         "n_days": len(basket_ret),
         "pct_time_invested": round(invested * 100, 1),
+        "pct_exposure_drawdown": round(dd_invested * 100, 1),
         "buy_and_hold": bh,
         "overlay": overlay,
+        "overlay_drawdown": overlay_dd,
     }

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Boro Portfolio</title>
+    
+    <!-- Scripts & Styles -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Geist:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/history@5/umd/history.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-router@6.3.0/umd/react-router.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-router-dom@6.3.0/umd/react-router-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js" crossorigin></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface": "#e8eaf0",
+                        "surface-bright": "#edeef4",
+                        "surface-container-lowest": "#f0f2f8",
+                        "surface-container-low": "#e5e7ed",
+                        "surface-container": "#e2e4ea",
+                        "surface-container-high": "#dcdee4",
+                        "surface-container-highest": "#d6d8de",
+                        "surface-variant": "#dcdee4",
+                        "surface-dim": "#d4d6dc",
+                        "surface-tint": "#6366f1",
+                        "inverse-surface": "#2e3040",
+                        "inverse-on-surface": "#e8eaf0",
+                        "background": "#e8eaf0",
+                        "on-background": "#2e3040",
+                        "on-surface": "#2e3040",
+                        "on-surface-variant": "#585a68",
+                        "primary": "#6366f1",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#818cf8",
+                        "on-primary-container": "#e0e2ff",
+                        "inverse-primary": "#a5b4fc",
+                        "primary-fixed": "#e0e2ff",
+                        "primary-fixed-dim": "#a5b4fc",
+                        "on-primary-fixed": "#1e1b4b",
+                        "on-primary-fixed-variant": "#4338ca",
+                        "secondary": "#6c6e7e",
+                        "on-secondary": "#ffffff",
+                        "secondary-container": "#d8dae6",
+                        "on-secondary-container": "#585a68",
+                        "secondary-fixed": "#d8dae6",
+                        "secondary-fixed-dim": "#b8baca",
+                        "on-secondary-fixed": "#1a1b26",
+                        "on-secondary-fixed-variant": "#404252",
+                        "tertiary": "#7c3aed",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#a78bfa",
+                        "on-tertiary-container": "#3b1f63",
+                        "tertiary-fixed": "#ede9fe",
+                        "tertiary-fixed-dim": "#c4b5fd",
+                        "on-tertiary-fixed": "#2e1065",
+                        "on-tertiary-fixed-variant": "#5b21b6",
+                        "error": "#dc2626",
+                        "on-error": "#ffffff",
+                        "error-container": "#fee2e2",
+                        "on-error-container": "#991b1b",
+                        "outline": "#8a8c9a",
+                        "outline-variant": "#d0d2dc"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "2xl": "2rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Plus Jakarta Sans"],
+                        "display": ["Plus Jakarta Sans"],
+                        "body": ["Plus Jakarta Sans"],
+                        "label": ["Plus Jakarta Sans"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #e8eaf0; color: #2e3040; overflow-x: hidden; }
+        .neomorphic-raised { box-shadow: 6px 6px 12px rgba(0,0,0,0.08), -6px -6px 12px rgba(255,255,255,0.6); }
+        .neomorphic-inset { box-shadow: inset 4px 4px 8px rgba(0,0,0,0.06), inset -4px -4px 8px rgba(255,255,255,0.5); }
+        .neo-raised { box-shadow: 6px 6px 12px rgba(0,0,0,0.08), -6px -6px 12px rgba(255,255,255,0.6); }
+        .neo-inset { box-shadow: inset 4px 4px 8px rgba(0,0,0,0.06), inset -4px -4px 8px rgba(255,255,255,0.5); }
+        .neomorph-raised { box-shadow: 6px 6px 12px rgba(0,0,0,0.08), -6px -6px 12px rgba(255,255,255,0.6); }
+        .neomorph-inset { box-shadow: inset 4px 4px 8px rgba(0,0,0,0.06), inset -4px -4px 8px rgba(255,255,255,0.5); }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
+        .progress-ring-circle { transition: stroke-dashoffset 0.35s; transform: rotate(-90deg); transform-origin: 50% 50%; }
+        @keyframes pulse-glow { 0%, 100% { opacity: 0.4; filter: blur(4px); } 50% { opacity: 0.8; filter: blur(8px); } }
+        .glow-effect { animation: pulse-glow 3s infinite ease-in-out; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { createRoot } = ReactDOM;
+        const { MemoryRouter, Routes, Route, Link, useNavigate, useLocation } = ReactRouterDOM;
+
+        // --- Common Components ---
+
+        const SidebarItem = ({ icon, label, to, active, onClick }) => {
+            return (
+                <Link to={to} onClick={onClick} className={`flex items-center gap-3 px-4 py-3 mx-2 rounded-xl transition-all ${active ? 'shadow-[inset_4px_4px_8px_rgba(0,0,0,0.06),inset_-4px_-4px_8px_rgba(255,255,255,0.5)] text-primary font-semibold' : 'text-on-surface-variant hover:shadow-[6px_6px_12px_rgba(0,0,0,0.04)]'}`}>
+                    <span className="material-symbols-outlined" style={{ fontVariationSettings: active ? "'FILL' 1" : "'FILL' 0" }}>{icon}</span>
+                    <span>{label}</span>
+                </Link>
+            );
+        };
+
+        const Sidebar = () => {
+            const location = useLocation();
+            return (
+                <aside className="fixed left-0 top-0 h-full flex flex-col py-6 z-50 bg-surface w-64 rounded-r-xl shadow-[6px_6px_12px_rgba(0,0,0,0.08),-6px_-6px_12px_rgba(255,255,255,0.6)]">
+                    <div className="px-6 mb-10">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl neomorphic-raised flex items-center justify-center bg-surface">
+                                <span className="material-symbols-outlined text-primary">account_balance</span>
+                            </div>
+                            <div>
+                                <h2 className="text-lg font-semibold text-primary">Boro Portfolio</h2>
+                                <p className="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Premium Analytics</p>
+                            </div>
+                        </div>
+                    </div>
+                    <nav className="flex-1 space-y-2">
+                        <SidebarItem icon="dashboard" label="Dashboard" to="/engine" active={location.pathname === '/engine'} />
+                        <SidebarItem icon="query_stats" label="Screening" to="/bot-preview" active={location.pathname === '/bot-preview'} />
+                        <SidebarItem icon="pie_chart" label="Portfolio" to="/" active={location.pathname === '/'} />
+                        <SidebarItem icon="security" label="Protection" to="/broker-connect" active={location.pathname === '/broker-connect'} />
+                        <SidebarItem icon="receipt_long" label="Obligations" to="/trade-confirm" active={location.pathname === '/trade-confirm'} />
+                        <SidebarItem icon="notifications_active" label="Alerts" to="/alert-config" active={location.pathname === '/alert-config'} />
+                        <SidebarItem icon="history" label="Backtesting" to="/backtesting" active={location.pathname === '/backtesting'} />
+                        <SidebarItem icon="terminal" label="Logs" to="/logs" active={location.pathname === '/logs'} />
+                        <SidebarItem icon="api" label="API" to="/api-playground" active={location.pathname === '/api-playground'} />
+                    </nav>
+                </aside>
+            );
+        };
+
+        const Header = ({ title = "Boro Portfolio" }) => {
+            return (
+                <header className="flex justify-between items-center px-8 w-full sticky top-0 z-40 bg-surface h-16 shadow-[6px_6px_12px_rgba(0,0,0,0.08),-6px_-6px_12px_rgba(255,255,255,0.6)]">
+                    <div className="flex items-center gap-4">
+                        <div className="relative">
+                            <input className="bg-surface neomorphic-inset border-none rounded-full px-6 py-2 text-sm focus:ring-2 focus:ring-primary/20 w-64 placeholder:text-on-surface-variant/50" placeholder="Search insights..." type="text" />
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-6">
+                        <button className="neomorphic-raised p-2 rounded-full text-on-surface-variant hover:text-primary transition-colors">
+                            <span className="material-symbols-outlined">notifications</span>
+                        </button>
+                        <button className="neomorphic-raised p-2 rounded-full text-on-surface-variant hover:text-primary transition-colors">
+                            <span className="material-symbols-outlined">settings</span>
+                        </button>
+                        <div className="flex items-center gap-3 pl-4 border-l border-outline-variant/30">
+                            <div className="text-right">
+                                <p className="text-xs font-semibold">Alex Sterling</p>
+                                <p className="text-[10px] text-on-surface-variant">Institutional Tier</p>
+                            </div>
+                            <img className="w-10 h-10 rounded-full neomorphic-raised object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAK94qCt0No9SGZgAPyQRnhB1XArSW6f0VQjyRXV01Lf_zOupB8aFW2uXTucTz-zEjkGbV0BXr3B0PCpXcZUnMEqNAuIjSPJB9tv_BR1nRDcpwHaHBME3Q_PCo_A3qWSc1YArtUIjOJaGLVYu_hAdAzSG5Tq8aw98lf2ajj2c20ACKIBQHUBnU-7wT6fbKrlruxKUXff0E3LVeMxp933ABWzU5galrRMO37_11afgUTUQ1z3Q10CTCeGKtiRKi8m62A1PAjz9WqJg4" alt="Profile" />
+                        </div>
+                    </div>
+                </header>
+            );
+        };
+
+        // --- Screens ---
+
+        const SyncScreen = () => {
+            const [percent, setPercent] = useState(68);
+
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    setPercent(p => p < 99 ? p + (Math.random() * 0.5) : p);
+                }, 3000);
+                return () => clearInterval(interval);
+            }, []);
+
+            const offset = 750 - (percent / 100 * 750);
+
+            return (
+                <div className="flex-1 flex flex-col items-center justify-center p-12 relative z-10">
+                    <div className="relative w-[500px] h-[500px] flex items-center justify-center">
+                        <div className="absolute inset-0 rounded-full neomorphic-inset"></div>
+                        <div className="absolute inset-12 rounded-full neomorphic-raised opacity-50"></div>
+                        <div className="relative z-10 w-64 h-64 rounded-full neomorphic-raised flex items-center justify-center bg-surface">
+                            <svg className="absolute inset-0 w-full h-full p-4">
+                                <circle className="text-surface-container" cx="50%" cy="50%" fill="none" r="45%" stroke="currentColor" strokeWidth="8"></circle>
+                                <circle className="progress-ring-circle" cx="50%" cy="50%" fill="none" r="45%" stroke="url(#gradient)" strokeDasharray="750" strokeDashoffset={offset} strokeLinecap="round" strokeWidth="8"></circle>
+                                <defs>
+                                    <linearGradient id="gradient" x1="0%" x2="100%" y1="0%" y2="100%">
+                                        <stop offset="0%" stopColor="#6366f1"></stop>
+                                        <stop offset="100%" stopColor="#7c3aed"></stop>
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div className="text-center">
+                                <span className="text-4xl font-extrabold text-primary">{Math.floor(percent)}%</span>
+                                <p className="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mt-1">Progress</p>
+                            </div>
+                        </div>
+                        <div className="absolute top-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 group">
+                            <div className="w-3 h-3 rounded-full bg-primary glow-effect"></div>
+                            <div className="neomorphic-raised px-4 py-2 rounded-xl bg-surface/80 backdrop-blur-sm">
+                                <p className="text-xs font-semibold text-on-surface">Authenticating</p>
+                                <div className="w-full h-0.5 bg-primary/20 mt-1 overflow-hidden rounded-full">
+                                    <div className="h-full bg-primary w-full transition-all duration-1000"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="absolute bottom-20 left-4 flex flex-col items-start gap-2">
+                            <div className="w-3 h-3 rounded-full bg-primary glow-effect"></div>
+                            <div className="neomorphic-raised px-4 py-2 rounded-xl bg-surface/80 backdrop-blur-sm border-l-2 border-primary">
+                                <p className="text-xs font-semibold text-on-surface">Fetching Assets</p>
+                                <p className="text-[10px] text-on-surface-variant">524 instruments found...</p>
+                            </div>
+                        </div>
+                        <div className="absolute bottom-20 right-4 flex flex-col items-end gap-2">
+                            <div className="w-3 h-3 rounded-full bg-surface-container-highest"></div>
+                            <div className="neomorphic-inset px-4 py-2 rounded-xl bg-surface/40">
+                                <p className="text-xs font-semibold text-on-secondary-container">Analyzing Risk</p>
+                                <p className="text-[10px] text-on-surface-variant/60">Waiting to initialize...</p>
+                            </div>
+                        </div>
+                        <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20" viewBox="0 0 500 500">
+                            <path d="M250 80 L250 160" fill="none" stroke="#6366f1" strokeDasharray="4 4" strokeWidth="1"></path>
+                            <path d="M100 380 Q150 350 200 320" fill="none" stroke="#6366f1" strokeDasharray="4 4" strokeWidth="1"></path>
+                            <path d="M400 380 Q350 350 300 320" fill="none" stroke="#8a8c9a" strokeDasharray="4 4" strokeWidth="1"></path>
+                        </svg>
+                    </div>
+                    <div className="mt-12 text-center max-w-lg">
+                        <h1 className="text-2xl font-semibold text-on-surface mb-2">Synchronizing your Interactive Brokers portfolio...</h1>
+                        <p className="text-on-surface-variant leading-relaxed">We are currently linking your institutional data streams. This process ensures all risk parameters and asset allocations are perfectly mirrored in Boro's premium analytics engine.</p>
+                        <div className="mt-12">
+                            <button className="neomorphic-raised px-8 py-4 rounded-xl text-error font-semibold flex items-center gap-3 mx-auto active:scale-[0.98] active:shadow-[inset_4px_4px_8px_rgba(0,0,0,0.06),inset_-4px_-4px_8px_rgba(255,255,255,0.5)] transition-all group">
+                                <span className="material-symbols-outlined text-xl">cancel</span>
+                                Cancel Sync
+                            </button>
+                            <p className="text-[10px] text-on-surface-variant/60 mt-4 uppercase tracking-[0.2em]">Session ID: BR-992-1XQ-IBKR</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const BrokerConnectScreen = () => {
+            return (
+                <div className="p-12 max-w-6xl mx-auto z-10 relative">
+                    <div className="mb-12">
+                        <h2 className="text-3xl font-headline font-semibold text-on-surface tracking-tight">Connect Broker</h2>
+                        <p className="text-on-surface-variant mt-2 max-w-xl">Choose your investment provider to securely sync your portfolio and enable automated risk protection analysis.</p>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+                        {['Zerodha', 'Interactive Brokers', 'TD Ameritrade', 'Charles Schwab'].map(broker => (
+                            <div key={broker} className="neo-raised rounded-2xl p-8 flex flex-col items-center text-center group transition-all duration-300 hover:-translate-y-1">
+                                <div className="w-20 h-20 neo-inset rounded-full flex items-center justify-center mb-6 overflow-hidden bg-white">
+                                   <span className="material-symbols-outlined text-4xl text-primary">account_balance</span>
+                                </div>
+                                <h3 className="text-lg font-semibold mb-1">{broker}</h3>
+                                <p className="text-xs text-on-surface-variant mb-6">API Integration</p>
+                                <button className="w-full py-3 neo-raised neo-button-active text-primary font-semibold rounded-xl text-sm transition-all hover:text-primary-container active:neo-inset">
+                                    Connect
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const BotPreviewScreen = () => {
+            return (
+                <div className="p-8 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center min-h-[calc(100vh-5rem)] z-10 relative">
+                    <div className="lg:col-span-7 flex justify-center items-center">
+                        <div className="relative w-full max-w-lg aspect-square flex items-center justify-center neomorph-raised rounded-[3rem] bg-background">
+                            <div className="floating-phone w-[280px] h-[580px] bg-neutral-900 rounded-[3rem] p-3 shadow-2xl relative border-[6px] border-neutral-800" style={{animation: 'float 6s ease-in-out infinite', perspective: '1000px'}}>
+                                <div className="w-full h-full bg-slate-950 rounded-[2.5rem] overflow-hidden relative">
+                                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 via-slate-900 to-black opacity-80"></div>
+                                    <div className="h-8 w-full flex justify-between items-center px-8 pt-2 relative z-10">
+                                        <span className="text-[10px] text-white font-bold">9:41</span>
+                                    </div>
+                                    <div className="flex flex-col items-center pt-12 relative z-10">
+                                        <span className="text-5xl font-extralight text-white mb-2">9:41</span>
+                                        <span className="text-xs text-slate-300 font-medium">Tuesday, October 12</span>
+                                    </div>
+                                    <div className="mt-8 px-4 space-y-3 relative z-10 overflow-y-auto no-scrollbar max-h-[380px]">
+                                        <div className="bg-white/10 backdrop-blur-xl border border-white/10 rounded-2xl p-4 shadow-lg">
+                                            <p className="text-xs font-semibold text-white">Portfolio Rebalance Required</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="lg:col-span-5 space-y-6">
+                        <div className="p-8 neomorph-raised rounded-3xl bg-background">
+                            <div className="flex items-center gap-4 mb-8">
+                                <div className="w-12 h-12 rounded-2xl neomorph-inset flex items-center justify-center text-primary">
+                                    <span className="material-symbols-outlined">tune</span>
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold">Notification Settings</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+        
+        const EngineDashboardScreen = () => {
+             return (
+                <div className="p-12 lg:p-16 z-10 relative">
+                     <header className="flex items-center justify-between mb-16">
+                        <div>
+                            <h2 className="text-4xl font-headline font-extrabold tracking-tight text-on-surface">Engine Dashboard</h2>
+                            <p className="text-on-surface-variant font-medium mt-2 text-sm">Silk Phase 4 Management Console</p>
+                        </div>
+                    </header>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mb-16">
+                        <div className="neo-raised rounded-[2rem] p-10 bg-surface">
+                            <h3 className="text-xl font-headline font-bold mb-6 tracking-tight">GitHub Actions</h3>
+                            <div className="space-y-5 font-mono text-xs">
+                                <div className="flex items-center justify-between"><span className="text-on-surface-variant/70">Last Run</span><span className="text-green-600 font-bold">SUCCESS</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+             );
+        }
+
+        const APIPlaygroundScreen = () => {
+             return (
+                 <div className="flex-grow p-8 flex gap-8 overflow-hidden z-10 relative">
+                     <div className="w-1/3 flex flex-col gap-6 h-full overflow-y-auto pr-4">
+                         <h2 className="text-xl font-semibold text-on-surface">Endpoints</h2>
+                         <div className="neomorph-raised p-6 rounded-2xl border-l-4 border-primary bg-primary/5">
+                             <h3 className="font-mono text-sm font-semibold text-on-surface mb-1">/engine/rebalance/trigger</h3>
+                         </div>
+                     </div>
+                     <div className="w-2/3 flex flex-col gap-6 h-full overflow-hidden">
+                         <div className="neomorph-raised p-8 rounded-3xl flex flex-col gap-6">
+                            <h2 className="text-xl font-semibold text-on-surface">Interactive Playground</h2>
+                            <div className="neomorph-inset p-4 rounded-2xl h-48">
+                                <textarea className="w-full h-full bg-transparent border-none focus:ring-0 text-on-surface font-mono text-sm resize-none" defaultValue='{"rebalance_strategy": "drift_controlled"}'></textarea>
+                            </div>
+                         </div>
+                     </div>
+                 </div>
+             )
+        }
+
+        const App = () => {
+            return (
+                <MemoryRouter>
+                    <div className="flex min-h-screen bg-background text-on-surface">
+                        <Sidebar />
+                        <main className="flex-1 ml-64 flex flex-col min-h-screen relative overflow-hidden">
+                            <Header />
+                            <div className="flex-1 overflow-y-auto custom-scrollbar relative">
+                                <Routes>
+                                    <Route path="/" element={<SyncScreen />} />
+                                    <Route path="/broker-connect" element={<BrokerConnectScreen />} />
+                                    <Route path="/bot-preview" element={<BotPreviewScreen />} />
+                                    <Route path="/engine" element={<EngineDashboardScreen />} />
+                                    <Route path="/api-playground" element={<APIPlaygroundScreen />} />
+                                    <Route path="*" element={<SyncScreen />} />
+                                </Routes>
+                            </div>
+                        </main>
+                    </div>
+                </MemoryRouter>
+            );
+        };
+
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

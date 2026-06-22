@@ -466,6 +466,8 @@
     <div class="tab" onclick="showTab('fiidii',this)">🏦 FII/DII</div>
     <div class="tab" onclick="showTab('india',this)">🇮🇳 India Signals</div>
     <div class="tab" onclick="showTab('watchlist',this)">📋 Watchlist</div>
+    <div class="tab" onclick="showTab('halal',this)">🕌 Halal Screen</div>
+    <div class="tab" onclick="showTab('riskguard',this)">🛡️ Risk Guard</div>
     <div class="tab" onclick="showTab('zakat',this)">🌙 Zakat</div>
   </div>
 
@@ -1025,6 +1027,93 @@
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════ -->
+  <!-- TAB — HALAL SCREEN (lookup + tier alerts + purification)          -->
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <div id="tab-halal" class="section">
+    <div class="card p-4 mb-4 flex items-center gap-4 flex-wrap">
+      <div class="text-3xl">🕌</div>
+      <div class="flex-1">
+        <div class="font-bold text-base">Halal Screen — AAOIFI Shariah Compliance</div>
+        <div class="text-sm mt-1" style="color:var(--text2)">Real fundamentals · 84 NSE stocks screened · debt/assets &lt; 33% · interest income &lt; 5%</div>
+      </div>
+      <button class="info-btn" onclick="showInfo('halal_screen')" style="width:22px;height:22px;font-size:11px">i</button>
+    </div>
+
+    <!-- #3 — "Is this stock halal?" lookup -->
+    <div class="card p-5 mb-4">
+      <div class="flex items-center gap-2 mb-3"><h3 class="font-semibold text-sm">Is this stock halal?</h3><button class="info-btn" onclick="showInfo('halal_lookup')">i</button></div>
+      <input id="halalSearch" oninput="renderHalalLookup()" type="text" placeholder="🔍 Type a ticker — TCS, BHARTIARTL, NTPC, RELIANCE…" style="width:100%;padding:11px 15px;border-radius:12px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:14px;outline:none"/>
+      <div class="flex flex-wrap gap-1.5 mt-3" id="halalChips"></div>
+      <div id="halalResult" class="mt-4"></div>
+    </div>
+
+    <!-- #2 — Tier-change / mislabel alerts -->
+    <div class="card p-5 mb-4">
+      <div class="flex items-center gap-2 mb-1"><h3 class="font-semibold text-sm">⚠️ Watchlist mislabels caught by the screen</h3><button class="info-btn" onclick="showInfo('tier_alerts')">i</button></div>
+      <div class="text-xs mb-3" style="color:var(--text2)">10 of 84 hand-curated "halal" names fail AAOIFI on real fundamentals — curated by sector/reputation, not actual ratios. The screen catches them.</div>
+      <div id="tierAlerts" class="space-y-2"></div>
+    </div>
+
+    <!-- #1 — Purification summary -->
+    <div class="card p-5">
+      <div class="flex items-center gap-2 mb-1"><h3 class="font-semibold text-sm">🧹 Dividend purification (auto-calculated)</h3><button class="info-btn" onclick="showInfo('purification')">i</button></div>
+      <div class="text-xs mb-3" style="color:var(--text2)">Even 🟢 stocks carry a sliver of interest income. Purify that % of dividends to charity so the gain is clean. Looked up per-stock from cached fundamentals.</div>
+      <div id="purificationBox"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <!-- TAB — RISK GUARD (drawdown-guard "why I de-risked" explainer)     -->
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <div id="tab-riskguard" class="section">
+    <div class="card p-4 mb-4 flex items-center gap-4 flex-wrap">
+      <div class="text-3xl">🛡️</div>
+      <div class="flex-1">
+        <div class="font-bold text-base">Drawdown Guard — "Why I de-risked"</div>
+        <div class="text-sm mt-1" style="color:var(--text2)">The passive overlay scales basket exposure by how far Nifty is below its recent peak — and explains every move</div>
+      </div>
+      <button class="info-btn" onclick="showInfo('drawdown_guard')" style="width:22px;height:22px;font-size:11px">i</button>
+    </div>
+
+    <!-- Live explainer card -->
+    <div id="ddGuardCard" class="mb-4"></div>
+
+    <!-- Interactive: move Nifty's drawdown, watch the guard react -->
+    <div class="card p-5 mb-4">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-semibold text-sm">Drag: Nifty drawdown from peak</h3>
+        <span id="ddVal" class="font-bold" style="color:#fbbf24">−4%</span>
+      </div>
+      <input id="ddSlider" type="range" min="0" max="35" value="4" oninput="renderRiskGuard()" style="width:100%"/>
+      <div class="flex justify-between text-xs mt-1" style="color:var(--text3)"><span>0% (at peak)</span><span>−8% de-risk line</span><span>−20% floor</span><span>−35%</span></div>
+    </div>
+
+    <!-- The band explained -->
+    <div class="card p-0 overflow-hidden">
+      <div class="accordion-header" onclick="toggleAccordion('ddBand',this)">
+        <div class="font-semibold text-sm">📖 How the graded band works</div>
+        <div class="accordion-icon">▼</div>
+      </div>
+      <div class="accordion-body" id="ddBand">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 p-4 pt-0 text-sm" style="color:var(--text2)">
+          <div class="p-3 rounded-xl" style="background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.18)">
+            <div style="color:#34d399;font-weight:700;margin-bottom:6px">🟢 Above −8% — fully invested</div>
+            Ordinary dips aren't worth timing. Stay 100% in the basket so you never miss the snap-back recoveries that punish market-timers.
+          </div>
+          <div class="p-3 rounded-xl" style="background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.18)">
+            <div style="color:#fbbf24;font-weight:700;margin-bottom:6px">🟡 −8% to −20% — de-risking</div>
+            Exposure scales down linearly as the drawdown deepens. Each step to cash is a graded response, not a panic switch — avoiding the whipsaw of a binary on/off rule.
+          </div>
+          <div class="p-3 rounded-xl" style="background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.18)">
+            <div style="color:#f87171;font-weight:700;margin-bottom:6px">🔴 Below −20% — 30% floor</div>
+            Catastrophic-crash mode: cut to the 30% floor as insurance. Never zero — long-only, and trying to call the exact bottom is a loser's game.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════ -->
   <!-- TAB 13 — ZAKAT CALCULATOR                                         -->
   <!-- ══════════════════════════════════════════════════════════════════ -->
   <div id="tab-zakat" class="section">
@@ -1115,6 +1204,9 @@
 <!-- ══════════════════════════════════════════════════════════════════════ -->
 <!-- SCRIPTS                                                                -->
 <!-- ══════════════════════════════════════════════════════════════════════ -->
+<!-- Full 84-ticker halal data (generated by scripts/build_halal_dashboard_data.py).
+     Loaded via <script src> so it works over file:// too; absent ⇒ embedded fallback slice. -->
+<script src="halal_data.js"></script>
 <script>
 /* ── INFO CARD DATA ──────────────────────────────────────────────────────── */
 const INFO = {
@@ -1178,6 +1270,12 @@ const INFO = {
   zakat_explained:{ icon:'🌙', cat:'Islamic Finance', title:'Zakat on Stocks — Overview', desc:'Zakat is the 3rd pillar of Islam — an annual obligatory purification of wealth. For stock portfolios, you calculate 2.5% on the zakatable value (usually current market value) if it has been above the nisab threshold for a full lunar year (hawl).', rule:'<strong>Simple rule:</strong> Portfolio value × 2.5% = Zakat due. For ₹1,24,300 portfolio → Zakat = ₹3,107.5/year. Pay on your Zakat date (same Islamic date each year). Most scholars recommend setting aside 2.5% annually from portfolio gains.' },
   nisab:         { icon:'⚖️', cat:'Islamic Finance', title:'Nisab — Minimum Threshold', desc:'Nisab is the minimum amount of wealth you must have before Zakat becomes obligatory. It is set at the value of 87.48 grams of gold OR 612.36 grams of silver (whichever applies). Most scholars use the silver nisab as it is lower and more inclusive.', rule:'<strong>2026 estimates:</strong> Silver nisab ≈ ₹45,000. Gold nisab ≈ ₹5,85,000. <strong>If your total zakatable wealth (portfolio + cash + gold) is above the silver nisab:</strong> Zakat is due. Your portfolio of ₹1,24,300 is well above the silver nisab — Zakat applies.' },
   hawl:          { icon:'📅', cat:'Islamic Finance', title:'Hawl — The Lunar Year Condition', desc:'Hawl means a complete Islamic lunar year (354 days) must pass with your wealth continuously above the nisab. If your portfolio drops below nisab at any point, the hawl resets. The clock starts again once wealth rises back above nisab.', rule:'<strong>Practical approach:</strong> Choose a consistent date (e.g., 1st Ramadan) as your annual Zakat date. Calculate and pay on that date every year. If your portfolio had a major crash below nisab during the year, consult a scholar about whether hawl was broken.' },
+  // Halal screen entries
+  halal_screen:  { icon:'🕌', cat:'Islamic Finance', title:'Halal Screen — AAOIFI', desc:'We screen every stock against AAOIFI Shariah financial ratios using REAL fundamentals (balance sheet + P&L) pulled from Tickertape and refreshed quarterly. A stock is graded 🟢 clean / 🟡 doubtful / 🔴 non-compliant based on its actual debt and interest-income ratios — not its sector reputation.', rule:'<strong>🟢:</strong> debt/assets &lt; 33% AND interest income &lt; 5%. <strong>🟡:</strong> in the caution band — screen + purify. <strong>🔴:</strong> debt ≥ 45% OR interest income ≥ 10% — not tradeable in the halal sleeve.' },
+  halal_lookup:  { icon:'🔍', cat:'Islamic Finance', title:'Is this stock halal?', desc:'Type any NSE ticker for an instant verdict with the actual ratios, the AAOIFI standard cited, the data source + date, and the purification %. It cites an authority rather than originating a ruling — the only survivable shape for a religious-compliance tool.', rule:'Cached names answer instantly. Anything not in the quarterly cache falls back to a live screen in the full app. The verdict is a data check, <strong>not a fatwa</strong> — verify with a qualified scholar.' },
+  tier_alerts:   { icon:'⚠️', cat:'Islamic Finance', title:'Tier-Change Alerts', desc:'Compliance is not static — a company can quietly cross the AAOIFI debt or interest line and turn non-compliant while you hold it. After each quarterly refresh we diff every stock\'s tier against the last snapshot and surface only the transitions, especially anything that went 🟢→🔴.', rule:'<strong>The #1 halal-portfolio risk</strong> is silently holding a stock that turned haram. Here we show the 10 watchlist names already flagged 🔴 by real fundamentals — they were curated by sector, not actual ratios.' },
+  purification:  { icon:'🧹', cat:'Islamic Finance', title:'Dividend Purification', desc:'Even a 🟢-compliant company earns a small amount of interest income. The portion of your dividend traceable to that impure income should be given to charity (not as Zakat) to keep the gain clean. We auto-calculate it per stock from each company\'s actual interest-income ratio.', rule:'<strong>Purification ≠ Zakat.</strong> Purification cleans the impure sliver of investment income (give to charity, no reward sought); Zakat is the 2.5% annual obligation on your wealth. Both apply to a stock portfolio.' },
+  drawdown_guard:{ icon:'🛡️', cat:'Risk Management', title:'Drawdown Guard', desc:'A long-only halal investor can\'t short or hedge — the one lever that genuinely helps is cutting exposure in a crash. This overlay scales the basket\'s exposure by how far Nifty is below its trailing peak: full through ordinary dips, grading down to a 30% floor in a catastrophic drawdown. Every move is explained in plain language and rupees.', rule:'<strong>Above −8%:</strong> 100% invested (don\'t time dips). <strong>−8% to −20%:</strong> scale down linearly. <strong>Below −20%:</strong> 30% floor (never zero). Lagged a day in the backtest to avoid look-ahead.' },
 };
 
 function showInfo(key) {
@@ -1211,6 +1309,8 @@ function showTab(id, el) {
   if (id === 'fiidii') drawFIIChart();
   if (id === 'watchlist') renderWatchlist();
   if (id === 'zakat') calcZakat();
+  if (id === 'halal') initHalal();
+  if (id === 'riskguard') renderRiskGuard();
 }
 
 /* ── ACCORDION ───────────────────────────────────────────────────────────── */
@@ -1220,6 +1320,162 @@ function toggleAccordion(bodyId, headerEl) {
   const isOpen = body.classList.contains('open');
   body.classList.toggle('open', !isOpen);
   icon.classList.toggle('open', !isOpen);
+}
+
+/* ── HALAL SCREEN ────────────────────────────────────────────────────────── */
+/* Fallback slice — used only if halal_data.js (the full 84-ticker build) didn't load.
+   Real cached fundamentals (Tickertape, refreshed quarterly). d=debt/assets%, i=interest income%. */
+const _HALAL_DATA_FB = {
+  TCS:{d:6.2,i:0.4}, INFY:{d:5.9,i:0.2}, WIPRO:{d:15.0,i:1.6}, HCLTECH:{d:6.0,i:0.5},
+  RELIANCE:{d:18.5,i:2.5}, SUNPHARMA:{d:2.6,i:0.4}, CIPLA:{d:1.5,i:0.1}, NESTLEIND:{d:3.4,i:0.7},
+  ASIANPAINT:{d:11.4,i:0.5}, MARUTI:{d:0.1,i:0.1}, DRREDDY:{d:9.7,i:0.8}, BRITANNIA:{d:14.1,i:0.8},
+  PIDILITIND:{d:3.2,i:0.4}, TITAN:{d:51.1,i:1.6}, BHARTIARTL:{d:42.3,i:11.2}, NTPC:{d:47.8,i:6.8},
+  POWERGRID:{d:49.3,i:18.2}, "M&M":{d:45.3,i:5.6}, TVSMOTOR:{d:60.0,i:4.7}, ADANIPORTS:{d:34.5,i:11.3},
+};
+const _HALAL_ASOF_FB = "2026-06-19";
+/* Point-in-time tiers per fiscal year (8yr cached history) — the SAME classify engine run on each year's ratios. */
+const _HALAL_HISTORY_FB = {
+  TCS:[{y:2019,t:"🟢"},{y:2020,t:"🟢"},{y:2021,t:"🟢"},{y:2022,t:"🟢"},{y:2023,t:"🟢"},{y:2024,t:"🟢"},{y:2025,t:"🟢"},{y:2026,t:"🟢"}],
+  RELIANCE:[{y:2019,t:"🟢"},{y:2020,t:"🟢"},{y:2021,t:"🟢"},{y:2022,t:"🟢"},{y:2023,t:"🟢"},{y:2024,t:"🟢"},{y:2025,t:"🟢"},{y:2026,t:"🟢"}],
+  MARUTI:[{y:2018,t:"🟡"},{y:2019,t:"🟢"},{y:2020,t:"🟢"},{y:2021,t:"🟢"},{y:2022,t:"🟢"},{y:2023,t:"🟢"},{y:2024,t:"🟢"},{y:2025,t:"🟢"}],
+  TITAN:[{y:2018,t:"🟡"},{y:2019,t:"🟢"},{y:2020,t:"🟢"},{y:2021,t:"🟡"},{y:2022,t:"🟡"},{y:2023,t:"🟡"},{y:2024,t:"🔴"},{y:2025,t:"🔴"}],
+  BHARTIARTL:[{y:2018,t:"🟡"},{y:2019,t:"🔴"},{y:2020,t:"🔴"},{y:2021,t:"🔴"},{y:2022,t:"🔴"},{y:2023,t:"🔴"},{y:2024,t:"🔴"},{y:2025,t:"🔴"}],
+  NTPC:[{y:2018,t:"🔴"},{y:2019,t:"🔴"},{y:2020,t:"🔴"},{y:2021,t:"🔴"},{y:2022,t:"🔴"},{y:2023,t:"🔴"},{y:2024,t:"🔴"},{y:2025,t:"🔴"}],
+  POWERGRID:[{y:2018,t:"🔴"},{y:2019,t:"🔴"},{y:2020,t:"🔴"},{y:2021,t:"🔴"},{y:2022,t:"🔴"},{y:2023,t:"🔴"},{y:2024,t:"🔴"},{y:2025,t:"🔴"}],
+  "M&M":[{y:2018,t:"🟡"},{y:2019,t:"🟡"},{y:2020,t:"🔴"},{y:2021,t:"🔴"},{y:2022,t:"🔴"},{y:2023,t:"🔴"},{y:2024,t:"🔴"},{y:2025,t:"🔴"}],
+  TVSMOTOR:[{y:2018,t:"🔴"},{y:2019,t:"🔴"},{y:2020,t:"🔴"},{y:2021,t:"🔴"},{y:2022,t:"🔴"},{y:2023,t:"🔴"},{y:2024,t:"🔴"},{y:2025,t:"🔴"}],
+  ADANIPORTS:[{y:2019,t:"🔴"},{y:2020,t:"🔴"},{y:2021,t:"🔴"},{y:2022,t:"🔴"},{y:2023,t:"🔴"},{y:2024,t:"🟡"},{y:2025,t:"🟡"},{y:2026,t:"🔴"}],
+  WIPRO:[{y:2018,t:"🟡"},{y:2019,t:"🟢"},{y:2020,t:"🟢"},{y:2021,t:"🟢"},{y:2022,t:"🟢"},{y:2023,t:"🟢"},{y:2024,t:"🟢"},{y:2025,t:"🟢"}],
+  INFY:[{y:2019,t:"🟢"},{y:2020,t:"🟢"},{y:2021,t:"🟢"},{y:2022,t:"🟢"},{y:2023,t:"🟢"},{y:2024,t:"🟢"},{y:2025,t:"🟢"},{y:2026,t:"🟢"}],
+};
+/* Prefer the generated full-universe file (halal_data.js → window.HALAL_DASH); fall back to the embedded slice. */
+const _DASH = window.HALAL_DASH || null;
+const HALAL_DATA = _DASH ? _DASH.data : _HALAL_DATA_FB;
+const HALAL_HISTORY = _DASH ? _DASH.history : _HALAL_HISTORY_FB;
+const HALAL_ASOF = (_DASH && _DASH.asof) || _HALAL_ASOF_FB;
+// AAOIFI thresholds (mirror src/halal_screen): debt<33 green / <45 yellow / ≥45 red; income<5 / <10 / ≥10.
+// null ratio → 🟡 caution (unknown is not 0), matching the Python classify().
+function classifyHalal(d, i) {
+  const dt = d == null ? 1 : (d < 33 ? 0 : (d < 45 ? 1 : 2));
+  const it = i == null ? 1 : (i < 5 ? 0 : (i < 10 ? 1 : 2));
+  const sev = Math.max(dt, it);
+  const tier = ["🟢","🟡","🔴"][sev];
+  const dTxt = d == null ? "Debt/assets unknown — treated as caution"
+    : `Debt/assets ${d}% ` + (dt===0?"— well under 33%":(dt===1?"— in the 33–45% caution band":"— exceeds 45% limit"));
+  const iTxt = i == null ? "Interest income unknown — treated as caution"
+    : `Interest income ${i}% of revenue ` + (it===0?"— under 5%":(it===1?"— in the 5–10% caution band":"— exceeds 10% limit"));
+  const reasons = [
+    (dt===0?"✓ ":(dt===1?"⚠ ":"✗ ")) + dTxt,
+    (it===0?"✓ ":(it===1?"⚠ ":"✗ ")) + iTxt,
+  ];
+  return { tier, verdict: ["HALAL","DOUBTFUL — screen + purify","NOT HALAL"][sev], tradeable: sev<2, reasons, pur: i == null ? 0 : i };
+}
+function halalCardHTML(t, rec) {
+  const c = classifyHalal(rec.d, rec.i);
+  const ring = c.tier==="🟢"?"52,211,153":(c.tier==="🟡"?"251,191,36":"248,113,113");
+  let h = `<div class="p-4 rounded-xl" style="background:rgba(${ring},.07);border:1px solid rgba(${ring},.28)">`;
+  h += `<div class="flex items-center gap-2 mb-2"><span style="font-size:1.4rem">${c.tier}</span><span class="font-bold text-base">${t} — ${c.verdict}</span>${c.tradeable?"":'<span class="badge-red text-xs px-2 py-0.5 rounded-full ml-1">not tradeable</span>'}</div>`;
+  c.reasons.forEach(r => { h += `<div class="text-xs mb-1" style="color:var(--text2)">${r}</div>`; });
+  h += `<div class="text-xs mt-2 pt-2" style="color:var(--text3);border-top:1px solid var(--border)">Standard: AAOIFI (debt &lt; 33%, interest income &lt; 5%) · Source: tickertape, as of ${HALAL_ASOF}</div>`;
+  if (c.pur > 0) h += `<div class="text-xs mt-1" style="color:#a78bfa">🧹 Purify ${c.pur}% of dividends to charity.</div>`;
+  h += `<div class="text-xs mt-1" style="color:var(--text3)">⚠️ Not financial or religious advice — verify with a qualified scholar.</div>`;
+  h += timelineHTML(t);
+  h += `</div>`;
+  return h;
+}
+/* Point-in-time: 8-year tier strip. Avoids "look-ahead halal bias" — each cell is that
+   year's verdict from that year's ratios, not today's tier painted backwards. */
+function timelineHTML(t) {
+  const hist = HALAL_HISTORY[t];
+  if (!hist) return "";
+  const cc = {"🟢":"52,211,153","🟡":"251,191,36","🔴":"248,113,113"};
+  const cells = hist.map(h =>
+    `<div style="text-align:center"><div style="width:26px;height:26px;border-radius:6px;background:rgba(${cc[h.t]},.22);border:1px solid rgba(${cc[h.t]},.5);display:flex;align-items:center;justify-content:center;font-size:13px">${h.t}</div><div style="font-size:9px;color:var(--text3);margin-top:2px">'${String(h.y).slice(2)}</div></div>`
+  ).join("");
+  // call out the most decision-relevant crossing: the latest WORSENING (the moment it
+  // turned less compliant). Fall back to the latest change if it only ever improved.
+  const rank = c => "🟢🟡🔴".indexOf(c);
+  let worsen = null, lastChange = null;
+  for (let k = 1; k < hist.length; k++) {
+    if (hist[k].t !== hist[k-1].t) {
+      lastChange = k;
+      if (rank(hist[k].t) > rank(hist[k-1].t)) worsen = k;
+    }
+  }
+  let note = "";
+  const pick = worsen !== null ? worsen : lastChange;
+  if (pick !== null) {
+    const worse = worsen !== null;
+    const tail = hist[pick].t === "🔴" ? " — holding it past here means silently holding a now-haram stock" : "";
+    note = `<div class="text-xs mt-2" style="color:${worse?'#f87171':'#34d399'}">${worse?'↓':'↑'} Crossed ${hist[pick-1].t}→${hist[pick].t} in FY${hist[pick].y}${worse?tail:''}</div>`;
+  }
+  return `<div class="mt-3 pt-3" style="border-top:1px solid var(--border)"><div class="text-xs mb-2" style="color:var(--text2)">📅 8-year compliance timeline <span style="color:var(--text3)">(point-in-time — each year screened on that year's data)</span></div><div style="display:flex;gap:5px;flex-wrap:wrap">${cells}</div>${note}</div>`;
+}
+function renderHalalLookup() {
+  const q = (document.getElementById('halalSearch').value || "").trim().toUpperCase();
+  const box = document.getElementById('halalResult');
+  if (!q) { box.innerHTML = ""; return; }
+  const key = Object.keys(HALAL_DATA).find(k => k === q || k.startsWith(q));
+  if (key) { box.innerHTML = halalCardHTML(key, HALAL_DATA[key]); return; }
+  box.innerHTML = `<div class="p-4 rounded-xl text-xs" style="background:var(--surface2);color:var(--text2)">“${q}” isn't in the quarterly cache. In the app this falls back to a live yfinance screen. Try a cached name from the chips above.</div>`;
+}
+function initHalal() {
+  // example chips: a clean and a flagged one to make the contrast obvious
+  const chips = ["TCS","RELIANCE","BHARTIARTL","NTPC","TITAN","MARUTI"];
+  document.getElementById('halalChips').innerHTML = chips.map(t =>
+    `<span class="feat-pill" style="cursor:pointer" onclick="document.getElementById('halalSearch').value='${t}';renderHalalLookup()">${classifyHalal(HALAL_DATA[t].d,HALAL_DATA[t].i).tier} ${t}</span>`
+  ).join("");
+  if (!document.getElementById('halalSearch').value) { document.getElementById('halalSearch').value = "TCS"; }
+  renderHalalLookup();
+  // tier alerts: every cached name that screens 🔴
+  const red = Object.keys(HALAL_DATA).filter(t => classifyHalal(HALAL_DATA[t].d,HALAL_DATA[t].i).tier === "🔴");
+  document.getElementById('tierAlerts').innerHTML = red.map(t => {
+    const r = HALAL_DATA[t];
+    return `<div class="flex items-center gap-3 p-2.5 rounded-lg" style="background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.18)">
+      <span class="badge-red text-xs px-2 py-0.5 rounded-full">🟢→🔴 ${t}</span>
+      <span class="text-xs" style="color:var(--text2)">debt/assets <strong style="color:#f87171">${r.d}%</strong> · interest income <strong style="color:#f87171">${r.i}%</strong> → now NON-TRADEABLE</span></div>`;
+  }).join("");
+  // purification on a sample 🟢 book
+  const book = {RELIANCE:40000, TCS:35000, INFY:25000};
+  let total=0, rows="";
+  for (const t in book) {
+    const i = HALAL_DATA[t].i, div = book[t]*0.012, pur = div*i/100; total += pur;
+    rows += `<tr><td>${t}</td><td>₹${book[t].toLocaleString('en-IN')}</td><td>${i}%</td><td style="color:#a78bfa">₹${pur.toFixed(0)}</td></tr>`;
+  }
+  document.getElementById('purificationBox').innerHTML =
+    `<table class="text-xs w-full"><thead><tr><th>Stock</th><th>Holding</th><th>Impure %</th><th>Purify</th></tr></thead><tbody>${rows}</tbody></table>
+     <div class="mt-3 p-3 rounded-xl text-sm" style="background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2)">On a ₹1,00,000 halal book (~1.2% yield), give <strong style="color:#a78bfa">₹${total.toFixed(0)}</strong> to charity this year to purify the interest-income sliver. Auto-computed per stock — not a flat guess.</div>`;
+}
+
+/* ── RISK GUARD (mirror src/drawdown_guard) ──────────────────────────────── */
+function ddState(ddPct) {
+  const dd = -ddPct;                                  // drawdown is ≤ 0
+  const frac = Math.min(Math.max((dd - (-8)) / ((-20) - (-8)), 0), 1);
+  const exp = (1 - frac * (1 - 0.30)) * 100;
+  const status = dd >= -8 ? "FULLY INVESTED" : (dd <= -20 ? "MAX DEFENSIVE" : "DE-RISKING");
+  return { dd, exp: Math.round(exp*10)/10, cash: Math.round((100-exp)*10)/10, status };
+}
+function renderRiskGuard() {
+  const ddPct = parseInt(document.getElementById('ddSlider').value, 10);
+  document.getElementById('ddVal').textContent = `−${ddPct}%`;
+  const s = ddState(ddPct), cap = 50000;
+  const icon = {"FULLY INVESTED":"🟢","DE-RISKING":"🟡","MAX DEFENSIVE":"🔴"}[s.status];
+  const ring = s.status==="FULLY INVESTED"?"52,211,153":(s.status==="DE-RISKING"?"251,191,36":"248,113,113");
+  let reason;
+  if (s.status==="FULLY INVESTED") reason = `Nifty 50 is ${ddPct}% off its recent peak — shallower than the 8% de-risk line. Holding the basket in full; ordinary dips aren't worth timing.`;
+  else if (s.status==="MAX DEFENSIVE") reason = `Nifty 50 is ${ddPct}% off its peak — past the 20% catastrophic line. Exposure cut to the 30% floor; ${s.cash}% parked in cash as crash insurance.`;
+  else reason = `Nifty 50 is ${ddPct}% off its peak — inside the de-risk band (8% to 20%). Trimmed to ${s.exp}% invested, ${s.cash}% in cash, and it scales further if the drawdown deepens.`;
+  const invested = cap * s.exp/100, cash = cap - invested;
+  document.getElementById('ddGuardCard').innerHTML =
+    `<div class="card p-5" style="border:1px solid rgba(${ring},.35)">
+      <div class="flex items-center gap-2 mb-2"><span style="font-size:1.5rem">${icon}</span><span class="font-bold text-base">Drawdown guard — ${s.status}</span><span class="badge-blue text-xs px-2 py-0.5 rounded-full ml-auto">${s.exp}% invested</span></div>
+      <div class="text-sm mb-3" style="color:var(--text2)">${reason}</div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="p-3 rounded-xl text-center" style="background:rgba(52,211,153,.08)"><div class="text-xs" style="color:var(--text2)">In basket</div><div style="color:#34d399;font-weight:800;font-size:1.3rem">₹${invested.toLocaleString('en-IN',{maximumFractionDigits:0})}</div></div>
+        <div class="p-3 rounded-xl text-center" style="background:rgba(96,165,250,.08)"><div class="text-xs" style="color:var(--text2)">In cash</div><div style="color:#60a5fa;font-weight:800;font-size:1.3rem">₹${cash.toLocaleString('en-IN',{maximumFractionDigits:0})}</div></div>
+      </div>
+      <div class="text-xs mt-3" style="color:var(--text3)">⚠️ Mechanical trend rule, not advice. Past drawdowns don't predict future ones.</div>
+    </div>`;
 }
 
 /* ── THEME ───────────────────────────────────────────────────────────────── */

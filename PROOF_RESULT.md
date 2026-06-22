@@ -88,3 +88,39 @@ The earlier "positive, beats random + costs" result must be **downgraded**. The 
 the evidence points to **passive/rebalanced halal investing >> this active momentum signal**. The
 durable value of this project is the **halal screening + risk/Zakat overlay**, not daily entry signals.
 
+## Passive core + regime overlay (`src/passive.py`)
+Equal-weight halal basket, with a regime overlay (cash when Nifty < 200-day SMA). Both windows
+use a benchmark fetched with SMA lead-time so exposure reflects regime, not warmup.
+
+Two overlays: binary 200-SMA (cash when Nifty < 200-SMA) and a graded **drawdown overlay**
+(`drawdown_exposure`: full exposure through ordinary dips, scaling toward a 0.3 floor only as a
+catastrophic drawdown deepens). Corrected numbers (after the robustness fixes below):
+
+| window | Buy & Hold (MaxDD / Sharpe) | 200-SMA overlay | Drawdown overlay |
+|---|---|---|---|
+| full 7y (incl. 2020 −38% crash) | −32% / 1.32 | −13% / **1.56** | −13% / 1.35 |
+| 2021–23 correction | −17% / 1.21 | −6% / 1.33 | −15% / 1.20 |
+
+- **Both overlays deliver real crash protection** — in the 7y they cut max drawdown from −32% to
+  ~−13% and improve Sharpe (survivorship-robust: same basket, overlay vs no-overlay).
+- **Correction:** the earlier "binary overlay whipsaws and hurts (Sharpe →0.6)" claim was largely a
+  **bug artifact** (SMA-warmup + exposure-corruption, fixed below). With the bugs fixed the binary
+  overlay performs fine in ordinary chop too. The drawdown overlay stays more invested (less
+  whipsaw) but does NOT clearly beat the binary on these runs.
+- **Caveat:** results are noisy run-to-run because yfinance returns different stock samples each
+  call — a rigorous overlay comparison needs a fixed cached universe.
+- **Net: a regime overlay genuinely earns its keep as a drawdown guard on the passive halal core.**
+
+### Windowing-bug fix (debugging note)
+The date-window run originally reported 1733 days for a 2y window. Root cause: yfinance 1.2.0
+returns wrong-range data under cold concurrent fetching, and the basket build had no boundary
+defense. yfinance `period=Ny` fetches are also non-deterministic in length, so the benchmark
+sometimes came back shorter than the basket and missing dates were filled as cash — corrupting
+exposure (drawdown-overlay showed avg exposure 19.6%, below its 0.3 floor). Fixed with:
+(1) clip each series to the window in `_fetch_close`; (2) `min_coverage` guard in
+`basket_daily_returns`; (3) `pct_change(fill_method=None)` (no fake flat returns from forward-fill);
+(4) benchmark fetched from the ACTUAL basket date range + SMA lead-time (deterministic coverage);
+(5) `drawdown_exposure` uses a rolling (not all-time) peak — robust to spurious highs;
+(6) `apply_overlay` forward-fills exposure and defaults to invested (not cash). Regression tests
+added; full suite **70 green**.
+
