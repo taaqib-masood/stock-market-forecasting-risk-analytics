@@ -211,7 +211,10 @@ python -m src.drawdown_guard --capital 50000
 ```bash
 # Train on any stock (saves to results/)
 python -m src.pipeline --ticker RELIANCE --years 5
-python -m src.pipeline --ticker RELIANCE --years 5 --lstm   # enable LSTM (slow, needs tensorflow)
+
+# Enable LSTM (slow; needs TensorFlow, which has no Python 3.14 wheel —
+# use a 3.11/3.12 venv and `pip install -r requirements-lstm.txt` first)
+python -m src.pipeline --ticker RELIANCE --years 5 --lstm
 
 # Walk-forward validation gate (the harness new strategies must clear before shipping)
 python -m src.walk_forward --ticker RELIANCE --years 5 --splits 4
