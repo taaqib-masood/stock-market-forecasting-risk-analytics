@@ -195,7 +195,14 @@ def backtest_with_risk(
             hit_target = (direction == 1 and price >= target) or \
                          (direction == -1 and price <= target)
 
-            if hit_stop or hit_target or sig == 0:
+            # Exit on stop, target, or a GENUINE reversal (opposite signal) — NOT
+            # merely because the entry signal turned flat (sig == 0). The score is
+            # an ENTRY trigger, not a continuous hold condition; exiting on every
+            # flat bar churns positions out in sub-cost moves (the live exit,
+            # src.auto_close, already holds to stop/target — this makes the
+            # backtest match live). For BUY-only strategies sig is never -1, so
+            # exits become purely stop/target.
+            if hit_stop or hit_target or sig == -1:
                 # Slippage on exit: adverse to position direction
                 exit_slip = price * slippage_pct * (-direction)
                 exit_price = price + exit_slip
@@ -217,7 +224,7 @@ def backtest_with_risk(
                     "pnl": round(pnl, 2),
                     "equity": round(equity, 2),
                     "won": won,
-                    "exit_reason": "stop" if hit_stop else ("target" if hit_target else "signal"),
+                    "exit_reason": "stop" if hit_stop else ("target" if hit_target else "reversal"),
                 })
                 in_trade = None
 

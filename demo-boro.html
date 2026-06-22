@@ -155,10 +155,10 @@
             <span class="text-[11px] font-semibold px-3 py-1 rounded-pill bg-white/10 border border-white/20 text-white/70 whitespace-nowrap">7-yr proof backtest · src/passive.py</span>
           </div>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="bg-white/5 border border-white/10 rounded-card p-4"><p class="text-xs text-white/50">Basket 7y (buy &amp; hold)</p><p class="text-2xl font-bold tracking-tight" style="color:#6ee7b7;">+337%</p><p class="text-[11px] text-white/40">avg · 100% positive*</p></div>
-            <div class="bg-white/5 border border-white/10 rounded-card p-4"><p class="text-xs text-white/50">Max drawdown</p><p class="text-2xl font-bold tracking-tight">−32% → <span style="color:#6ee7b7;">−13%</span></p><p class="text-[11px] text-white/40">with crash overlay</p></div>
-            <div class="bg-white/5 border border-white/10 rounded-card p-4"><p class="text-xs text-white/50">Sharpe</p><p class="text-2xl font-bold tracking-tight">1.32 → <span style="color:#6ee7b7;">1.56</span></p><p class="text-[11px] text-white/40">overlay vs hold</p></div>
-            <div class="bg-white/5 border border-white/10 rounded-card p-4"><p class="text-xs text-white/50">The overlay's job</p><p class="text-2xl font-bold tracking-tight">cut crashes</p><p class="text-[11px] text-white/40">+ screen · purify · Zakat</p></div>
+            <div class="bg-white/5 border border-white/10 rounded-card p-4"><p class="text-xs text-white/50">Basket 7y (buy &amp; hold)</p><p class="text-2xl font-bold tracking-tight" style="color:#6ee7b7;"><span id="pv-bh-total">+310%</span></p><p class="text-[11px] text-white/40">avg · 100% positive*</p></div>
+            <div class="bg-white/5 border border-white/10 rounded-card p-4"><p class="text-xs text-white/50">Max drawdown</p><p class="text-2xl font-bold tracking-tight"><span id="pv-dd-bh">−37%</span> → <span id="pv-dd-ov" style="color:#6ee7b7;">−25%</span></p><p class="text-[11px] text-white/40">crash overlay cuts the crash</p></div>
+            <div class="bg-white/5 border border-white/10 rounded-card p-4"><p class="text-xs text-white/50">Cost of the overlay</p><p class="text-2xl font-bold tracking-tight"><span id="pv-ret-bh">+310%</span> → <span id="pv-ret-ov" style="color:#fbbf24;">+146%</span></p><p class="text-[11px] text-white/40">lower return buys lower drawdown</p></div>
+            <div class="bg-white/5 border border-white/10 rounded-card p-4"><p class="text-xs text-white/50">The overlay's job</p><p class="text-2xl font-bold tracking-tight">cut crashes</p><p class="text-[11px] text-white/40">lower drawdown · not higher return</p></div>
           </div>
           <div class="flex flex-wrap items-center gap-3">
             <button onclick="document.querySelector('[data-tab=\'halal\']').click()" class="px-5 py-2.5 rounded-pill bg-white font-semibold text-sm hover:opacity-90 transition-opacity" style="color:#0f3d2e;">Screen the basket →</button>
@@ -223,19 +223,19 @@
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2">
           <p class="text-sm font-medium text-muted">Nifty 50<button class="info-btn" onclick="showInfo('nifty50')">i</button></p>
-          <div class="flex items-end justify-between"><h3 class="text-2xl font-semibold tracking-tight">22,847</h3><span class="text-xs font-semibold px-2 py-1 bg-green-50 text-green-600 rounded-pill border border-green-200">+0.6%</span></div>
+          <div class="flex items-end justify-between"><h3 class="text-2xl font-semibold tracking-tight" id="mkt-nifty">22,847</h3><span class="text-xs font-semibold px-2 py-1 bg-green-50 text-green-600 rounded-pill border border-green-200" id="mkt-nifty-chg">+0.6%</span></div>
         </div>
         <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2">
           <p class="text-sm font-medium text-muted">VIX<button class="info-btn" onclick="showInfo('vix')">i</button></p>
-          <div class="flex items-end justify-between"><h3 class="text-2xl font-semibold tracking-tight">14.2</h3><span class="text-xs font-semibold px-2 py-1 bg-surface-highest text-on-surface rounded-pill border border-outline-variant">Calm</span></div>
+          <div class="flex items-end justify-between"><h3 class="text-2xl font-semibold tracking-tight" id="mkt-vix">14.2</h3><span class="text-xs font-semibold px-2 py-1 bg-surface-highest text-on-surface rounded-pill border border-outline-variant" id="mkt-vix-tag">Calm</span></div>
         </div>
         <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2">
           <p class="text-sm font-medium text-muted">USD/INR<button class="info-btn" onclick="showInfo('usdinr')">i</button></p>
-          <div class="flex items-end justify-between"><h3 class="text-2xl font-semibold tracking-tight">83.87</h3><span class="text-xs font-semibold px-2 py-1 bg-surface-highest text-on-surface rounded-pill border border-outline-variant">Neutral</span></div>
+          <div class="flex items-end justify-between"><h3 class="text-2xl font-semibold tracking-tight" id="mkt-usdinr">83.87</h3><span class="text-xs font-semibold px-2 py-1 bg-surface-highest text-on-surface rounded-pill border border-outline-variant">Neutral</span></div>
         </div>
         <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2">
           <p class="text-sm font-medium text-muted">Portfolio Value<button class="info-btn" onclick="showInfo('portfolio')">i</button></p>
-          <div class="flex items-end justify-between"><h3 class="text-2xl font-semibold tracking-tight">₹1,24,300</h3><span class="text-xs font-semibold px-2 py-1 bg-green-50 text-green-600 rounded-pill border border-green-200">+24.3%</span></div>
+          <div class="flex items-end justify-between"><h3 class="text-2xl font-semibold tracking-tight" id="mkt-pf">₹1,24,300</h3><span class="text-xs font-semibold px-2 py-1 bg-green-50 text-green-600 rounded-pill border border-green-200" id="mkt-pf-chg">+24.3%</span></div>
         </div>
       </div>
 
@@ -1495,6 +1495,34 @@ function toggleAccordion(bodyId, headerEl){
 // ---- Today's Signals: render live trade cards from window.DASH ----
 const DASH = window.DASH || {};
 const inr = n => '₹' + Number(n).toLocaleString('en-IN');
+
+// ---- Passive proof figures: live from window.DASH.passive (fallback = static hero) ----
+(function renderPassive(){
+  const p = DASH.passive;
+  if(!p || !p.live) return;                 // offline export → keep hardcoded fallback
+  const set = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+  const pct = n => ((n>0?'+':'')+Math.round(n)+'%').replace('-','−');
+  const bh = p.buy_and_hold||{}, ov = p.overlay_drawdown||{};
+  if(bh.total_return_pct!=null)  set('pv-bh-total', pct(bh.total_return_pct));
+  if(bh.max_drawdown_pct!=null)  set('pv-dd-bh',    pct(bh.max_drawdown_pct));
+  if(ov.max_drawdown_pct!=null)  set('pv-dd-ov',    pct(ov.max_drawdown_pct));
+  if(bh.total_return_pct!=null)  set('pv-ret-bh',   pct(bh.total_return_pct));  // hold
+  if(ov.total_return_pct!=null)  set('pv-ret-ov',   pct(ov.total_return_pct));  // overlay (a cost)
+})();
+
+// ---- Market header cards: live from window.DASH.market + .portfolio ----
+(function renderMarket(){
+  const set=(id,v)=>{const el=document.getElementById(id); if(el) el.textContent=v;};
+  const m = DASH.market || {};
+  if(m.nifty!=null)       set('mkt-nifty', Math.round(m.nifty).toLocaleString('en-IN'));
+  if(m.nifty_ret1w!=null) set('mkt-nifty-chg', (m.nifty_ret1w>0?'+':'')+m.nifty_ret1w+'% 1w');
+  if(m.vix!=null){ set('mkt-vix', m.vix);
+    set('mkt-vix-tag', m.vix<15?'Calm':m.vix<20?'Normal':m.vix<28?'Elevated':'High'); }
+  if(m.usdinr!=null)      set('mkt-usdinr', m.usdinr);
+  const p = DASH.portfolio || {};
+  if(p.total_val!=null)     set('mkt-pf', '₹'+Math.round(p.total_val).toLocaleString('en-IN'));
+  if(p.total_pnl_pct!=null) set('mkt-pf-chg', (p.total_pnl_pct>0?'+':'')+p.total_pnl_pct+'%');
+})();
 function signalCardHTML(c){
   const pass = Object.values(c.criteria||{}).filter(Boolean).length;
   const tot  = Object.keys(c.criteria||{}).length || 7;

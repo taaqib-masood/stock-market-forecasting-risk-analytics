@@ -101,3 +101,66 @@ class RuleStrategy(Strategy):
             "signal": signal.astype(int),
             "confidence": (score / 100.0).round(4),
         })
+
+
+class RuleStrategyV2(RuleStrategy):
+    """
+    Track-A candidate: the base 7 criteria PLUS daily-bar additions, to be GATED
+    through src.walk_forward (kept only if it beats RuleStrategy net-of-cost OOS).
+
+    Additions (each toggleable so the harness can isolate its marginal lift):
+      - ADX gate        : require adx_14 >= adx_gate (trade only in real trends).
+      - Donchian break  : +1 scored criterion when close clears the prior 20-day
+                          high AND volume z-score confirms (>= vol_z_min).
+      - Squeeze release : +1 scored criterion when band width is in its low
+                          percentile AND volume z + MACD confirm expansion.
+
+    min_criteria is auto-scaled to the active criterion count to preserve the
+    base's ~71% (5/7) selectivity, so a fair vote — not a looser one.
+    """
+
+    name = "rule_v2"
+
+    def __init__(self, allow_short: bool = False, adx_gate: float = 20.0,
+                 use_donchian: bool = True, use_squeeze: bool = True,
+                 vol_z_min: float = 1.0, selectivity: float = 5 / 7):
+        super().__init__(min_criteria=5, allow_short=allow_short)
+        self.adx_gate = adx_gate
+        self.use_donchian = use_donchian
+        self.use_squeeze = use_squeeze
+        self.vol_z_min = vol_z_min
+        self.selectivity = selectivity
+
+    def criteria(self, features: pd.DataFrame) -> pd.DataFrame:
+        c = super().criteria(features)  # base 7
+        if self.use_donchian:
+            c["donchian_break"] = (features["donchian_break_20"] == 1) & \
+                                  (features["volume_zscore"] >= self.vol_z_min)
+        if self.use_squeeze:
+            c["squeeze_break"] = (features["bb_squeeze_pct"] <= 0.25) & \
+                                 (features["volume_zscore"] >= self.vol_z_min) & \
+                                 (features["macd_hist"] > 0)
+        return c
+
+    def generate_signals(self, features: pd.DataFrame) -> pd.DataFrame:
+        c = self.criteria(features)
+        n = c.shape[1]
+        count = c.sum(axis=1)
+        score = count / n * 100.0
+
+        import math
+        min_needed = max(1, math.ceil(n * self.selectivity))
+        buy = count >= min_needed
+        if self.adx_gate:
+            buy = buy & (features["adx_14"] >= self.adx_gate)
+
+        signal = pd.Series(0, index=features.index, dtype=int)
+        signal[buy] = 1
+        if self.allow_short:
+            signal[count <= (n - min_needed)] = -1
+
+        return pd.DataFrame({
+            "score": score.round(1),
+            "signal": signal.astype(int),
+            "confidence": (score / 100.0).round(4),
+        })
