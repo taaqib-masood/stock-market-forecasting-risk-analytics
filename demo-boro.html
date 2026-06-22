@@ -239,6 +239,26 @@
         </div>
       </div>
 
+      <!-- Run controls — talk to src.control_server so you never need the terminal -->
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-5 flex flex-col gap-3">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <p class="text-sm font-semibold text-on-surface">Run controls <span class="text-xs text-muted font-normal">— runs the paper-trading commands via the control server</span></p>
+          <button onclick="document.getElementById('ctlCfg').classList.toggle('hidden')" class="text-xs text-muted underline">connection ⚙</button>
+        </div>
+        <div id="ctlCfg" class="hidden flex flex-wrap gap-2 text-xs">
+          <input id="ctlBase" placeholder="http://localhost:8765" class="border border-outline-variant rounded-pill px-3 py-1.5 flex-1 min-w-[200px]" />
+          <input id="ctlToken" type="password" placeholder="control token" class="border border-outline-variant rounded-pill px-3 py-1.5 flex-1 min-w-[160px]" />
+          <button onclick="ctlSave()" class="px-3 py-1.5 rounded-pill bg-surface-highest border border-outline-variant">Save</button>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button onclick="runCtl('/scan','Scanning…')" class="px-4 py-2 rounded-pill bg-primary text-white text-sm font-semibold hover:opacity-90">▶ Run scan</button>
+          <button onclick="runCtl('/auto-close','Closing positions…')" class="px-4 py-2 rounded-pill bg-surface-highest border border-outline-variant text-sm font-semibold">⏹ Auto-close</button>
+          <button onclick="runCtl('/daily-briefing','Running full briefing…')" class="px-4 py-2 rounded-pill bg-surface-highest border border-outline-variant text-sm font-semibold">📋 Daily briefing</button>
+          <button onclick="refreshPortfolio()" class="px-4 py-2 rounded-pill bg-surface-highest border border-outline-variant text-sm font-semibold">↻ Portfolio</button>
+        </div>
+        <p id="ctlStatus" class="text-xs text-muted">Idle. Set the control server URL + token under ⚙, then start the server: <code>CONTROL_TOKEN=… python -m src.control_server</code></p>
+      </div>
+
       <!-- News Sentiment -->
       <div class="bg-surface-lowest border border-outline-variant rounded-card overflow-hidden flex flex-col">
         <div class="p-8 border-b border-outline-variant flex flex-col gap-6">
@@ -1523,6 +1543,34 @@ const inr = n => '₹' + Number(n).toLocaleString('en-IN');
   if(p.total_val!=null)     set('mkt-pf', '₹'+Math.round(p.total_val).toLocaleString('en-IN'));
   if(p.total_pnl_pct!=null) set('mkt-pf-chg', (p.total_pnl_pct>0?'+':'')+p.total_pnl_pct+'%');
 })();
+
+// ---- Run controls: call src.control_server (no terminal needed) ----
+function ctlCfg(){ return { base:(localStorage.getItem('ctlBase')||'http://localhost:8765').replace(/\/+$/,''), token:localStorage.getItem('ctlToken')||'' }; }
+function ctlStatus(m){ const e=document.getElementById('ctlStatus'); if(e) e.textContent=m; }
+function ctlSave(){ localStorage.setItem('ctlBase',(document.getElementById('ctlBase').value||'').trim()); localStorage.setItem('ctlToken',(document.getElementById('ctlToken').value||'').trim()); ctlStatus('Saved connection settings.'); }
+async function runCtl(path,busyMsg){
+  const {base,token}=ctlCfg();
+  if(!token){ ctlStatus('⚠ Open ⚙ and set the control token first.'); return; }
+  ctlStatus(busyMsg+' (can take a minute)…');
+  try{
+    const r=await fetch(base+path,{method:'POST',headers:{'X-Control-Token':token}});
+    const j=await r.json();
+    if(j.ok){ ctlStatus('✓ Done: '+(j.cmd||path)+'. Reloading…'); setTimeout(()=>location.reload(),1200); }
+    else ctlStatus('✗ '+(j.error||('failed ('+r.status+')')));
+  }catch(e){ ctlStatus('✗ Cannot reach control server at '+base+' — is it running? '+e.message); }
+}
+async function refreshPortfolio(){
+  const {base,token}=ctlCfg();
+  if(!token){ ctlStatus('⚠ Open ⚙ and set the control token first.'); return; }
+  ctlStatus('Fetching portfolio…');
+  try{
+    const r=await fetch(base+'/portfolio',{headers:{'X-Control-Token':token}});
+    const j=await r.json();
+    if(j.ok){ ctlStatus('Portfolio ₹'+Math.round(j.total_val).toLocaleString('en-IN')+' · P&L '+j.total_pnl_pct+'% · '+((j.trades||[]).length)+' recent trades'); }
+    else ctlStatus('✗ '+(j.error||'failed'));
+  }catch(e){ ctlStatus('✗ Cannot reach control server: '+e.message); }
+}
+(function(){ const b=document.getElementById('ctlBase'),t=document.getElementById('ctlToken'); if(b)b.value=localStorage.getItem('ctlBase')||''; if(t)t.value=localStorage.getItem('ctlToken')||''; })();
 function signalCardHTML(c){
   const pass = Object.values(c.criteria||{}).filter(Boolean).length;
   const tot  = Object.keys(c.criteria||{}).length || 7;
