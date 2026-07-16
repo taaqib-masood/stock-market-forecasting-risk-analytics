@@ -1,0 +1,5 @@
+# Optional — only needed for `python -m src.pipeline --lstm`.
+# Kept out of requirements.txt because TensorFlow has no wheel for Python 3.14
+# (and lags new CPython releases generally); install this in a 3.11/3.12 venv
+# if you need the LSTM path. Everything else in the project runs without it.
+tensorflow

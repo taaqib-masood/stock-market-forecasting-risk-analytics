@@ -1,0 +1,422 @@
+{
+  "TCS": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0623,
+    "interest_income_ratio": 0.0045
+  },
+  "INFY": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0595,
+    "interest_income_ratio": 0.0023
+  },
+  "WIPRO": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.1501,
+    "interest_income_ratio": 0.0159
+  },
+  "HCLTECH": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0601,
+    "interest_income_ratio": 0.0054
+  },
+  "TECHM": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0458,
+    "interest_income_ratio": 0.006
+  },
+  "BHARTIARTL": {
+    "tier": "\ud83d\udd34",
+    "debt_to_assets": 0.423,
+    "interest_income_ratio": 0.1119
+  },
+  "RELIANCE": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.1851,
+    "interest_income_ratio": 0.0249
+  },
+  "MARUTI": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0007,
+    "interest_income_ratio": 0.0012
+  },
+  "TVSMOTOR": {
+    "tier": "\ud83d\udd34",
+    "debt_to_assets": 0.6004,
+    "interest_income_ratio": 0.0474
+  },
+  "M&M": {
+    "tier": "\ud83d\udd34",
+    "debt_to_assets": 0.4527,
+    "interest_income_ratio": 0.0558
+  },
+  "EICHERMOT": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0169,
+    "interest_income_ratio": 0.0026
+  },
+  "HEROMOTOCO": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0247,
+    "interest_income_ratio": 0.0017
+  },
+  "SUNPHARMA": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0257,
+    "interest_income_ratio": 0.0042
+  },
+  "DRREDDY": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0974,
+    "interest_income_ratio": 0.0084
+  },
+  "CIPLA": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0145,
+    "interest_income_ratio": 0.0014
+  },
+  "DIVISLAB": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0002,
+    "interest_income_ratio": 0.0003
+  },
+  "APOLLOHOSP": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.2625,
+    "interest_income_ratio": 0.0208
+  },
+  "HINDUNILVR": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0185,
+    "interest_income_ratio": 0.0058
+  },
+  "NESTLEIND": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0337,
+    "interest_income_ratio": 0.0065
+  },
+  "TATACONSUM": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0823,
+    "interest_income_ratio": 0.0067
+  },
+  "BRITANNIA": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.1411,
+    "interest_income_ratio": 0.0076
+  },
+  "ULTRACEMCO": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.1804,
+    "interest_income_ratio": 0.0215
+  },
+  "GRASIM": {
+    "tier": "\ud83d\udfe1",
+    "debt_to_assets": 0.3726,
+    "interest_income_ratio": 0.0832
+  },
+  "ADANIPORTS": {
+    "tier": "\ud83d\udd34",
+    "debt_to_assets": 0.3454,
+    "interest_income_ratio": 0.1132
+  },
+  "BEL": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0015,
+    "interest_income_ratio": 0.0005
+  },
+  "TATASTEEL": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.3116,
+    "interest_income_ratio": 0.0305
+  },
+  "JSWSTEEL": {
+    "tier": "\ud83d\udfe1",
+    "debt_to_assets": 0.4104,
+    "interest_income_ratio": 0.0496
+  },
+  "HINDALCO": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.2419,
+    "interest_income_ratio": 0.0142
+  },
+  "NTPC": {
+    "tier": "\ud83d\udd34",
+    "debt_to_assets": 0.4777,
+    "interest_income_ratio": 0.0675
+  },
+  "POWERGRID": {
+    "tier": "\ud83d\udd34",
+    "debt_to_assets": 0.4926,
+    "interest_income_ratio": 0.1818
+  },
+  "ONGC": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.2495,
+    "interest_income_ratio": 0.0232
+  },
+  "BPCL": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.2798,
+    "interest_income_ratio": 0.0081
+  },
+  "COALINDIA": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0353,
+    "interest_income_ratio": 0.0058
+  },
+  "TITAN": {
+    "tier": "\ud83d\udd34",
+    "debt_to_assets": 0.5112,
+    "interest_income_ratio": 0.0156
+  },
+  "TRENT": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.2184,
+    "interest_income_ratio": 0.0115
+  },
+  "MPHASIS": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0757,
+    "interest_income_ratio": 0.0114
+  },
+  "PERSISTENT": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0356,
+    "interest_income_ratio": 0.0056
+  },
+  "COFORGE": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0872,
+    "interest_income_ratio": 0.011
+  },
+  "LTTS": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0552,
+    "interest_income_ratio": 0.0057
+  },
+  "LTIM": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0622,
+    "interest_income_ratio": 0.0064
+  },
+  "AUROPHARMA": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.1669,
+    "interest_income_ratio": 0.0141
+  },
+  "TORNTPHARM": {
+    "tier": "\ud83d\udfe1",
+    "debt_to_assets": 0.3445,
+    "interest_income_ratio": 0.0201
+  },
+  "LUPIN": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.188,
+    "interest_income_ratio": 0.0129
+  },
+  "ALKEM": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0781,
+    "interest_income_ratio": 0.009
+  },
+  "LALPATHLAB": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.058,
+    "interest_income_ratio": 0.0087
+  },
+  "MAXHEALTH": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.1982,
+    "interest_income_ratio": 0.023
+  },
+  "METROPOLIS": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.1098,
+    "interest_income_ratio": 0.0177
+  },
+  "ZYDUSLIFE": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0876,
+    "interest_income_ratio": 0.0071
+  },
+  "BAJAJ-AUTO": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.1731,
+    "interest_income_ratio": 0.0074
+  },
+  "MOTHERSON": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.1875,
+    "interest_income_ratio": 0.0164
+  },
+  "ENDURANCE": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.1034,
+    "interest_income_ratio": 0.004
+  },
+  "ESCORTS": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.008,
+    "interest_income_ratio": 0.0027
+  },
+  "CEATLTD": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.1905,
+    "interest_income_ratio": 0.0209
+  },
+  "TIINDIA": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0443,
+    "interest_income_ratio": 0.0042
+  },
+  "ASHOKLEY": {
+    "tier": "\ud83d\udd34",
+    "debt_to_assets": 0.6127,
+    "interest_income_ratio": 0.0786
+  },
+  "MARICO": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0669,
+    "interest_income_ratio": 0.0042
+  },
+  "DABUR": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0586,
+    "interest_income_ratio": 0.0125
+  },
+  "COLPAL": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0202,
+    "interest_income_ratio": 0.0007
+  },
+  "EMAMILTD": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0255,
+    "interest_income_ratio": 0.0024
+  },
+  "GODREJCP": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.2075,
+    "interest_income_ratio": 0.0225
+  },
+  "AMBUJACEM": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0097,
+    "interest_income_ratio": 0.0054
+  },
+  "SIEMENS": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.011,
+    "interest_income_ratio": 0.0026
+  },
+  "HAVELLS": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.018,
+    "interest_income_ratio": 0.0034
+  },
+  "CROMPTON": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0756,
+    "interest_income_ratio": 0.006
+  },
+  "ABB": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0062,
+    "interest_income_ratio": 0.0015
+  },
+  "THERMAX": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.143,
+    "interest_income_ratio": 0.011
+  },
+  "CUMMINSIND": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0029,
+    "interest_income_ratio": 0.0014
+  },
+  "OBEROIRLTY": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.1116,
+    "interest_income_ratio": 0.0381
+  },
+  "PRESTIGE": {
+    "tier": "\ud83d\udd34",
+    "debt_to_assets": 0.2263,
+    "interest_income_ratio": 0.1724
+  },
+  "DLF": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0599,
+    "interest_income_ratio": 0.0442
+  },
+  "TATAPOWER": {
+    "tier": "\ud83d\udfe1",
+    "debt_to_assets": 0.4362,
+    "interest_income_ratio": 0.0795
+  },
+  "TORNTPOWER": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.2425,
+    "interest_income_ratio": 0.0352
+  },
+  "GAIL": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.1622,
+    "interest_income_ratio": 0.0051
+  },
+  "IGL": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.006,
+    "interest_income_ratio": 0.0017
+  },
+  "ATGL": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.2362,
+    "interest_income_ratio": 0.0217
+  },
+  "PETRONET": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0972,
+    "interest_income_ratio": 0.005
+  },
+  "IRCTC": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0132,
+    "interest_income_ratio": 0.0034
+  },
+  "INDIGO": {
+    "tier": "\ud83d\udd34",
+    "debt_to_assets": 0.5767,
+    "interest_income_ratio": 0.0609
+  },
+  "DELHIVERY": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.1178,
+    "interest_income_ratio": 0.0134
+  },
+  "CONCOR": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0578,
+    "interest_income_ratio": 0.0077
+  },
+  "DMART": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0337,
+    "interest_income_ratio": 0.0012
+  },
+  "ASIANPAINT": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.1138,
+    "interest_income_ratio": 0.0054
+  },
+  "PIDILITIND": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0325,
+    "interest_income_ratio": 0.0038
+  },
+  "BERGEPAINT": {
+    "tier": "\ud83d\udfe2",
+    "debt_to_assets": 0.0735,
+    "interest_income_ratio": 0.0054
+  }
+}

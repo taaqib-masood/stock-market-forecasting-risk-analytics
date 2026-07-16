@@ -16,8 +16,14 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 
 from src.watchlist import DEFAULT_SCAN, EXTENDED_SCAN, nse
+from src.strategy import RuleStrategy
+from src.backtest_runner import generate_live_signal
 
 warnings.filterwarnings("ignore")
+
+# NOTE: _score() and _trade_card() below are SUPERSEDED by the unified
+# RuleStrategy + generate_live_signal path and are no longer called by the live
+# scan. Kept temporarily; slated for removal in a dedicated cleanup commit.
 
 
 # ── Indicator helpers (no external TA lib needed) ────────────────────────────
@@ -202,34 +208,31 @@ def _weekly_trend(ticker: str) -> str:
 
 
 def _scan_one(ticker: str, capital: float) -> dict | None:
-    """Fetch data and score a single ticker. Returns None on failure."""
+    """Produce a unified live BUY signal for one ticker. None on failure/no-signal.
+
+    Uses the SAME RuleStrategy + RiskManager as the backtest (via
+    generate_live_signal), so the live signal == the backtested signal.
+    """
     try:
         with contextlib.redirect_stderr(io.StringIO()):
-            df = yf.download(nse(ticker), period="6mo", interval="1d",
+            df = yf.download(nse(ticker), period="2y", interval="1d",
                              progress=False, auto_adjust=True)
-        if df.empty or len(df) < 30:
+        # Need ~200 bars for the sma_200-based engineered features.
+        if df.empty or len(df) < 220:
             return None
 
         df.columns = [c[0] if isinstance(c, tuple) else c for c in df.columns]
 
-        s = _score(
-            df["Close"].values,
-            df["High"].values,
-            df["Low"].values,
-            df["Volume"].values,
-        )
-
-        if s["direction"] == 0:
+        card = generate_live_signal(df, strategy=RuleStrategy(), capital=capital)
+        if card is None:           # no approved BUY on the latest bar
             return None
 
-        # ── Multi-timeframe: skip if weekly trend disagrees ───────────────
+        # ── Multi-timeframe: skip BUY if the weekly trend disagrees ───────
         weekly = _weekly_trend(ticker)
-        if s["signal"] == "BUY" and weekly == "DOWN":
-            return None   # daily BUY but weekly DOWN → skip
-        if s["signal"] == "SELL" and weekly == "UP":
-            return None   # daily SELL but weekly UP → skip
+        if weekly == "DOWN":
+            return None
 
-        card = _trade_card(ticker, s, capital)
+        card["ticker"]        = ticker
         card["last_updated"]  = datetime.now().strftime("%Y-%m-%d %H:%M")
         card["weekly_trend"]  = weekly
         card["mtf_confirmed"] = weekly in ("UP", "NEUTRAL")
@@ -321,9 +324,9 @@ def scan(
         return {"cards": [], "blocked": [], "regime": regime_info,
                 "sectors": top_sectors, "near_misses": near_misses[:5]}
 
-    # Stage 2: backtest filter
+    # Stage 2: backtest filter (unified — same strategy + engine as live)
     if use_backtest_filter:
-        from src.backtest_filter import filter_cards as bt_filter
+        from src.backtest_runner import filter_cards as bt_filter
         passed, failed = bt_filter(results)
         if failed:
             print(f"  Backtest filter blocked: "

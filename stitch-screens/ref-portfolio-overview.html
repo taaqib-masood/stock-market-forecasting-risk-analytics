@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Silk Invest — Portfolio Overview</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline": "#8a8c9a",
+                    "on-secondary-fixed": "#1a1b26",
+                    "error-container": "#fee2e2",
+                    "surface-container": "#e2e4ea",
+                    "on-tertiary-container": "#3b1f63",
+                    "secondary-container": "#d8dae6",
+                    "on-primary-fixed-variant": "#4338ca",
+                    "primary-container": "#818cf8",
+                    "on-surface": "#2e3040",
+                    "primary": "#6366f1",
+                    "background": "#e8eaf0",
+                    "tertiary-container": "#a78bfa",
+                    "surface-bright": "#edeef4",
+                    "on-tertiary-fixed-variant": "#5b21b6",
+                    "error": "#dc2626",
+                    "primary-fixed-dim": "#a5b4fc",
+                    "secondary-fixed-dim": "#b8baca",
+                    "surface-container-low": "#e5e7ed",
+                    "surface-container-high": "#dcdee4",
+                    "surface-tint": "#6366f1",
+                    "on-secondary-fixed-variant": "#404252",
+                    "inverse-surface": "#2e3040",
+                    "on-tertiary-fixed": "#2e1065",
+                    "tertiary-fixed": "#ede9fe",
+                    "inverse-on-surface": "#e8eaf0",
+                    "on-background": "#2e3040",
+                    "surface-container-highest": "#d6d8de",
+                    "on-surface-variant": "#585a68",
+                    "on-error": "#ffffff",
+                    "surface-container-lowest": "#f0f2f8",
+                    "on-primary": "#ffffff",
+                    "secondary-fixed": "#d8dae6",
+                    "tertiary": "#7c3aed",
+                    "on-secondary-container": "#585a68",
+                    "on-tertiary": "#ffffff",
+                    "on-error-container": "#991b1b",
+                    "inverse-primary": "#a5b4fc",
+                    "on-secondary": "#ffffff",
+                    "surface": "#e8eaf0",
+                    "tertiary-fixed-dim": "#c4b5fd",
+                    "surface-variant": "#dcdee4",
+                    "outline-variant": "#d0d2dc",
+                    "surface-dim": "#d4d6dc",
+                    "primary-fixed": "#e0e2ff",
+                    "on-primary-fixed": "#1e1b4b",
+                    "secondary": "#6c6e7e",
+                    "on-primary-container": "#e0e2ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.5rem",
+                    "lg": "1rem",
+                    "xl": "1.5rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans", "sans-serif"],
+                    "body": ["Plus Jakarta Sans", "sans-serif"],
+                    "mono": ["JetBrains Mono", "monospace"]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body {
+            background-color: #e8eaf0;
+            color: #2e3040;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .neomorph-raised {
+            box-shadow: 6px 6px 12px rgba(0,0,0,0.08), -6px -6px 12px rgba(255,255,255,0.6);
+        }
+
+        .neomorph-inset {
+            box-shadow: inset 4px 4px 8px rgba(0,0,0,0.06), inset -4px -4px 8px rgba(255,255,255,0.5);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        .chart-gradient {
+            background: linear-gradient(180deg, rgba(99, 102, 241, 0.1) 0%, rgba(232, 234, 240, 0) 100%);
+        }
+
+        /* Micro-interactions */
+        .interactive-scale:active {
+            transform: scale(0.98);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e8eaf0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full p-4 flex flex-col gap-4 w-64 bg-background z-50">
+<div class="flex items-center gap-3 px-4 py-6">
+<div class="w-10 h-10 rounded-xl neomorph-raised flex items-center justify-center bg-background">
+<span class="material-symbols-outlined text-primary font-bold">sick</span>
+</div>
+<div>
+<h1 class="text-xl font-semibold text-on-surface font-headline leading-none">Silk Invest</h1>
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-medium mt-1">Premium Analytics</p>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-3">
+<!-- Dashboard (Inactive logic: but Portfolio is the main content, so Dashboard is secondary here) -->
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:text-primary transition-all duration-300 hover:shadow-[6px_6px_12px_rgba(0,0,0,0.04)] rounded-xl group interactive-scale" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">dashboard</span>
+<span class="font-body font-medium tracking-tight">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:text-primary transition-all duration-300 hover:shadow-[6px_6px_12px_rgba(0,0,0,0.04)] rounded-xl group interactive-scale" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">analytics</span>
+<span class="font-body font-medium tracking-tight">Screening</span>
+</a>
+<!-- ACTIVE: Portfolio -->
+<a class="flex items-center gap-4 px-4 py-3 text-primary shadow-[inset_4px_4px_8px_rgba(0,0,0,0.06),inset_-4px_-4px_8px_rgba(255,255,255,0.5)] rounded-xl bg-background group interactive-scale" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">pie_chart</span>
+<span class="font-body font-medium tracking-tight">Portfolio</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:text-primary transition-all duration-300 hover:shadow-[6px_6px_12px_rgba(0,0,0,0.04)] rounded-xl group interactive-scale" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">security</span>
+<span class="font-body font-medium tracking-tight">Protection</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:text-primary transition-all duration-300 hover:shadow-[6px_6px_12px_rgba(0,0,0,0.04)] rounded-xl group interactive-scale" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">receipt_long</span>
+<span class="font-body font-medium tracking-tight">Obligations</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:text-primary transition-all duration-300 hover:shadow-[6px_6px_12px_rgba(0,0,0,0.04)] rounded-xl group interactive-scale" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">notifications</span>
+<span class="font-body font-medium tracking-tight">Alerts</span>
+</a>
+</nav>
+<div class="mt-auto p-4 rounded-2xl neomorph-raised bg-background">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden neomorph-inset border-2 border-surface-container">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait of a sophisticated high-net-worth investor, wearing a charcoal grey tailored suit, with soft ambient office lighting reflecting a modern financial services environment. The aesthetic is clean, professional, and follows a light-mode color palette with subtle indigo accents. High-end professional photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLcJlJQaBIP9hj46dczyR_9DVvesNkJiXbK22KmJabVagfLGcKP6iRv7qEy9QopE6tJGkEq6JHaYeIApW_lCc_qw_E1UjEz7v7MSC2-lDoasXhPmTDYdoIDhhhC2nmErOD8jUo5fBlhxucJbEsmyNprnHOIG0lBoN5grfZsRhSmDjJHLyGhhEeJDV4zfRmql2_Uj5GanXUh7Zeil_6GipITqnszAqKrIqmmkyzOWSLX0wW_nrYvAw0kKLwCgg58TNkGI-pui_fzVY"/>
+</div>
+<div class="overflow-hidden">
+<p class="text-sm font-semibold truncate">Ananya Boro</p>
+<p class="text-[10px] text-on-surface-variant">Elite Tier Member</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 flex-1 flex flex-col min-h-screen">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center px-8 w-full h-16 sticky top-0 bg-background/80 backdrop-blur-md z-40 shadow-[0px_4px_10px_rgba(0,0,0,0.03)]">
+<div class="flex-1 max-w-md">
+<div class="relative group">
+<input class="w-full h-10 pl-10 pr-4 bg-background neomorph-inset border-none rounded-xl text-sm focus:ring-0 placeholder:text-on-surface-variant/50" placeholder="Search assets, sectors, or reports..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-xl">search</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="w-10 h-10 flex items-center justify-center rounded-xl neomorph-raised hover:text-primary transition-all active:scale-95 group">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-xl neomorph-raised hover:text-primary transition-all active:scale-95 group">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="h-8 w-[1px] bg-outline-variant opacity-30"></div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-mono font-medium text-on-surface-variant">UTC +5:30</span>
+<span class="text-xs font-mono font-semibold text-primary" id="digital-clock">12:45:00</span>
+</div>
+</div>
+</header>
+<!-- Canvas -->
+<div class="p-8 space-y-8">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h2 class="text-3xl font-extrabold font-headline text-on-surface tracking-tight">Portfolio Overview</h2>
+<p class="text-on-surface-variant mt-1">Consolidated wealth analysis and risk distribution</p>
+</div>
+<div class="flex gap-4">
+<button class="px-5 py-2.5 rounded-xl neomorph-raised flex items-center gap-2 bg-background font-medium interactive-scale text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">download</span>
+                        Export Report
+                    </button>
+<button class="px-5 py-2.5 rounded-xl neomorph-raised flex items-center gap-2 bg-primary text-white font-medium interactive-scale">
+<span class="material-symbols-outlined text-sm">add</span>
+                        Allocate Capital
+                    </button>
+</div>
+</div>
+<!-- Metrics Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Total Portfolio Value -->
+<div class="p-6 rounded-3xl neomorph-raised bg-background flex flex-col gap-4 relative overflow-hidden">
+<div class="flex justify-between items-start">
+<span class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Total Portfolio Value</span>
+<div class="w-8 h-8 rounded-lg neomorph-inset flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-lg" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+</div>
+</div>
+<div class="mt-2">
+<h3 class="text-2xl font-mono font-semibold text-on-surface">₹4,82,31,050.42</h3>
+<p class="text-sm text-green-600 font-medium mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">trending_up</span>
+                            +₹12,40,200.00 today
+                        </p>
+</div>
+<div class="w-full h-1 bg-surface-container rounded-full overflow-hidden mt-4 neomorph-inset">
+<div class="h-full bg-primary w-3/4 rounded-full"></div>
+</div>
+</div>
+<!-- Total Return -->
+<div class="p-6 rounded-3xl neomorph-raised bg-background flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<span class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Total Return (All-time)</span>
+<div class="w-8 h-8 rounded-lg neomorph-inset flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary text-lg" style="font-variation-settings: 'FILL' 1;">monitoring</span>
+</div>
+</div>
+<div class="mt-2">
+<h3 class="text-2xl font-mono font-semibold text-on-surface">24.82%</h3>
+<p class="text-sm text-on-surface-variant font-medium mt-1">Benchmark: +18.4% (NIFTY 50)</p>
+</div>
+<div class="flex items-center gap-2 mt-4">
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full border-2 border-background bg-primary-container"></div>
+<div class="w-6 h-6 rounded-full border-2 border-background bg-tertiary-container"></div>
+<div class="w-6 h-6 rounded-full border-2 border-background bg-on-surface-variant"></div>
+</div>
+<span class="text-[10px] text-on-surface-variant font-medium italic">Diversified across 14 asset classes</span>
+</div>
+</div>
+<!-- Risk Exposure -->
+<div class="p-6 rounded-3xl neomorph-raised bg-background flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<span class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Current Risk Exposure</span>
+<div class="w-8 h-8 rounded-lg neomorph-inset flex items-center justify-center">
+<span class="material-symbols-outlined text-error text-lg" style="font-variation-settings: 'FILL' 1;">shield</span>
+</div>
+</div>
+<div class="mt-2">
+<h3 class="text-2xl font-mono font-semibold text-on-surface">50.00%</h3>
+<p class="text-sm text-primary font-medium mt-1">Status: Partially Defended</p>
+</div>
+<div class="flex items-center justify-between mt-4">
+<div class="flex gap-1 h-3 flex-1">
+<div class="bg-primary rounded-l-full w-1/2"></div>
+<div class="bg-surface-container w-1/4"></div>
+<div class="bg-surface-container rounded-r-full w-1/4"></div>
+</div>
+<span class="text-[10px] ml-4 font-bold text-on-surface-variant">MODERATE</span>
+</div>
+</div>
+</div>
+<!-- Data Visuals Section -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Performance Chart -->
+<div class="lg:col-span-8 p-8 rounded-3xl neomorph-raised bg-background flex flex-col gap-6">
+<div class="flex items-center justify-between">
+<h4 class="font-semibold text-lg flex items-center gap-2">
+                            Performance
+                            <span class="text-xs font-normal text-on-surface-variant px-2 py-0.5 rounded-full neomorph-inset bg-surface-container-low">Last 12 Months</span>
+</h4>
+<div class="flex gap-2">
+<button class="px-3 py-1.5 rounded-lg neomorph-inset text-xs font-bold text-primary">1Y</button>
+<button class="px-3 py-1.5 rounded-lg neomorph-raised text-xs font-medium text-on-surface-variant">5Y</button>
+<button class="px-3 py-1.5 rounded-lg neomorph-raised text-xs font-medium text-on-surface-variant">MAX</button>
+</div>
+</div>
+<div class="relative h-[300px] w-full mt-4 neomorph-inset rounded-2xl overflow-hidden flex items-end p-4">
+<!-- Simulated Chart Content -->
+<div class="absolute inset-0 chart-gradient pointer-events-none"></div>
+<div class="flex items-end justify-between w-full h-3/4 px-4 gap-4 z-10">
+<!-- Visual placeholder for a line chart using CSS heights -->
+<div class="w-full h-[60%] border-b-2 border-primary/20 flex items-end gap-1 relative">
+<svg class="absolute inset-0 w-full h-full preserve-3d" preserveaspectratio="none" viewbox="0 0 1000 200">
+<path d="M0,150 Q100,120 200,160 T400,80 T600,100 T800,40 T1000,60" fill="none" stroke="rgba(99, 102, 241, 1)" stroke-linecap="round" stroke-width="4"></path>
+<path d="M0,150 Q100,120 200,160 T400,80 T600,100 T800,40 T1000,60 V200 H0 Z" fill="rgba(99, 102, 241, 0.05)"></path>
+</svg>
+<!-- Tooltip placeholder -->
+<div class="absolute left-[70%] top-[20%] w-32 p-3 rounded-xl neomorph-raised bg-background/90 backdrop-blur z-20 border border-white/50">
+<p class="text-[10px] text-on-surface-variant">Sept 12, 2023</p>
+<p class="text-sm font-mono font-bold text-primary">₹4.61 Cr</p>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-6 text-center text-[10px] font-mono text-on-surface-variant uppercase tracking-widest mt-2">
+<span>Jan</span>
+<span>Mar</span>
+<span>May</span>
+<span>Jul</span>
+<span>Sep</span>
+<span>Nov</span>
+</div>
+</div>
+<!-- Recent Activity Feed -->
+<div class="lg:col-span-4 p-8 rounded-3xl neomorph-raised bg-background flex flex-col gap-6">
+<div class="flex items-center justify-between">
+<h4 class="font-semibold text-lg">Recent Activity</h4>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">more_horiz</span>
+</div>
+<div class="space-y-6">
+<!-- Activity Item -->
+<div class="flex gap-4">
+<div class="flex flex-col items-center">
+<div class="w-10 h-10 rounded-xl neomorph-inset flex items-center justify-center bg-background text-green-500">
+<span class="material-symbols-outlined text-xl">shopping_cart</span>
+</div>
+<div class="w-0.5 h-full bg-outline-variant/30 mt-2"></div>
+</div>
+<div class="flex-1 pb-4">
+<p class="text-sm font-semibold">Buy Order Executed</p>
+<p class="text-xs text-on-surface-variant mt-1">Reliance Industries Ltd.</p>
+<div class="mt-2 flex justify-between items-center">
+<span class="text-xs font-mono bg-surface-container px-2 py-0.5 rounded text-on-surface">+₹12,40,000</span>
+<span class="text-[10px] text-on-surface-variant">2h ago</span>
+</div>
+</div>
+</div>
+<!-- Activity Item -->
+<div class="flex gap-4">
+<div class="flex flex-col items-center">
+<div class="w-10 h-10 rounded-xl neomorph-inset flex items-center justify-center bg-background text-primary">
+<span class="material-symbols-outlined text-xl">refresh</span>
+</div>
+<div class="w-0.5 h-full bg-outline-variant/30 mt-2"></div>
+</div>
+<div class="flex-1 pb-4">
+<p class="text-sm font-semibold">Rebalancing Complete</p>
+<p class="text-xs text-on-surface-variant mt-1">Growth &amp; Aggressive Model</p>
+<div class="mt-2 flex justify-between items-center">
+<span class="text-xs font-mono bg-surface-container px-2 py-0.5 rounded text-on-surface">5 Assets</span>
+<span class="text-[10px] text-on-surface-variant">Yesterday</span>
+</div>
+</div>
+</div>
+<!-- Activity Item -->
+<div class="flex gap-4">
+<div class="flex flex-col items-center">
+<div class="w-10 h-10 rounded-xl neomorph-inset flex items-center justify-center bg-background text-tertiary">
+<span class="material-symbols-outlined text-xl">mail</span>
+</div>
+</div>
+<div class="flex-1">
+<p class="text-sm font-semibold">Tax Harvest Report</p>
+<p class="text-xs text-on-surface-variant mt-1">FY 2023-24 Summary</p>
+<div class="mt-2 flex justify-between items-center">
+<span class="text-xs font-mono text-primary hover:underline cursor-pointer">View PDF</span>
+<span class="text-[10px] text-on-surface-variant">Oct 18</span>
+</div>
+</div>
+</div>
+</div>
+<button class="w-full mt-2 py-3 rounded-xl neomorph-raised text-xs font-bold text-on-surface-variant hover:text-primary transition-all interactive-scale">
+                        VIEW FULL LEDGER
+                    </button>
+</div>
+</div>
+<!-- Secondary Insight Bento Section -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+<div class="md:col-span-1 p-6 rounded-3xl neomorph-raised bg-background flex flex-col gap-2">
+<p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Top Performer</p>
+<div class="mt-2">
+<p class="text-lg font-bold">HDFC Bank</p>
+<p class="text-2xl font-mono text-green-600 font-semibold">+18.2%</p>
+</div>
+</div>
+<div class="md:col-span-1 p-6 rounded-3xl neomorph-raised bg-background flex flex-col gap-2">
+<p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Asset Liquidity</p>
+<div class="mt-2">
+<p class="text-lg font-bold">High</p>
+<p class="text-2xl font-mono text-primary font-semibold">72.4%</p>
+</div>
+</div>
+<div class="md:col-span-2 p-6 rounded-3xl neomorph-raised bg-background flex items-center justify-between overflow-hidden relative group cursor-pointer">
+<div class="z-10">
+<p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Market Insight</p>
+<p class="text-lg font-semibold mt-1">Interest rate cuts anticipated in Q1.</p>
+<p class="text-xs text-primary font-bold mt-2 flex items-center gap-1">
+                            READ ANALYSIS <span class="material-symbols-outlined text-xs">arrow_forward</span>
+</p>
+</div>
+<div class="absolute right-0 top-0 bottom-0 w-32 bg-primary/5 -mr-4 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-primary/30 text-6xl rotate-12 group-hover:scale-110 transition-transform">insights</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action for Mobile context (Hidden by rules but structure included for logic) -->
+<div class="fixed bottom-8 right-8 z-50 md:hidden">
+<button class="w-14 h-14 rounded-full bg-primary text-white shadow-xl flex items-center justify-center active:scale-90 transition-transform">
+<span class="material-symbols-outlined">bolt</span>
+</button>
+</div>
+<script>
+        // Micro-interaction: Digital Clock
+        function updateClock() {
+            const now = new Date();
+            const h = String(now.getUTCHours() + 5).padStart(2, '0'); // Manual IST offset for demo
+            const m = String(now.getUTCMinutes() + 30).padStart(2, '0');
+            const s = String(now.getUTCSeconds()).padStart(2, '0');
+            document.getElementById('digital-clock').textContent = `${h}:${m}:${s}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Reveal animations or interaction feedback
+        document.querySelectorAll('.neomorph-raised').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-2px)';
+                card.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease';
+                card.style.boxShadow = '8px 8px 16px rgba(0,0,0,0.1), -8px -8px 16px rgba(255,255,255,0.7)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+                card.style.boxShadow = '6px 6px 12px rgba(0,0,0,0.08), -6px -6px 12px rgba(255,255,255,0.6)';
+            });
+        });
+    </script>
+</body></html>

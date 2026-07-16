@@ -18,6 +18,24 @@ def _atr(df, period=14):
     return tr.rolling(period).mean()
 
 
+def _adx(df, period=14):
+    """Wilder's ADX (trend strength, 0-100) as a vectorized per-bar Series."""
+    up = df["High"].diff()
+    down = -df["Low"].diff()
+    plus_dm = ((up > down) & (up > 0)) * up.clip(lower=0)
+    minus_dm = ((down > up) & (down > 0)) * down.clip(lower=0)
+    tr = pd.concat([
+        df["High"] - df["Low"],
+        (df["High"] - df["Close"].shift()).abs(),
+        (df["Low"] - df["Close"].shift()).abs(),
+    ], axis=1).max(axis=1)
+    atr = tr.ewm(alpha=1 / period, adjust=False).mean().replace(0, np.nan)
+    plus_di = 100 * plus_dm.ewm(alpha=1 / period, adjust=False).mean() / atr
+    minus_di = 100 * minus_dm.ewm(alpha=1 / period, adjust=False).mean() / atr
+    dx = (plus_di - minus_di).abs() / (plus_di + minus_di).replace(0, np.nan) * 100
+    return dx.ewm(alpha=1 / period, adjust=False).mean()
+
+
 def _bollinger(series, period=20):
     sma = series.rolling(period).mean()
     std = series.rolling(period).std()
@@ -179,6 +197,18 @@ def add_features(
     df["volatility_10"] = df["return_1d"].rolling(10).std()
     df["volatility_5"] = df["return_1d"].rolling(5).std()
     df["bb_width"], df["bb_pct_b"] = _bollinger(df["Close"], 20)
+    # Bollinger squeeze: rolling percentile rank of band width (low = tight = squeeze)
+    df["bb_squeeze_pct"] = df["bb_width"].rolling(120, min_periods=20).rank(pct=True)
+
+    # ── Trend strength (ADX) ──────────────────────────────────────────────────
+    df["adx_14"] = _adx(df, 14)
+
+    # ── Donchian channel (20) ─────────────────────────────────────────────────
+    dc_hi = df["High"].rolling(20).max()
+    dc_lo = df["Low"].rolling(20).min()
+    df["donchian_pos_20"] = (df["Close"] - dc_lo) / (dc_hi - dc_lo).replace(0, np.nan)  # 0-1
+    # Breakout = close clears the PRIOR 20-day high (shift(1) avoids look-ahead)
+    df["donchian_break_20"] = (df["Close"] >= dc_hi.shift(1)).astype(int)
 
     # ── Volume ────────────────────────────────────────────────────────────────
     df["obv"] = _obv(df)

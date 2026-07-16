@@ -29,6 +29,10 @@ logger = logging.getLogger(__name__)
 TRACKING_URI = os.environ.get("MLFLOW_TRACKING_URI", "mlruns")
 EXPERIMENT_NAME = os.environ.get("MLFLOW_EXPERIMENT", "stock-forecasting")
 
+# mlflow >=3 puts the plain file store in maintenance mode and raises unless this
+# is set — we want the zero-config local file store (see module docstring), not a DB.
+os.environ.setdefault("MLFLOW_ALLOW_FILE_STORE", "true")
+
 
 def _get_client():
     try:

@@ -1,0 +1,2047 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Stock AI Dashboard — Halal Portfolio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="halal_data.js"></script>
+<script src="info_data.js"></script>
+<script src="dashboard_data.js"></script>
+<script src="backtest_data.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<script>
+  tailwind.config = {
+    theme: { extend: {
+      colors: {
+        surface: "#fcf8f8", "surface-lowest": "#ffffff", "surface-low": "#f7f3f2",
+        "surface-high": "#f1edec", "surface-highest": "#e5e2e1",
+        primary: "#080909", "on-primary": "#ffffff", secondary: "#075cf2",
+        "on-surface": "#1c1b1b", outline: "#70757d", "outline-variant": "#e7e8ea",
+        muted: "#70757d",
+        green: { 50:"#f0fdf4", 200:"#bbf7d0", 400:"#4ade80", 500:"#22c55e", 600:"#16a34a" },
+        red: { 50:"#fef2f2", 200:"#fecaca", 500:"#ef4444" },
+      },
+      fontFamily: { sans: ["Inter","sans-serif"] },
+      borderRadius: { card: "24px", pill: "9999px" },
+    }}
+  }
+</script>
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .nav-item.active { background:#f1f3f5; color:#080909; font-weight:600; }
+  .tab-panel { display:none; }
+  .tab-panel.active { display:flex; }
+  ::-webkit-scrollbar { width:8px; } ::-webkit-scrollbar-thumb { background:#e0ddda; border-radius:8px; }
+  /* ── Info (ⓘ) tooltip system — Boro-skinned ── */
+  .info-btn { display:inline-flex; align-items:center; justify-content:center; width:16px; height:16px;
+    border-radius:9999px; background:#fff; border:1px solid #e7e8ea; color:#70757d; font-size:10px;
+    font-weight:700; font-style:normal; cursor:pointer; margin-left:6px; vertical-align:middle;
+    transition:all .15s ease; line-height:1; flex:none; }
+  .info-btn:hover { border-color:#080909; color:#080909; }
+  .info-overlay { display:none; position:fixed; inset:0; z-index:9000; background:rgba(8,9,9,.45);
+    backdrop-filter:blur(6px); align-items:center; justify-content:center; padding:24px; }
+  .info-overlay.open { display:flex; }
+  .info-card { position:relative; background:#fff; border:1px solid #e7e8ea; border-radius:24px;
+    padding:32px; max-width:440px; width:100%; color:#1c1b1b; max-height:85vh; overflow-y:auto;
+    animation:infoPop .22s cubic-bezier(.16,1,.3,1); }
+  .info-card.wide { max-width:520px; }
+  @keyframes infoPop { from{ opacity:0; transform:translateY(8px) scale(.98);} to{ opacity:1; transform:none;} }
+  .info-card-close { position:absolute; top:20px; right:20px; width:32px; height:32px; border-radius:9999px;
+    background:#fcf8f8; border:1px solid #e7e8ea; color:#70757d; cursor:pointer; font-size:14px;
+    display:flex; align-items:center; justify-content:center; transition:all .15s; }
+  .info-card-close:hover { background:#080909; color:#fff; border-color:#080909; }
+  .info-card .ic { font-size:34px; line-height:1; }
+  .info-card .cat { font-size:12px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:#075cf2; margin-top:14px; }
+  .info-card h3 { font-size:24px; font-weight:600; letter-spacing:-.01em; color:#080909; margin:4px 0 16px; }
+  .info-card .desc { font-size:15px; line-height:1.6; color:#444747; }
+  .info-card .rule { margin-top:18px; padding:16px; background:#fcf8f8; border:1px solid #e7e8ea;
+    border-radius:16px; font-size:14px; line-height:1.55; color:#1c1b1b; }
+  /* ── Mouse-track glow on dark hero card (subtle, Boro-restrained) ── */
+  #heroCard { --mx:50%; --my:50%; }
+  #heroCard .hero-glow { position:absolute; inset:0; pointer-events:none; opacity:0; z-index:1;
+    background:radial-gradient(420px circle at var(--mx) var(--my), rgba(255,255,255,.09), transparent 62%);
+    transition:opacity .35s ease; }
+  #heroCard:hover .hero-glow { opacity:1; }
+  /* ── Accordion (progressive disclosure) ── */
+  .accordion-body { max-height:0; overflow:hidden; transition:max-height .3s ease; }
+  .accordion-body.open { max-height:600px; }
+  .accordion-icon { transition:transform .3s ease; }
+  .accordion-icon.open { transform:rotate(180deg); }
+  /* ── 52-Features chips: stagger-in + hover lift ── */
+  @keyframes featIn { from{ opacity:0; transform:translateY(6px);} to{ opacity:1; transform:none;} }
+  .feat-chip { animation:featIn .35s ease backwards; transition:border-color .15s ease, transform .15s ease, box-shadow .15s ease; }
+  .feat-chip:hover { transform:translateY(-2px); }
+  /* ── Live pulse dot (sentiment header) ── */
+  .pulse-dot { width:8px; height:8px; border-radius:9999px; background:#16a34a; position:relative; flex:none; }
+  .pulse-dot::after { content:''; position:absolute; inset:0; border-radius:9999px; background:#16a34a; animation:pulseRing 1.8s ease-out infinite; }
+  @keyframes pulseRing { 0%{ transform:scale(1); opacity:.55;} 100%{ transform:scale(3.4); opacity:0;} }
+  .sent-range.on { background:#080909; color:#fff; border-color:#080909; }
+  #sentDist .seg { transition:opacity .15s ease; }
+  #sentDist .seg.dim { opacity:.35; }
+</style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen">
+
+<!-- Sidebar -->
+<nav class="bg-surface h-screen w-64 fixed left-0 top-0 overflow-y-auto border-r border-outline-variant flex flex-col py-8 px-6 gap-2 z-50">
+  <div class="flex items-center gap-3 mb-8 px-1">
+    <div class="w-10 h-10 rounded-full border-[1.5px] border-primary flex items-center justify-center">
+      <span class="text-lg font-bold text-primary">B</span>
+    </div>
+    <div class="flex flex-col">
+      <span class="text-xl font-bold tracking-tight text-primary">Boro</span>
+      <span class="text-[11px] text-muted uppercase tracking-wider font-semibold">Halal Finance</span>
+    </div>
+  </div>
+  <div id="nav" class="flex flex-col gap-1 w-full">
+    <button data-tab="sentiment" class="nav-item active flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">analytics</span><span class="text-sm">Sentiment</span></button>
+    <button data-tab="technical" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">monitoring</span><span class="text-sm">Technical</span></button>
+    <button data-tab="macro" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">public</span><span class="text-sm">Macro</span></button>
+    <button data-tab="screener" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">filter_alt</span><span class="text-sm">Screener</span></button>
+    <button data-tab="moat" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">fort</span><span class="text-sm">Moat</span></button>
+    <button data-tab="explainer" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">psychology</span><span class="text-sm">AI Insights</span></button>
+    <button data-tab="montecarlo" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">query_stats</span><span class="text-sm">Monte Carlo</span></button>
+    <button data-tab="drift" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">trending_down</span><span class="text-sm">Drift</span></button>
+    <button data-tab="fiidii" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">group</span><span class="text-sm">FII/DII</span></button>
+    <button data-tab="india" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">location_on</span><span class="text-sm">India Signals</span></button>
+    <button data-tab="watchlist" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">visibility</span><span class="text-sm">Watchlist</span></button>
+    <button data-tab="halal" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">verified</span><span class="text-sm">Halal &amp; Zakat</span></button>
+    <button data-tab="riskguard" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">security</span><span class="text-sm">Risk Guard</span></button>
+    <button data-tab="telegram" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">send</span><span class="text-sm">Telegram</span></button>
+  </div>
+</nav>
+
+<!-- Main -->
+<main class="ml-64 flex flex-col min-h-screen">
+  <header class="bg-surface/80 backdrop-blur-md sticky top-0 z-40 flex justify-between items-center px-12 py-8">
+    <div>
+      <h1 class="font-semibold text-2xl tracking-tight">Stock AI Dashboard</h1>
+      <p class="text-sm text-muted font-medium mt-1">Halal Portfolio · NSE India · FinBERT + LightGBM + LSTM Ensemble</p>
+    </div>
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2 bg-green-50 text-green-600 px-3 py-1.5 rounded-pill border border-green-200">
+        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+        <span class="text-xs font-bold tracking-wider">Live · RELIANCE</span>
+      </div>
+      <div class="flex items-center gap-2 text-muted">
+        <span class="material-symbols-outlined">schedule</span>
+        <span class="text-sm font-medium">9:00 AM IST</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="px-12 pt-4 pb-12 w-full max-w-[1280px] mx-auto">
+
+    <!-- SENTIMENT (home) -->
+    <section data-panel="sentiment" class="tab-panel active flex-col gap-10">
+      <!-- Tier-change alert banner (🟢→🔴 since last screen) -->
+      <div id="tierBanner"></div>
+
+      <!-- #7: PRODUCT HERO — the screened halal basket + crash overlay is the default product ("certainty, not signals") -->
+      <div class="rounded-card p-8 text-white relative overflow-hidden" style="background:linear-gradient(135deg,#0f3d2e,#0b2a3f);">
+        <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image:radial-gradient(circle at 2px 2px,white 1px,transparent 0);background-size:24px 24px;"></div>
+        <div class="relative z-10 flex flex-col gap-6">
+          <div class="flex items-start justify-between flex-wrap gap-4">
+            <div>
+              <p class="text-xs font-bold tracking-widest uppercase mb-2" style="color:#6ee7b7;">Your Product · Halal Core</p>
+              <h2 class="text-3xl md:text-4xl font-bold leading-tight tracking-tight max-w-2xl">Hold a screened halal basket — crash-guarded.</h2>
+              <p class="text-sm text-white/60 mt-3 max-w-2xl">An equal-weight, AAOIFI-screened basket, rebalanced quarterly, with a drawdown overlay that steps toward cash as a crash deepens. The product is <strong class="text-white">certainty</strong> — not daily signals.</p>
+            </div>
+            <span class="text-[11px] font-semibold px-3 py-1 rounded-pill bg-white/10 border border-white/20 text-white/70 whitespace-nowrap">7-yr proof backtest · src/passive.py</span>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white/5 border border-white/10 rounded-card p-4"><p class="text-xs text-white/50">Basket 7y (buy &amp; hold)</p><p class="text-2xl font-bold tracking-tight" style="color:#6ee7b7;"><span id="pv-bh-total">+310%</span></p><p class="text-[11px] text-white/40">avg · 100% positive*</p></div>
+            <div class="bg-white/5 border border-white/10 rounded-card p-4"><p class="text-xs text-white/50">Max drawdown</p><p class="text-2xl font-bold tracking-tight"><span id="pv-dd-bh">−37%</span> → <span id="pv-dd-ov" style="color:#6ee7b7;">−25%</span></p><p class="text-[11px] text-white/40">crash overlay cuts the crash</p></div>
+            <div class="bg-white/5 border border-white/10 rounded-card p-4"><p class="text-xs text-white/50">Cost of the overlay</p><p class="text-2xl font-bold tracking-tight"><span id="pv-ret-bh">+310%</span> → <span id="pv-ret-ov" style="color:#fbbf24;">+146%</span></p><p class="text-[11px] text-white/40">lower return buys lower drawdown</p></div>
+            <div class="bg-white/5 border border-white/10 rounded-card p-4"><p class="text-xs text-white/50">The overlay's job</p><p class="text-2xl font-bold tracking-tight">cut crashes</p><p class="text-[11px] text-white/40">lower drawdown · not higher return</p></div>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <button onclick="document.querySelector('[data-tab=\'halal\']').click()" class="px-5 py-2.5 rounded-pill bg-white font-semibold text-sm hover:opacity-90 transition-opacity" style="color:#0f3d2e;">Screen the basket →</button>
+            <button onclick="document.getElementById('sigCards').scrollIntoView({behavior:'smooth'})" class="px-5 py-2.5 rounded-pill bg-white/10 border border-white/20 text-white font-semibold text-sm hover:bg-white/20 transition-colors">Today's tactical signals ↓</button>
+            <span class="text-[11px] text-white/40">*Survivorship-caveated: today's halal universe is composed of survivors. See PROOF_RESULT.md.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero (tactical signal — secondary to the passive core above) -->
+      <div id="heroCard" onmousemove="trackMouse(event,this)" class="bg-primary rounded-card p-8 text-white relative overflow-hidden flex flex-col md:flex-row items-center justify-between">
+        <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
+        <div class="hero-glow"></div>
+        <div class="relative z-10 flex flex-col gap-6 w-full md:w-2/3">
+          <div>
+            <p class="text-xs font-bold tracking-widest text-white/50 uppercase mb-2">Optional Tactical Overlay · today's signal</p>
+            <h2 class="text-5xl font-bold leading-none mb-4 tracking-tight">BUY RELIANCE <span class="text-white/50 font-medium text-3xl ml-2">₹2,945</span></h2>
+            <div class="flex items-center gap-6 text-sm font-medium">
+              <span class="text-white/50">Stop <strong class="text-white">₹2,800</strong></span>
+              <span class="text-white/50">Target <strong class="text-white">₹3,200</strong></span>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="bg-white/10 px-4 py-2 rounded-pill border border-white/20 text-sm font-medium flex items-center gap-2">✅ 7/9 indicators bullish</div>
+            <div class="bg-white/10 px-4 py-2 rounded-pill border border-white/20 text-sm font-medium flex items-center gap-2">📊 Confidence 79%</div>
+            <div class="bg-white/10 px-4 py-2 rounded-pill border border-white/20 text-sm font-medium flex items-center gap-2">⚖️ Risk/Reward 2.8:1</div>
+          </div>
+        </div>
+        <div class="relative z-10 flex flex-col items-center justify-center mt-8 md:mt-0 w-full md:w-1/3">
+          <div class="w-32 h-32 rounded-full bg-green-500/20 flex items-center justify-center mb-4 border border-green-500/30">
+            <div class="w-24 h-24 rounded-full bg-green-500 flex items-center justify-center shadow-[0_0_40px_rgba(34,197,94,0.4)]">
+              <span class="material-symbols-outlined text-white text-5xl" style="font-variation-settings:'wght' 300;">trending_up</span>
+            </div>
+          </div>
+          <span class="text-green-400 font-bold tracking-widest uppercase text-sm">Strong Buy</span>
+        </div>
+      </div>
+
+      <!-- Today's Signals (live from dashboard_data.js → window.DASH) -->
+      <div class="flex flex-col gap-4">
+        <div class="flex items-center justify-between flex-wrap gap-3">
+          <div class="flex flex-col gap-0.5">
+            <div class="flex items-center gap-3">
+              <h2 class="text-2xl font-semibold tracking-tight">Today's Signals</h2>
+              <span class="text-[11px] font-semibold px-2.5 py-1 rounded-pill bg-amber-50 text-amber-700 border border-amber-200">Secondary · optional</span>
+              <span id="sigSample" class="hidden text-[11px] font-semibold px-2.5 py-1 rounded-pill bg-surface-highest text-muted border border-outline-variant">Sample · run export_dashboard.py</span>
+            </div>
+            <p class="text-xs text-muted">A tactical overlay on the core basket. In the 7-yr proof, active signals trailed simply holding the screened basket — treat these as optional, not the product.</p>
+          </div>
+          <div id="sigRegime" class="text-xs font-medium text-muted"></div>
+        </div>
+        <div id="sigCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+      </div>
+
+      <!-- Paper Portfolio (live from window.DASH.portfolio) -->
+      <div id="portfolioPanel" class="flex flex-col gap-4"></div>
+
+      <!-- Alerts & GTT feed (mirrors Telegram + Kite) -->
+      <div id="alertsPanel" class="flex flex-col gap-4"></div>
+
+      <!-- Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2">
+          <p class="text-sm font-medium text-muted">Nifty 50<button class="info-btn" onclick="showInfo('nifty50')">i</button></p>
+          <div class="flex items-end justify-between"><h3 class="text-2xl font-semibold tracking-tight" id="mkt-nifty">22,847</h3><span class="text-xs font-semibold px-2 py-1 bg-green-50 text-green-600 rounded-pill border border-green-200" id="mkt-nifty-chg">+0.6%</span></div>
+        </div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2">
+          <p class="text-sm font-medium text-muted">VIX<button class="info-btn" onclick="showInfo('vix')">i</button></p>
+          <div class="flex items-end justify-between"><h3 class="text-2xl font-semibold tracking-tight" id="mkt-vix">14.2</h3><span class="text-xs font-semibold px-2 py-1 bg-surface-highest text-on-surface rounded-pill border border-outline-variant" id="mkt-vix-tag">Calm</span></div>
+        </div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2">
+          <p class="text-sm font-medium text-muted">USD/INR<button class="info-btn" onclick="showInfo('usdinr')">i</button></p>
+          <div class="flex items-end justify-between"><h3 class="text-2xl font-semibold tracking-tight" id="mkt-usdinr">83.87</h3><span class="text-xs font-semibold px-2 py-1 bg-surface-highest text-on-surface rounded-pill border border-outline-variant">Neutral</span></div>
+        </div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2">
+          <p class="text-sm font-medium text-muted">Portfolio Value<button class="info-btn" onclick="showInfo('portfolio')">i</button></p>
+          <div class="flex items-end justify-between"><h3 class="text-2xl font-semibold tracking-tight" id="mkt-pf">₹1,24,300</h3><span class="text-xs font-semibold px-2 py-1 bg-green-50 text-green-600 rounded-pill border border-green-200" id="mkt-pf-chg">+24.3%</span></div>
+        </div>
+      </div>
+
+      <!-- Run controls — talk to src.control_server so you never need the terminal -->
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-5 flex flex-col gap-3">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <p class="text-sm font-semibold text-on-surface">Run controls <span class="text-xs text-muted font-normal">— runs the paper-trading commands via the control server</span></p>
+          <button onclick="document.getElementById('ctlCfg').classList.toggle('hidden')" class="text-xs text-muted underline">connection ⚙</button>
+        </div>
+        <div id="ctlCfg" class="hidden flex flex-wrap gap-2 text-xs items-center">
+          <select id="ctlMode" class="border border-outline-variant rounded-pill px-3 py-1.5">
+            <option value="ci">Cloud (GitHub Actions)</option>
+            <option value="local">Local (control server)</option>
+          </select>
+          <input id="ctlBase" placeholder="http://localhost:8765 (local only)" class="border border-outline-variant rounded-pill px-3 py-1.5 flex-1 min-w-[200px]" />
+          <input id="ctlToken" type="password" placeholder="control token (local only)" class="border border-outline-variant rounded-pill px-3 py-1.5 flex-1 min-w-[160px]" />
+          <button onclick="ctlSave()" class="px-3 py-1.5 rounded-pill bg-surface-highest border border-outline-variant">Save</button>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button onclick="runCtl('/scan','Scanning…')" class="px-4 py-2 rounded-pill bg-primary text-white text-sm font-semibold hover:opacity-90">▶ Run scan</button>
+          <button onclick="runCtl('/auto-close','Closing positions…')" class="px-4 py-2 rounded-pill bg-surface-highest border border-outline-variant text-sm font-semibold">⏹ Auto-close</button>
+          <button onclick="runCtl('/daily-briefing','Running full briefing…')" class="px-4 py-2 rounded-pill bg-surface-highest border border-outline-variant text-sm font-semibold">📋 Daily briefing</button>
+          <button onclick="refreshPortfolio()" class="px-4 py-2 rounded-pill bg-surface-highest border border-outline-variant text-sm font-semibold">↻ Portfolio</button>
+        </div>
+        <p id="ctlStatus" class="text-xs text-muted">Idle · <b>Cloud mode</b> (default): buttons trigger GitHub Actions, no server needed (works on the deployed Netlify site). Switch to <b>Local</b> under ⚙ to drive a local <code>control_server</code>.</p>
+      </div>
+
+      <!-- News Sentiment -->
+      <div class="bg-surface-lowest border border-outline-variant rounded-card overflow-hidden flex flex-col">
+        <div class="p-8 border-b border-outline-variant flex flex-col gap-6">
+          <div class="flex justify-between items-center">
+            <h3 class="font-semibold text-xl tracking-tight">Market Sentiment Pulse<button class="info-btn" onclick="showInfo('sentiment_score')">i</button></h3>
+            <div class="flex items-center gap-2"><span class="pulse-dot"></span><span class="text-sm font-medium text-muted">Live · Bullish Bias</span></div>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="bg-surface border border-outline-variant rounded-2xl p-4"><p class="text-xs text-muted">Sentiment Score</p><p class="text-2xl font-bold tracking-tight count-up" data-target="86" data-suffix="%">0%</p></div>
+            <div class="bg-surface border border-outline-variant rounded-2xl p-4"><p class="text-xs text-muted">7-day change</p><p class="text-2xl font-bold tracking-tight text-green-600 count-up" data-target="14" data-prefix="+" data-suffix="%">+0%</p></div>
+            <div class="bg-surface border border-outline-variant rounded-2xl p-4"><p class="text-xs text-muted">News today</p><p class="text-2xl font-bold tracking-tight count-up" data-target="47">0</p></div>
+            <div class="bg-surface border border-outline-variant rounded-2xl p-4"><p class="text-xs text-muted">Bull / Bear</p><p class="text-2xl font-bold tracking-tight text-green-600">68<span class="text-base text-muted font-medium">/32</span></p></div>
+          </div>
+          <div class="flex items-center justify-between flex-wrap gap-3">
+            <div class="flex gap-2" id="sentRange"></div>
+            <span id="sentRangeLabel" class="text-xs text-muted"></span>
+          </div>
+          <div class="w-full h-56"><canvas id="sentChart"></canvas></div>
+          <div id="sentDist" class="flex flex-col gap-3"></div>
+        </div>
+        <div class="flex flex-col" id="newsList"></div>
+      </div>
+
+      <!-- Accordion: progressive disclosure (methodology) -->
+      <div class="flex flex-col gap-3">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card overflow-hidden">
+          <button onclick="toggleAccordion('accMethod', this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-surface-low transition-colors">
+            <span class="font-semibold tracking-tight">How was this BUY signal built?</span>
+            <span class="material-symbols-outlined accordion-icon text-muted">expand_more</span>
+          </button>
+          <div id="accMethod" class="accordion-body px-6">
+            <div class="pb-6 flex flex-col gap-3 text-sm text-on-surface-variant">
+              <p>The rule-based scanner scores each stock 0–100 across <strong>7 bullish criteria</strong>, then passes it through staged gates before it ever reaches you:</p>
+              <ol class="flex flex-col gap-2 list-decimal list-inside text-on-surface">
+                <li><strong>Trend</strong> — price above 50 & 200-day moving averages</li>
+                <li><strong>Momentum</strong> — RSI in the healthy 50–70 zone</li>
+                <li><strong>MACD</strong> — bullish crossover with rising histogram</li>
+                <li><strong>Volume</strong> — above-average accumulation</li>
+                <li><strong>Sentiment</strong> — positive FinBERT news score</li>
+                <li><strong>Below 52-week high</strong> — room left to run</li>
+                <li><strong>Risk/Reward ≥ 2.0</strong> — favourable stop-to-target ratio</li>
+              </ol>
+              <p class="text-muted">Then: regime gate → sector rotation (top 2) → multi-timeframe agreement → ≥52% historical win-rate filter → gap-risk filter. Only BUY signals survive — no shorting, no leverage (halal-enforced in code).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TECHNICAL -->
+    <section data-panel="technical" class="tab-panel flex-col gap-8">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-6">
+        <div class="flex items-center justify-between flex-wrap gap-4">
+          <div class="flex items-center gap-3">
+            <h2 class="text-2xl font-semibold tracking-tight">Technical Drill-down</h2>
+            <select id="techTicker" onchange="renderTechnical()" class="bg-surface border border-outline-variant rounded-pill px-4 py-2 text-sm font-medium outline-none focus:border-primary cursor-pointer"></select>
+          </div>
+          <div id="techHead" class="text-right"></div>
+        </div>
+        <div class="w-full h-48"><canvas id="techChart"></canvas></div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="techIndicators"></div>
+      <div class="bg-surface-lowest border border-outline-variant rounded-card overflow-hidden">
+        <div class="px-8 py-5 border-b border-outline-variant"><h3 class="font-semibold text-lg tracking-tight">Support &amp; Resistance Levels<button class="info-btn" onclick="showInfo('support_resistance')">i</button></h3></div>
+        <div class="flex flex-col" id="techLadder"></div>
+      </div>
+      <p id="techEmpty" class="hidden text-sm text-muted text-center py-8">No technical data yet — run <code class="text-xs">python -m scripts.export_dashboard</code> to populate.</p>
+    </section>
+
+    <!-- MACRO -->
+    <section data-panel="macro" class="tab-panel flex-col gap-10">
+      <!-- Live market regime (from window.DASH.signals.regime) -->
+      <div id="macroRegime"></div>
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex items-start gap-4">
+        <span class="material-symbols-outlined text-3xl text-green-600">public</span>
+        <div>
+          <div class="flex items-center gap-3 mb-2">
+            <h2 class="text-2xl font-semibold tracking-tight">Economic Phase<button class="info-btn" onclick="showInfo('eco_cycle')">i</button></h2>
+            <span class="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200">Expansion</span>
+          </div>
+          <p class="text-sm text-muted max-w-2xl">Macro conditions are favourable. Invest normally — focus on IT, Auto, Retail, FMCG sectors.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2">
+          <p class="text-sm font-medium text-muted">Fed Funds Rate<button class="info-btn" onclick="showInfo('fed_rate')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">5.33%</h3>
+          <span class="text-xs font-semibold px-2 py-1 rounded-pill bg-surface-highest text-on-surface border border-outline-variant w-fit">High</span>
+        </div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2">
+          <p class="text-sm font-medium text-muted">US 10Y Yield<button class="info-btn" onclick="showInfo('yield10y')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">4.28%</h3>
+          <span class="text-xs font-semibold px-2 py-1 rounded-pill bg-surface-highest text-on-surface border border-outline-variant w-fit">Normal</span>
+        </div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2">
+          <p class="text-sm font-medium text-muted">Yield Curve<button class="info-btn" onclick="showInfo('yield_curve')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">+0.18%</h3>
+          <span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">Normal ✓</span>
+        </div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2">
+          <p class="text-sm font-medium text-muted">DXY Dollar Index<button class="info-btn" onclick="showInfo('dxy')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">104.2</h3>
+          <span class="text-xs font-semibold px-2 py-1 rounded-pill bg-surface-highest text-on-surface border border-outline-variant w-fit">Slightly High</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-4">
+          <h3 class="font-semibold tracking-tight flex items-center gap-2">✅ Favour Sectors</h3>
+          <div class="flex flex-wrap gap-2">
+            <span class="text-sm font-medium px-4 py-2 rounded-pill bg-green-50 text-green-600 border border-green-200">IT</span>
+            <span class="text-sm font-medium px-4 py-2 rounded-pill bg-green-50 text-green-600 border border-green-200">Auto</span>
+            <span class="text-sm font-medium px-4 py-2 rounded-pill bg-green-50 text-green-600 border border-green-200">Retail</span>
+            <span class="text-sm font-medium px-4 py-2 rounded-pill bg-green-50 text-green-600 border border-green-200">FMCG</span>
+          </div>
+        </div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-4">
+          <h3 class="font-semibold tracking-tight flex items-center gap-2">⚠️ Reduce Exposure</h3>
+          <div class="flex flex-wrap gap-2">
+            <span class="text-sm font-medium px-4 py-2 rounded-pill bg-surface text-muted border border-outline-variant">Defensives-only</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREENER -->
+    <section data-panel="screener" class="tab-panel flex-col gap-10">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-3">
+        <div class="flex items-center gap-3 flex-wrap">
+          <h2 class="text-2xl font-semibold tracking-tight">RELIANCE</h2>
+          <span class="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200">Strong Buy · 5/6</span>
+          <span class="text-xs font-semibold px-3 py-1 rounded-pill bg-secondary/10 text-secondary border border-secondary/20">Halal compliant ✓</span>
+        </div>
+        <p class="text-sm text-muted">Fundamentally strong: low debt, good ROE, solid revenue growth.</p>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">P/E Ratio<button class="info-btn" onclick="showInfo('pe_ratio')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">23.4</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-surface-highest text-on-surface border border-outline-variant w-fit">Fairly Valued</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">ROE<button class="info-btn" onclick="showInfo('roe')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">18.2%</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">Good ✓</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">Debt / Equity<button class="info-btn" onclick="showInfo('de_ratio')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">0.42</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">Low Debt ✓</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">Revenue Growth<button class="info-btn" onclick="showInfo('rev_growth')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">14.2%</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">Strong ✓</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">Profit Margin<button class="info-btn" onclick="showInfo('profit_margin')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">12.1%</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-surface-highest text-on-surface border border-outline-variant w-fit">Healthy</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">Risk Rating<button class="info-btn" onclick="showInfo('risk_rating')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">4/10</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">Low Risk ✓</span></div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><p class="text-sm font-medium text-muted">Entry Zone</p><h3 class="text-2xl font-semibold tracking-tight">₹2,862</h3><p class="text-xs text-muted">Buy near here</p></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><p class="text-sm font-medium text-muted">Bull Target</p><h3 class="text-2xl font-semibold tracking-tight text-green-600">₹3,212</h3><p class="text-xs text-muted">Take profit</p></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><p class="text-sm font-medium text-muted">Bear Target</p><h3 class="text-2xl font-semibold tracking-tight text-red-500">₹2,475</h3><p class="text-xs text-muted">Worst case</p></div>
+      </div>
+    </section>
+
+    <!-- MOAT -->
+    <section data-panel="moat" class="tab-panel flex-col gap-10">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex items-start gap-4">
+        <span class="material-symbols-outlined text-3xl text-on-surface">fort</span>
+        <div>
+          <div class="flex items-center gap-3 mb-2">
+            <h2 class="text-2xl font-semibold tracking-tight">Moat Score<button class="info-btn" onclick="showInfo('moat')">i</button></h2>
+            <span class="text-sm font-bold uppercase tracking-widest px-3 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200">4/5 · Strong</span>
+          </div>
+          <p class="text-sm text-muted max-w-2xl">Reliance has a dominant competitive position. Very hard to replace in telecom, retail, and energy.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-3">
+          <h3 class="font-semibold tracking-tight">💪 Strengths</h3>
+          <ul class="flex flex-col gap-2 text-sm text-on-surface">
+            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>High ROE (18%)</li>
+            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>Strong margins (12%)</li>
+            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>Low debt (D/E 0.42)</li>
+          </ul>
+        </div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-3">
+          <h3 class="font-semibold tracking-tight">⚠️ Weaknesses</h3>
+          <ul class="flex flex-col gap-2 text-sm text-on-surface">
+            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>Complex conglomerate</li>
+            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>Oil price exposure</li>
+          </ul>
+        </div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-3">
+          <h3 class="font-semibold tracking-tight">🚀 Opportunities</h3>
+          <ul class="flex flex-col gap-2 text-sm text-on-surface">
+            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>Revenue growing 14%</li>
+            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>Jio + Retail digital</li>
+            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>India consumer boom</li>
+          </ul>
+        </div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-3">
+          <h3 class="font-semibold tracking-tight">🌩 Threats</h3>
+          <ul class="flex flex-col gap-2 text-sm text-on-surface">
+            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-muted"></span>USD/INR volatility</li>
+            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-muted"></span>Telecom regulation</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="bg-surface-lowest border border-outline-variant rounded-card overflow-hidden">
+        <div class="px-8 py-5 border-b border-outline-variant"><h3 class="font-semibold text-lg tracking-tight">Peer Comparison<button class="info-btn" onclick="showInfo('peer_compare')">i</button></h3></div>
+        <table class="w-full text-sm">
+          <thead><tr class="text-[11px] uppercase tracking-widest text-muted">
+            <th class="text-left font-bold px-8 py-3">Stock</th><th class="text-right font-bold px-4 py-3">ROE%</th><th class="text-right font-bold px-4 py-3">Margin%</th><th class="text-right font-bold px-4 py-3">D/E</th><th class="text-right font-bold px-8 py-3">Moat</th>
+          </tr></thead>
+          <tbody>
+            <tr class="border-t border-outline-variant bg-surface-low"><td class="px-8 py-3 font-bold">RELIANCE ⭐</td><td class="text-right px-4 py-3 font-semibold">18.2</td><td class="text-right px-4 py-3 font-semibold">12.1</td><td class="text-right px-4 py-3 font-semibold">0.42</td><td class="text-right px-8 py-3"><span class="text-xs font-semibold px-3 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200">Strong</span></td></tr>
+            <tr class="border-t border-outline-variant"><td class="px-8 py-3 font-medium">ONGC</td><td class="text-right px-4 py-3">11.4</td><td class="text-right px-4 py-3">8.2</td><td class="text-right px-4 py-3">0.38</td><td class="text-right px-8 py-3"><span class="text-xs font-semibold px-3 py-1 rounded-pill bg-surface-highest text-on-surface border border-outline-variant">Moderate</span></td></tr>
+            <tr class="border-t border-outline-variant"><td class="px-8 py-3 font-medium">BPCL</td><td class="text-right px-4 py-3">9.1</td><td class="text-right px-4 py-3">3.2</td><td class="text-right px-4 py-3">0.92</td><td class="text-right px-8 py-3"><span class="text-xs font-semibold px-3 py-1 rounded-pill bg-surface-highest text-on-surface border border-outline-variant">Moderate</span></td></tr>
+            <tr class="border-t border-outline-variant"><td class="px-8 py-3 font-medium">BHARTIARTL</td><td class="text-right px-4 py-3">14.3</td><td class="text-right px-4 py-3">11.8</td><td class="text-right px-4 py-3">1.84</td><td class="text-right px-8 py-3"><span class="text-xs font-semibold px-3 py-1 rounded-pill bg-surface-highest text-on-surface border border-outline-variant">Moderate</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- AI EXPLAINER -->
+    <section data-panel="explainer" class="tab-panel flex-col gap-8">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h2 class="text-2xl font-semibold tracking-tight">AI Insights<button class="info-btn" onclick="showInfo('features_overview')">i</button></h2>
+          <p class="text-sm text-muted mt-1">Why a signal fired (SHAP + model confidence) and the full feature set the models read — one place.</p>
+        </div>
+        <div class="flex gap-1 bg-surface border border-outline-variant rounded-pill p-1" id="aiSubNav">
+          <button data-aisub="explainer" onclick="aiSub('explainer')" class="text-xs font-semibold px-4 py-2 rounded-pill transition-colors bg-primary text-white">Why a signal fired</button>
+          <button data-aisub="features" onclick="aiSub('features')" class="text-xs font-semibold px-4 py-2 rounded-pill transition-colors text-muted hover:text-primary">All features</button>
+        </div>
+      </div>
+
+      <div id="aiPane-explainer" class="flex flex-col gap-8">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-4">
+        <div class="flex items-center gap-3 flex-wrap">
+          <h2 class="text-2xl font-semibold tracking-tight">AI Decision Explainer</h2>
+          <span class="text-xs font-semibold px-3 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200">Signal: BUY</span>
+          <span class="text-xs font-semibold px-3 py-1 rounded-pill bg-surface-highest text-on-surface border border-outline-variant">Confidence 79%</span>
+          <span class="text-xs font-semibold px-3 py-1 rounded-pill bg-surface-highest text-on-surface border border-outline-variant">₹2,940</span>
+        </div>
+        <p class="text-sm text-on-surface leading-relaxed border-l-2 border-outline-variant pl-4 italic">"RELIANCE shows a strong BUY driven by bullish MACD crossover, RSI in healthy zone (58), and positive news sentiment (+0.62). Trading below 52-week high with strong support at ₹2,820. Macro is favourable — VIX low (14.2), yield curve normal, expansion phase. Risk/Reward 2.8:1 meets minimum threshold of 2.0. Recommended position: 4% of portfolio."</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-5">
+          <h3 class="font-semibold tracking-tight">Why this decision? <span class="text-muted font-normal text-sm">(SHAP)</span></h3>
+          <div class="flex flex-col gap-3" id="shapList"></div>
+        </div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-5">
+          <h3 class="font-semibold tracking-tight">Model Confidence</h3>
+          <div class="flex flex-col gap-4" id="confList"></div>
+        </div>
+      </div>
+
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-3">
+        <h3 class="font-semibold tracking-tight">⚠️ Risk Warnings</h3>
+        <ul class="flex flex-col gap-2 text-sm text-on-surface">
+          <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-muted"></span>Global macro uncertainty / USD/INR</li>
+          <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-muted"></span>Earnings date approaching — vol may rise</li>
+        </ul>
+      </div>
+      </div><!-- /aiPane-explainer -->
+
+      <div id="aiPane-features" class="hidden flex-col gap-8">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-5">
+          <div class="flex items-start justify-between flex-wrap gap-3">
+            <div>
+              <h2 class="text-2xl font-semibold tracking-tight"><span id="featCount">52</span> AI Features<button class="info-btn" onclick="showInfo('features_overview')">i</button></h2>
+              <p class="text-sm text-muted mt-1" id="featSummary">Engineered in <code class="text-xs">feature_engineering.add_features</code> → fed to the LightGBM + LSTM ensemble.</p>
+            </div>
+            <span class="text-xs font-semibold px-3 py-1 rounded-pill bg-secondary/10 text-secondary border border-secondary/20">Halal Only · no leverage signals</span>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-2xl font-bold tracking-tight" id="featStatTotal">52</p><p class="text-xs text-muted">total features</p></div>
+            <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-2xl font-bold tracking-tight text-green-600" id="featStatCore">7</p><p class="text-xs text-muted">core signal drivers</p></div>
+            <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-2xl font-bold tracking-tight" id="featStatGroups">9</p><p class="text-xs text-muted">categories</p></div>
+            <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-2xl font-bold tracking-tight text-muted" id="featStatOpt">7</p><p class="text-xs text-muted">optional (degrade offline)</p></div>
+          </div>
+          <div class="flex items-center gap-3 bg-surface border border-outline-variant rounded-pill px-5">
+            <span class="material-symbols-outlined text-muted text-[20px]">search</span>
+            <input id="featSearch" type="text" placeholder="Search features — e.g. RSI, volume, macro…" oninput="renderFeats()" class="bg-transparent flex-1 py-3 text-sm outline-none placeholder:text-muted">
+            <button onclick="document.getElementById('featSearch').value='';featFilter='All';renderFeats()" class="material-symbols-outlined text-muted text-[18px] hover:text-primary transition-colors">close</button>
+          </div>
+          <div class="flex flex-wrap gap-2" id="featFilters"></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="featGroups"></div>
+        <p id="featEmpty" class="hidden text-sm text-muted text-center py-8">No features match your search.</p>
+      </div><!-- /aiPane-features -->
+    </section>
+
+    <!-- MONTE CARLO -->
+    <section data-panel="montecarlo" class="tab-panel flex-col gap-10">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-2">
+        <h2 class="text-2xl font-semibold tracking-tight">Monte Carlo Simulation <span class="text-muted font-medium text-lg">— 1,000 Runs</span></h2>
+        <p class="text-sm text-muted">Chance of ending profitable: <strong class="text-green-600">78%</strong> · Median outcome: <strong class="text-green-600">+12.4%</strong></p>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><p class="text-xs font-semibold uppercase tracking-widest text-muted">Worst 5%</p><h3 class="text-xl font-semibold tracking-tight">₹86,200</h3><span class="text-sm font-semibold text-red-500">-13.8%</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><p class="text-xs font-semibold uppercase tracking-widest text-muted">Bad Case 25%</p><h3 class="text-xl font-semibold tracking-tight">₹95,800</h3><span class="text-sm font-semibold text-red-500">-4.2%</span></div>
+        <div class="bg-surface-lowest border-2 border-primary rounded-card p-6 flex flex-col gap-1"><p class="text-xs font-semibold uppercase tracking-widest text-primary">Median</p><h3 class="text-xl font-bold tracking-tight">₹1,12,400</h3><span class="text-sm font-semibold text-green-600">+12.4%</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><p class="text-xs font-semibold uppercase tracking-widest text-muted">Good Case 75%</p><h3 class="text-xl font-semibold tracking-tight">₹1,28,600</h3><span class="text-sm font-semibold text-green-600">+28.6%</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><p class="text-xs font-semibold uppercase tracking-widest text-muted">Best 5%</p><h3 class="text-xl font-semibold tracking-tight">₹1,64,200</h3><span class="text-sm font-semibold text-green-600">+64.2%</span></div>
+      </div>
+
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8">
+        <h3 class="font-semibold text-lg tracking-tight mb-6">Outcome Distribution</h3>
+        <div class="w-full h-72"><canvas id="mcChart"></canvas></div>
+      </div>
+
+      <!-- Research Backtest — runs src.pipeline (ARIMA+LightGBM+stacking) on demand -->
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-4">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <h3 class="font-semibold text-lg tracking-tight">Research Backtest <span class="text-xs text-muted font-normal">— run the ML ensemble (not your live Telegram signals) on any ticker</span></h3>
+        </div>
+        <div class="flex flex-wrap gap-2 items-center">
+          <input id="btTicker" placeholder="e.g. RELIANCE" value="RELIANCE" class="border border-outline-variant rounded-pill px-4 py-2 text-sm w-40 uppercase" />
+          <select id="btYears" class="border border-outline-variant rounded-pill px-4 py-2 text-sm">
+            <option value="2">2 years</option>
+            <option value="3">3 years</option>
+            <option value="5" selected>5 years</option>
+            <option value="10">10 years</option>
+          </select>
+          <button onclick="runBacktest()" class="px-4 py-2 rounded-pill bg-primary text-white text-sm font-semibold hover:opacity-90">▶ Run Backtest</button>
+        </div>
+        <p id="btStatus" class="text-xs text-muted">Idle. Takes ~3–8 min (trains ARIMA + LightGBM + meta-learner on real history) — runs in GitHub Actions, this page updates the history list below once it lands.</p>
+      </div>
+
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8">
+        <div class="flex items-center justify-between mb-1 flex-wrap gap-2">
+          <h3 class="font-semibold text-lg tracking-tight">Backtest Equity Curve<button class="info-btn" onclick="showInfo('montecarlo')">i</button></h3>
+          <span id="eqMeta" class="text-xs text-muted"></span>
+        </div>
+        <p class="text-sm text-muted mb-6">Showing: <code class="text-xs" id="eqSource">results/</code> — click any run below to view it.</p>
+        <div class="w-full h-72"><canvas id="eqChart"></canvas></div>
+        <p id="eqEmpty" class="hidden text-sm text-muted">No backtest runs yet — use "Run Backtest" above, or <code class="text-xs">python -m src.pipeline --ticker RELIANCE</code> locally.</p>
+      </div>
+
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8">
+        <h3 class="font-semibold text-lg tracking-tight mb-4">Run History</h3>
+        <div id="btHistory" class="flex flex-col gap-2"></div>
+      </div>
+    </section>
+
+    <!-- DRIFT -->
+    <section data-panel="drift" class="tab-panel flex-col gap-10">
+      <div class="bg-green-50 border border-green-200 rounded-card p-8 flex items-start gap-4">
+        <span class="material-symbols-outlined text-3xl text-green-600">check_circle</span>
+        <div>
+          <h2 class="text-2xl font-semibold tracking-tight text-green-600 mb-1">No Drift Detected<button class="info-btn" onclick="showInfo('drift')">i</button></h2>
+          <p class="text-sm text-on-surface">Model is accurate. 30-day win rate 67% (floor 50%). PSI 0.04 — very stable.</p>
+        </div>
+      </div>
+
+      <div class="bg-surface-lowest border border-outline-variant rounded-card overflow-hidden">
+        <div class="px-8 py-5 border-b border-outline-variant"><h3 class="font-semibold text-lg tracking-tight">Feature Drift Report <span class="text-muted font-normal text-sm">(KS Test)</span></h3></div>
+        <table class="w-full text-sm">
+          <thead><tr class="text-[11px] uppercase tracking-widest text-muted">
+            <th class="text-left font-bold px-8 py-3">Feature</th><th class="text-right font-bold px-4 py-3">KS Stat</th><th class="text-right font-bold px-4 py-3">P-Value</th><th class="text-right font-bold px-4 py-3">PSI</th><th class="text-right font-bold px-8 py-3">Status</th>
+          </tr></thead>
+          <tbody id="driftBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- FII/DII -->
+    <section data-panel="fiidii" class="tab-panel flex-col gap-10">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-2">
+        <h2 class="text-2xl font-semibold tracking-tight">Institutional Flow <span class="text-muted font-medium text-lg">— Last 7 Days</span></h2>
+        <p class="text-sm text-muted">Net FII: <strong class="text-red-500">-₹2,340 Cr</strong> · Net DII: <strong class="text-green-600">+₹3,870 Cr</strong> · DII absorbing FII selling</p>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><p class="text-sm font-medium text-muted">Today FII<button class="info-btn" onclick="showInfo('fii')">i</button></p><h3 class="text-xl font-semibold tracking-tight text-red-500">-₹842 Cr</h3><span class="text-xs text-muted">Selling</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><p class="text-sm font-medium text-muted">Today DII<button class="info-btn" onclick="showInfo('dii')">i</button></p><h3 class="text-xl font-semibold tracking-tight text-green-600">+₹1,230 Cr</h3><span class="text-xs text-muted">Buying ✓</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><p class="text-sm font-medium text-muted">Net Flow<button class="info-btn" onclick="showInfo('net_flow')">i</button></p><h3 class="text-xl font-semibold tracking-tight text-green-600">+₹388 Cr</h3><span class="text-xs text-muted">Positive ✓</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><p class="text-sm font-medium text-muted">FII Streak<button class="info-btn" onclick="showInfo('fii_streak')">i</button></p><h3 class="text-xl font-semibold tracking-tight">3 days</h3><span class="text-xs text-muted">Selling streak</span></div>
+      </div>
+
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8">
+        <h3 class="font-semibold text-lg tracking-tight mb-6">7-Day FII vs DII Flows <span class="text-muted font-normal text-sm">(₹ Crore)</span></h3>
+        <div class="w-full h-72"><canvas id="fiiChart"></canvas></div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><h4 class="font-semibold tracking-tight text-sm">⚠️ FII Selling &gt; 3 Days</h4><p class="text-sm text-muted">Usually signals caution. If DII absorbs the selling the market holds up; if DII also pulls back, prepare for a correction.</p></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><h4 class="font-semibold tracking-tight text-sm">✅ DII &gt; FII Outflow</h4><p class="text-sm text-muted">Domestic institutions absorbing foreign selling = strong floor. India's structural advantage over other EMs.</p></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><h4 class="font-semibold tracking-tight text-sm">💡 Combined Net Flow</h4><p class="text-sm text-muted">When FII + DII net is positive, money is entering markets. 5+ sustained days = strong uptrend signal.</p></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><h4 class="font-semibold tracking-tight text-sm">📅 F&amp;O Expiry Effect</h4><p class="text-sm text-muted">FII flows turn volatile around NSE F&amp;O expiry (last Thursday). Don't over-react to single-day spikes.</p></div>
+      </div>
+    </section>
+
+    <!-- INDIA SIGNALS -->
+    <section data-panel="india" class="tab-panel flex-col gap-10">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-2">
+        <h2 class="text-2xl font-semibold tracking-tight">🇮🇳 India-Specific Market Signals</h2>
+        <p class="text-sm text-muted">India VIX · PCR · Delivery Volume · Advance/Decline — NSE proprietary data</p>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">India VIX<button class="info-btn" onclick="showInfo('india_vix')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">13.8</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">Calm ✓</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">Put-Call Ratio<button class="info-btn" onclick="showInfo('pcr')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">0.92</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-surface-highest text-on-surface border border-outline-variant w-fit">Neutral</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">Delivery Vol %<button class="info-btn" onclick="showInfo('delivery_vol')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">58%</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">High Conviction</span></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><p class="text-sm font-medium text-muted">Advance/Decline<button class="info-btn" onclick="showInfo('advance_decline')">i</button></p><h3 class="text-2xl font-semibold tracking-tight">1.42</h3><span class="text-xs font-semibold px-2 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200 w-fit">Breadth Good ✓</span></div>
+      </div>
+
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-6">
+        <h3 class="font-semibold text-lg tracking-tight">📊 Options Data — Max Pain &amp; IV Skew</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="flex flex-col gap-1"><p class="text-sm text-muted">Max Pain (Nifty)<button class="info-btn" onclick="showInfo('max_pain')">i</button></p><h4 class="text-xl font-semibold tracking-tight">₹22,900</h4><p class="text-xs text-muted">53 pts below spot</p></div>
+          <div class="flex flex-col gap-1"><p class="text-sm text-muted">IV Skew<button class="info-btn" onclick="showInfo('iv_skew')">i</button></p><h4 class="text-xl font-semibold tracking-tight text-green-600">+2.3%</h4><p class="text-xs text-muted">Calls pricier</p></div>
+          <div class="flex flex-col gap-1"><p class="text-sm text-muted">Expiry</p><h4 class="text-xl font-semibold tracking-tight">This Thursday</h4><p class="text-xs text-muted">3 days · F&amp;O Expiry</p></div>
+        </div>
+        <p class="text-sm text-muted leading-relaxed border-l-2 border-outline-variant pl-4">Spot (22,953) is above max pain (22,900) by 53 pts — market may drift toward max pain by Thursday. Positive IV skew means the options market expects upside (calls in demand). Delivery volume 58% confirms genuine buying, not intraday speculation.</p>
+      </div>
+
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-6">
+        <h3 class="font-semibold text-lg tracking-tight">☪️ NSE Shariah Compliance Check <span class="text-muted font-normal text-sm">(AAOIFI)</span></h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="border border-outline-variant rounded-card p-5 flex flex-col gap-2"><div class="flex items-center gap-2"><span class="text-green-600">✅</span><h4 class="font-semibold tracking-tight text-sm">Nifty50 Shariah</h4></div><p class="text-xs text-muted">Screened by TASIS. Pure-play halal only — excludes banks, insurance, NBFCs, alcohol, tobacco.</p></div>
+          <div class="border border-outline-variant rounded-card p-5 flex flex-col gap-2"><div class="flex items-center gap-2"><span class="text-green-600">✅</span><h4 class="font-semibold tracking-tight text-sm">Nifty Shariah 25</h4></div><p class="text-xs text-muted">Stricter 25-stock subset. Max debt/assets 33%, interest income &lt;5% revenue. Reviewed quarterly.</p></div>
+          <div class="border border-outline-variant rounded-card p-5 flex flex-col gap-2"><div class="flex items-center gap-2"><span class="text-green-600">✅</span><h4 class="font-semibold tracking-tight text-sm">Nifty500 Shariah</h4></div><p class="text-xs text-muted">Broadest halal index — 500 screened NSE stocks. Our watchlist universe basis.</p></div>
+        </div>
+        <div class="bg-secondary/5 border border-secondary/20 rounded-card p-5">
+          <p class="text-xs font-semibold uppercase tracking-widest text-secondary mb-2">AAOIFI Screening Criteria</p>
+          <ul class="text-sm text-muted flex flex-col gap-1">
+            <li>1 · Debt/Assets &lt; 33% — avoids riba-heavy companies</li>
+            <li>2 · Interest income &lt; 5% of revenue — excludes banks/NBFCs</li>
+            <li>3 · Haram revenue &lt; 5% — excludes alcohol, tobacco, weapons, adult content</li>
+            <li>4 · Accounts receivable &lt; 49% of assets — avoids interest-based receivables</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- WATCHLIST -->
+    <section data-panel="watchlist" class="tab-panel flex-col gap-8">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-1">
+        <h2 class="text-2xl font-semibold tracking-tight">📋 Halal Watchlist — <span id="wlCount">86</span> Stocks</h2>
+        <p class="text-sm text-muted">All screened for Shariah compliance · NSE India · filter by sector</p>
+      </div>
+
+      <div class="grid grid-cols-3 gap-6">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 text-center"><div class="text-3xl font-bold tracking-tight text-green-600">78</div><div class="text-sm text-muted mt-1">Default Scan</div><div class="text-xs text-muted/70">Nifty50 + Next50</div></div>
+        <div class="bg-surface-lowest border-2 border-secondary rounded-card p-6 text-center"><div class="text-3xl font-bold tracking-tight text-secondary">165</div><div class="text-sm text-muted mt-1">Extended Scan</div><div class="text-xs text-muted/70">+ MidCap + Thematic</div></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 text-center"><div class="text-3xl font-bold tracking-tight">195</div><div class="text-sm text-muted mt-1">Deep Scan</div><div class="text-xs text-muted/70">Full halal universe</div></div>
+      </div>
+
+      <div class="flex items-center gap-3 bg-surface-lowest border border-outline-variant rounded-pill px-5">
+        <span class="material-symbols-outlined text-muted text-[20px]">search</span>
+        <input id="wlSearch" type="text" placeholder="Search ticker or sector…" oninput="renderWL()" class="bg-transparent flex-1 py-3 text-sm outline-none placeholder:text-muted">
+        <button onclick="document.getElementById('wlSearch').value='';renderWL()" class="material-symbols-outlined text-muted text-[18px] hover:text-primary transition-colors">close</button>
+      </div>
+      <div class="flex flex-wrap gap-2" id="wlFilters"></div>
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-6"><div class="flex flex-wrap gap-2" id="wlPills"></div><p id="wlEmpty" class="text-sm text-muted hidden">No stocks match your search.</p></div>
+    </section>
+
+    <!-- ZAKAT -->
+    <!-- HALAL SCREEN -->
+    <section data-panel="halal" class="tab-panel flex-col gap-8">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h2 class="text-2xl font-semibold tracking-tight">Halal &amp; Zakat</h2>
+          <p class="text-sm text-muted mt-1">AAOIFI Shariah screening plus your annual Zakat &amp; dividend-purification ledger — one place.</p>
+        </div>
+        <div class="flex gap-1 bg-surface border border-outline-variant rounded-pill p-1" id="hzSubNav">
+          <button data-hzsub="halal" onclick="hzSub('halal')" class="text-xs font-semibold px-4 py-2 rounded-pill transition-colors bg-primary text-white">Screening</button>
+          <button data-hzsub="zakat" onclick="hzSub('zakat')" class="text-xs font-semibold px-4 py-2 rounded-pill transition-colors text-muted hover:text-primary">Zakat &amp; Purification</button>
+        </div>
+      </div>
+
+      <div id="hzPane-halal" class="flex flex-col gap-8">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-1">
+        <h2 class="text-2xl font-semibold tracking-tight">🕌 Halal Screen — AAOIFI Shariah Compliance</h2>
+        <p class="text-sm text-muted">Real fundamentals · 84 NSE stocks screened · debt/assets &lt; 33% · interest income &lt; 5%</p>
+      </div>
+      <div id="tierBannerHalal"></div>
+      <div id="screenHealth"></div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-4">
+          <h3 class="font-semibold tracking-tight">Is this stock halal?</h3>
+          <input id="halalSearch" oninput="renderHalalLookup()" type="text" placeholder="Type a ticker — e.g. TCS, ADANIPORTS" class="bg-surface border border-outline-variant rounded-pill px-5 py-3 text-base font-medium focus:border-primary outline-none transition-colors">
+          <div class="flex flex-wrap gap-2" id="halalChips"></div>
+          <div id="halalResult"></div>
+        </div>
+        <div class="flex flex-col gap-6">
+          <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><h4 class="font-semibold tracking-tight text-sm">⚠️ Watchlist mislabels caught</h4><p class="text-sm text-muted">10 of 84 hand-curated "halal" names fail AAOIFI on real fundamentals — they were curated by sector/reputation, not actual ratios. The screen catches them.</p></div>
+          <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-1"><h4 class="font-semibold tracking-tight text-sm">🧹 Dividend purification (auto)</h4><p class="text-sm text-muted">Even 🟢 stocks carry a sliver of interest income. Purify that % of dividends to charity so the gain is clean — looked up per-stock from cached fundamentals.</p></div>
+          <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-3"><h4 class="font-semibold tracking-tight text-sm">🔴 Names that fail the screen</h4><div class="flex flex-col gap-2" id="tierAlerts"></div></div>
+        </div>
+      </div>
+      </div><!-- /hzPane-halal -->
+
+      <div id="hzPane-zakat" class="hidden flex-col gap-8">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-1">
+          <h2 class="text-2xl font-semibold tracking-tight">🌙 Zakat Calculator<button class="info-btn" onclick="showInfo('zakat_explained')">i</button> <span class="text-muted font-medium text-lg">— Stock Portfolio</span></h2>
+          <p class="text-sm text-muted">Calculate your annual Zakat obligation on equity investments · AAOIFI method</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+          <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-5">
+            <h3 class="font-semibold tracking-tight">Your Holdings</h3>
+            <div class="flex flex-col gap-2"><label class="text-xs font-semibold uppercase tracking-widest text-muted">Portfolio Value (₹)</label><input id="z_portfolio" type="number" value="500000" oninput="calcZakat()" class="bg-surface border border-outline-variant rounded-pill px-5 py-3 text-base font-medium focus:border-primary outline-none transition-colors"></div>
+            <div class="flex flex-col gap-2"><label class="text-xs font-semibold uppercase tracking-widest text-muted">Cost Basis (₹)</label><input id="z_cost" type="number" value="420000" oninput="calcZakat()" class="bg-surface border border-outline-variant rounded-pill px-5 py-3 text-base font-medium focus:border-primary outline-none transition-colors"></div>
+            <div class="flex flex-col gap-2"><label class="text-xs font-semibold uppercase tracking-widest text-muted">Cash &amp; Savings (₹)</label><input id="z_cash" type="number" value="120000" oninput="calcZakat()" class="bg-surface border border-outline-variant rounded-pill px-5 py-3 text-base font-medium focus:border-primary outline-none transition-colors"></div>
+            <div class="flex flex-col gap-2"><label class="text-xs font-semibold uppercase tracking-widest text-muted">Gold Value (₹)</label><input id="z_gold" type="number" value="80000" oninput="calcZakat()" class="bg-surface border border-outline-variant rounded-pill px-5 py-3 text-base font-medium focus:border-primary outline-none transition-colors"></div>
+          </div>
+          <div class="bg-surface-lowest border border-outline-variant rounded-card p-8"><div id="zakatResult"></div></div>
+        </div>
+      </div><!-- /hzPane-zakat -->
+    </section>
+
+    <!-- RISK GUARD -->
+    <section data-panel="riskguard" class="tab-panel flex-col gap-8">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-1">
+        <h2 class="text-2xl font-semibold tracking-tight">🛡️ Drawdown Guard — "Why I de-risked"<button class="info-btn" onclick="showInfo('drawdown_guard')">i</button></h2>
+        <p class="text-sm text-muted">The passive overlay scales basket exposure by how far Nifty is below its recent peak — and explains every move.</p>
+      </div>
+
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-6">
+        <div class="flex justify-between items-baseline">
+          <label class="text-sm font-semibold text-muted">Nifty drawdown from peak</label>
+          <span id="ddVal" class="text-2xl font-bold tracking-tight">−4%</span>
+        </div>
+        <input id="ddSlider" type="range" min="0" max="35" value="4" oninput="renderRiskGuard()" class="w-full accent-primary cursor-pointer">
+        <div class="flex justify-between text-[11px] text-muted"><span>0% (peak)</span><span>−8% de-risk</span><span>−20% floor</span><span>−35%</span></div>
+        <div id="ddGuardCard"></div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><h4 class="font-semibold tracking-tight text-sm">🟢 Above −8% — fully invested</h4><p class="text-sm text-muted">Ordinary dips aren't worth timing. Stay 100% in the basket so you never miss the snap-back recoveries that punish market-timers.</p></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><h4 class="font-semibold tracking-tight text-sm">🟡 −8% to −20% — de-risking</h4><p class="text-sm text-muted">Exposure scales down linearly as the drawdown deepens. Each step to cash is a graded response, not a panic switch — avoiding binary-rule whipsaw.</p></div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-2"><h4 class="font-semibold tracking-tight text-sm">🔴 Below −20% — 30% floor</h4><p class="text-sm text-muted">Catastrophic-crash mode: cut to the 30% floor as insurance. Never zero — long-only, and calling the exact bottom is a loser's game.</p></div>
+      </div>
+    </section>
+
+    <!-- TELEGRAM (bot notification mirror) -->
+    <section data-panel="telegram" class="tab-panel flex-col gap-6">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h2 class="text-2xl font-semibold tracking-tight">Telegram Alerts<button class="info-btn" onclick="showInfo('headlines')">i</button></h2>
+          <p class="text-sm text-muted mt-1">Exactly what the bot pushes to your phone — morning briefing, GTT orders, tier changes, exits.</p>
+        </div>
+        <span class="flex items-center gap-2 text-xs font-semibold px-3 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200"><span class="pulse-dot"></span>Bot connected</span>
+      </div>
+      <style>
+        .tg-stage{display:flex;flex-direction:column;align-items:center;gap:28px;padding:32px 12px 8px;}
+        .tg-phone{position:relative;width:340px;max-width:92vw;border-radius:46px;padding:12px;
+          background:linear-gradient(160deg,#1c1c20,#0c0c0e);
+          box-shadow:0 40px 80px -20px rgba(0,0,0,.55),0 0 0 2px rgba(255,255,255,.04) inset;
+          animation:tgFloat 6s ease-in-out infinite;}
+        @keyframes tgFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+        .tg-notch{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:120px;height:26px;background:#000;border-radius:0 0 16px 16px;z-index:5;}
+        .tg-screen{background:#0e1621;border-radius:36px;overflow:hidden;height:560px;display:flex;flex-direction:column;}
+        .tg-hd{display:flex;align-items:center;gap:12px;padding:38px 16px 12px;background:#17212b;border-bottom:1px solid rgba(255,255,255,.05);}
+        .tg-back{color:#7d8e9e;font-size:22px;}
+        .tg-logo{width:40px;height:40px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
+          background:radial-gradient(circle at 30% 30%,#3ec6ff,#2196d6 60%,#1d8ac0);box-shadow:0 2px 8px rgba(33,158,214,.5);}
+        .tg-logo svg{width:22px;height:22px;margin-right:1px;}
+        .tg-name{color:#fff;font-weight:600;font-size:15px;line-height:1.1;}
+        .tg-role{color:#5eb5f7;font-size:12px;}
+        .tg-body{flex:1;overflow-y:auto;padding:16px 14px;display:flex;flex-direction:column;gap:14px;
+          background:#0e1621 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='20' cy='20' r='1' fill='%23ffffff08'/%3E%3C/svg%3E");}
+        .tg-body::-webkit-scrollbar{width:0;}
+        .tg-datepill{align-self:center;background:rgba(255,255,255,.08);color:#c7d3de;font-size:11px;font-weight:600;padding:3px 12px;border-radius:12px;}
+        .tg-row{display:flex;gap:8px;align-items:flex-end;}
+        .tg-av{width:28px;height:28px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
+          background:radial-gradient(circle at 30% 30%,#3ec6ff,#2196d6 60%,#1d8ac0);}
+        .tg-av svg{width:15px;height:15px;margin-right:1px;}
+        .tg-bub{background:#182533;color:#e9eff5;border-radius:14px 14px 14px 4px;padding:9px 12px;font-size:13px;line-height:1.5;max-width:86%;position:relative;box-shadow:0 1px 1px rgba(0,0,0,.2);}
+        .tg-bub.buy{background:#16302a;}
+        .tg-bub.alert{background:#3a1f24;}
+        .tg-bub strong{color:#fff;}
+        .tg-bub .tg-hl-red{color:#ff6b6b;font-weight:700;} .tg-bub .tg-hl-grn{color:#5ee29a;font-weight:700;}
+        .tg-bub a{color:#62b0f0;}
+        .tg-time{display:block;text-align:right;color:#62788c;font-size:10px;margin-top:4px;}
+        .tg-acts{display:flex;flex-direction:column;gap:8px;padding:0 14px 8px;}
+        .tg-btn{background:#17212b;color:#5eb5f7;font-weight:600;font-size:13px;text-align:center;padding:11px;border-radius:10px;border:1px solid rgba(94,181,247,.12);}
+        .tg-input{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#17212b;border-top:1px solid rgba(255,255,255,.05);}
+        .tg-input .ph{flex:1;background:#0e1621;color:#5d7384;font-size:13px;padding:9px 14px;border-radius:18px;}
+        .tg-conn{display:flex;align-items:center;gap:12px;background:var(--surface-lowest,#fff);border:1px solid var(--outline-variant,#e5e7eb);border-radius:18px;padding:14px 20px;box-shadow:0 8px 24px -12px rgba(0,0,0,.18);}
+        .tg-conn .ic{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 30% 30%,#3ec6ff,#2196d6 60%,#1d8ac0);}
+        .tg-conn .ic svg{width:18px;height:18px;margin-right:1px;}
+      </style>
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-4 md:p-6">
+        <div class="tg-stage">
+          <div class="tg-phone">
+            <div class="tg-notch"></div>
+            <div class="tg-screen">
+              <div class="tg-hd">
+                <span class="material-symbols-outlined tg-back">arrow_back</span>
+                <span class="tg-logo"><svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg></span>
+                <div><div class="tg-name">Halal Trader Bot</div><div class="tg-role">bot</div></div>
+              </div>
+              <div id="tgChat" class="tg-body"></div>
+              <div class="tg-acts" id="tgActs">
+                <div class="tg-btn">📊 View Dashboard</div>
+                <div class="tg-btn">⚡ Review Signals</div>
+              </div>
+              <div class="tg-input">
+                <span class="material-symbols-outlined" style="color:#5d7384;font-size:20px;">attach_file</span>
+                <span class="ph">Broadcast disabled…</span>
+                <span class="material-symbols-outlined" style="color:#5d7384;font-size:20px;">mic</span>
+              </div>
+            </div>
+          </div>
+          <div class="tg-conn">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg></span>
+            <div><div class="text-[10px] font-bold uppercase tracking-widest text-muted">Connection status</div>
+            <div class="text-sm font-semibold flex items-center gap-2">Telegram Active <span class="pulse-dot" style="background:#22c55e;"></span></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Other tabs (porting in progress) -->
+    <section data-panel="placeholder" class="tab-panel flex-col gap-6">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-12 flex flex-col items-center text-center gap-3">
+        <span class="material-symbols-outlined text-4xl text-muted">construction</span>
+        <h3 class="font-semibold text-xl tracking-tight" id="phTitle">Coming next</h3>
+        <p class="text-sm text-muted max-w-md">This tab is being ported into the Boro design from the working dashboard. Sentiment is the approved test tab — the rest follow once you sign off on the look.</p>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script>
+// ---- News data ----
+const NEWS = [
+  ["Reuters",   "Reliance Retail plans major expansion in tier-2 cities amidst strong Q3 projections.", "Positive"],
+  ["Bloomberg", "Indian markets remain resilient despite slight global tech sector sell-off.",          "Neutral"],
+  ["Mint",      "Energy sector faces headwinds as crude prices show unexpected volatility.",            "Negative"],
+  ["CNBC",      "Reliance Jio 5G rollout hits new milestone with 100M active subscribers.",             "Positive"],
+  ["ET Markets","FII inflows turn positive for the third straight session on financials.",             "Positive"],
+  ["Moneycontrol","IT majors cautious on FY guidance amid weak US discretionary spend.",               "Negative"],
+  ["Business Std","RBI holds rates; commentary read as neutral-to-dovish by the street.",              "Neutral"],
+  ["Reuters",   "Auto sales beat estimates as festive demand lifts two-wheeler volumes.",              "Positive"],
+  ["Bloomberg", "Crude above $90 keeps OMC margins under pressure, analysts flag risk.",               "Negative"],
+];
+const badge = { Positive:"bg-green-50 text-green-600 border-green-200", Neutral:"bg-surface-highest text-on-surface border-outline-variant", Negative:"bg-red-50 text-red-500 border-red-200" };
+let newsFilter = 'All';
+function renderNews(){
+  const list = NEWS.filter(n=>newsFilter==='All'||n[2]===newsFilter);
+  document.getElementById('newsList').innerHTML = list.map(([src,head,tag],i)=>`
+    <div class="px-8 py-5 ${i<list.length-1?'border-b border-outline-variant':''} flex gap-4 items-center hover:bg-surface-low transition-colors group cursor-pointer">
+      <span class="text-xs font-bold uppercase tracking-widest w-24 text-muted flex-shrink-0">${src}</span>
+      <p class="text-sm font-medium flex-grow group-hover:text-secondary transition-colors">${head}</p>
+      <span class="text-xs font-semibold px-3 py-1 rounded-pill border flex-shrink-0 ${badge[tag]}">${tag}</span>
+    </div>`).join('') || `<div class="px-8 py-6 text-sm text-muted">No ${newsFilter.toLowerCase()} headlines right now.</div>`;
+}
+
+// ---- Sentiment distribution bar (clickable → filters news) ----
+function renderSentDist(){
+  const counts = { Positive:0, Neutral:0, Negative:0 };
+  NEWS.forEach(n=>counts[n[2]]++);
+  const total = NEWS.length;
+  const col = { Positive:'#16a34a', Neutral:'#70757d', Negative:'#ef4444' };
+  const bar = ['Positive','Neutral','Negative'].map(k=>
+    `<div class="seg ${newsFilter!=='All'&&newsFilter!==k?'dim':''}" onclick="newsFilter=(newsFilter==='${k}'?'All':'${k}');renderNews();renderSentDist();" title="${k}: ${counts[k]} of ${total}" style="width:${counts[k]/total*100}%;background:${col[k]};cursor:pointer"></div>`).join('');
+  const legend = ['Positive','Neutral','Negative'].map(k=>
+    `<button onclick="newsFilter=(newsFilter==='${k}'?'All':'${k}');renderNews();renderSentDist();" class="flex items-center gap-1.5 text-xs ${newsFilter===k?'font-semibold text-on-surface':'text-muted'} hover:text-on-surface transition-colors">
+      <span class="w-2.5 h-2.5 rounded-full" style="background:${col[k]}"></span>${k} ${counts[k]}</button>`).join('');
+  document.getElementById('sentDist').innerHTML =
+    `<div class="flex h-2.5 rounded-pill overflow-hidden bg-surface-highest">${bar}</div>
+     <div class="flex items-center gap-4 flex-wrap">${legend}${newsFilter!=='All'?`<button onclick="newsFilter='All';renderNews();renderSentDist();" class="text-xs text-secondary hover:underline">clear filter</button>`:''}</div>`;
+}
+
+// ---- Sentiment chart (live Chart.js, multi-timeframe + tooltips) ----
+const SENT_90 = Array.from({length:90},(_,i)=>{ const base=0.25+(i/89)*0.6; const noise=Math.sin(i/3)*0.03+((i%5)-2)*0.008; return Math.max(0.05,Math.min(0.98,+(base+noise).toFixed(3))); });
+const SENT_SERIES = { '7D':SENT_90.slice(-7), '30D':SENT_90.slice(-30), '90D':SENT_90 };
+let sentChartObj = null, sentRange = '30D';
+function drawSent(){
+  const ctx = document.getElementById('sentChart'); if(!ctx) return;
+  const data = SENT_SERIES[sentRange];
+  if(sentChartObj) sentChartObj.destroy();
+  const g = ctx.getContext('2d').createLinearGradient(0,0,0,224);
+  g.addColorStop(0,'rgba(8,9,9,0.10)'); g.addColorStop(1,'rgba(8,9,9,0)');
+  sentChartObj = new Chart(ctx,{ type:'line',
+    data:{ labels:data.map((_,i)=>'D-'+(data.length-i)), datasets:[{ data, borderColor:'#080909', borderWidth:1.5,
+      fill:true, backgroundColor:g, tension:0.4, pointRadius:0, pointHoverRadius:4, pointHoverBackgroundColor:'#080909' }] },
+    options:{ responsive:true, maintainAspectRatio:false, animation:{ duration:900, easing:'easeOutCubic' },
+      interaction:{ intersect:false, mode:'index' },
+      plugins:{ legend:{display:false}, tooltip:{ enabled:true, displayColors:false,
+        backgroundColor:'#080909', padding:10, cornerRadius:10,
+        callbacks:{ title:items=>items[0].label, label:c=>'Sentiment '+Math.round(c.parsed.y*100)+'%' } } },
+      scales:{ x:{ display:false }, y:{ display:false, min:0, max:1 } } }
+  });
+  document.getElementById('sentRangeLabel').textContent = data.length+' sessions · '+Math.round(data[data.length-1]*100)+'% now';
+}
+function renderSentRange(){
+  document.getElementById('sentRange').innerHTML = ['7D','30D','90D'].map(r=>
+    `<button onclick="sentRange='${r}';drawSent();renderSentRange()" class="sent-range text-xs font-medium px-3 py-1.5 rounded-pill border border-outline-variant bg-surface text-muted hover:border-primary transition-colors ${r===sentRange?'on':''}">${r}</button>`).join('');
+}
+// count-up animation for the stat chips
+function runCountUps(scope){
+  (scope||document).querySelectorAll('.count-up').forEach(el=>{
+    if(el.dataset.done) return; el.dataset.done='1';
+    const target=+el.dataset.target, pre=el.dataset.prefix||'', suf=el.dataset.suffix||'';
+    const t0=performance.now(), dur=900;
+    (function tick(now){ const p=Math.min(1,(now-t0)/dur); const v=Math.round(target*(1-Math.pow(1-p,3)));
+      el.textContent=pre+v+suf; if(p<1) requestAnimationFrame(tick); })(t0);
+  });
+}
+renderNews(); renderSentDist(); renderSentRange(); drawSent(); runCountUps();
+
+// ---- AI Explainer: SHAP + model confidence ----
+const SHAP = [["RSI 14",0.41,82],["MACD Histogram",0.35,70],["Sentiment",0.31,62],["VIX Regime",0.27,55],["BB %B",-0.13,25],["Volume Z-Score",-0.09,18]];
+document.getElementById('shapList').innerHTML = SHAP.map(([f,v,w])=>{
+  const pos=v>=0; const col=pos?'bg-green-500':'bg-red-500'; const tc=pos?'text-green-600':'text-red-500';
+  return `<div class="flex items-center gap-3">
+    <span class="w-28 text-sm text-muted flex-shrink-0">${f}</span>
+    <div class="flex-1 h-2 rounded-pill bg-surface-highest overflow-hidden"><div class="h-full ${col} rounded-pill" style="width:${w}%"></div></div>
+    <span class="w-12 text-right text-sm font-semibold ${tc}">${pos?'+':''}${v.toFixed(2)}</span>
+  </div>`;}).join('');
+const CONF = [["ARIMA (Time-Series)",65],["LightGBM (ML Model)",81],["Meta-Ensemble (Final)",79]];
+document.getElementById('confList').innerHTML = CONF.map(([m,p],i)=>{
+  const final=i===CONF.length-1;
+  return `<div class="flex flex-col gap-1">
+    <div class="flex justify-between text-sm"><span class="${final?'font-semibold':'text-muted'}">${m}</span><span class="font-semibold">${p}%</span></div>
+    <div class="h-2 rounded-pill bg-surface-highest overflow-hidden"><div class="h-full ${final?'bg-primary':'bg-secondary'} rounded-pill" style="width:${p}%"></div></div>
+  </div>`;}).join('');
+
+// ---- Risk Guard (drawdown overlay) ----
+function ddState(dd){
+  if(dd < 8) return { status:"FULLY INVESTED", exp:100, cash:0 };
+  if(dd >= 20) return { status:"MAX DEFENSIVE", exp:30, cash:70 };
+  const exp = Math.round(100 - (dd-8)/12*70);
+  return { status:"DE-RISKING", exp, cash:100-exp };
+}
+function renderRiskGuard(){
+  const dd = parseInt(document.getElementById('ddSlider').value,10);
+  document.getElementById('ddVal').textContent = `−${dd}%`;
+  const s = ddState(dd), cap=50000;
+  const icon = {"FULLY INVESTED":"🟢","DE-RISKING":"🟡","MAX DEFENSIVE":"🔴"}[s.status];
+  const bg = s.status==="FULLY INVESTED"?'bg-green-50 border-green-200':(s.status==="DE-RISKING"?'bg-surface-highest border-outline-variant':'bg-red-50 border-red-200');
+  let reason;
+  if(s.status==="FULLY INVESTED") reason=`Nifty 50 is ${dd}% off its recent peak — shallower than the 8% de-risk line. Holding the basket in full; ordinary dips aren't worth timing.`;
+  else if(s.status==="MAX DEFENSIVE") reason=`Nifty 50 is ${dd}% off its peak — past the 20% catastrophic line. Exposure cut to the 30% floor; ${s.cash}% parked in cash as crash insurance.`;
+  else reason=`Nifty 50 is ${dd}% off its peak — inside the de-risk band (8% to 20%). Trimmed to ${s.exp}% invested, ${s.cash}% in cash, scaling further if the drawdown deepens.`;
+  const invested=Math.round(cap*s.exp/100), cash=cap-invested, inr=v=>'₹'+v.toLocaleString('en-IN');
+  document.getElementById('ddGuardCard').innerHTML = `
+    <div class="rounded-card p-6 border ${bg} flex flex-col gap-4">
+      <div class="flex items-center justify-between"><span class="text-lg font-bold">${icon} ${s.status}</span><span class="text-sm font-semibold">${s.exp}% invested</span></div>
+      <p class="text-sm text-on-surface leading-relaxed">${reason}</p>
+      <div class="flex gap-8 pt-3 border-t border-outline-variant">
+        <div><p class="text-xs text-muted mb-1">Invested</p><p class="text-lg font-semibold">${inr(invested)}</p></div>
+        <div><p class="text-xs text-muted mb-1">Cash</p><p class="text-lg font-semibold">${inr(cash)}</p></div>
+        <div><p class="text-xs text-muted mb-1">Exposure</p><p class="text-lg font-semibold">${s.exp}%</p></div>
+      </div>
+    </div>`;
+}
+
+// ---- Halal Screen (AAOIFI) ----
+const HALAL_DATA = (window.HALAL_DASH && window.HALAL_DASH.data) || {};
+const HALAL_HISTORY = (window.HALAL_DASH && window.HALAL_DASH.history) || {};
+// ---- 8-year point-in-time compliance timeline (Boro-skinned) ----
+function timelineHTML(t){
+  const hist = HALAL_HISTORY[t]; if(!hist || !hist.length) return "";
+  const cc = {"🟢":"22,163,74","🟡":"217,119,6","🔴":"239,68,68"};
+  const cells = hist.map(h=>`<div class="text-center"><div class="w-7 h-7 rounded-md flex items-center justify-center text-[13px]" style="background:rgba(${cc[h.t]},.12);border:1px solid rgba(${cc[h.t]},.35)">${h.t}</div><div class="text-[9px] text-muted mt-0.5">'${String(h.y).slice(2)}</div></div>`).join("");
+  const rank = c => "🟢🟡🔴".indexOf(c);
+  let worsen=null, lastChange=null;
+  for(let k=1;k<hist.length;k++){ if(hist[k].t!==hist[k-1].t){ lastChange=k; if(rank(hist[k].t)>rank(hist[k-1].t)) worsen=k; } }
+  let note=""; const pick = worsen!==null?worsen:lastChange;
+  if(pick!==null){
+    const worse = worsen!==null;
+    const tail = hist[pick].t==="🔴" ? " — holding past here means silently holding a now-haram stock" : "";
+    note = `<div class="text-xs mt-2 ${worse?'text-red-500':'text-green-600'}">${worse?'↓':'↑'} Crossed ${hist[pick-1].t}→${hist[pick].t} in FY${hist[pick].y}${worse?tail:''}</div>`;
+  }
+  return `<div class="mt-3 pt-3 border-t border-outline-variant"><div class="text-xs text-muted mb-2">📅 8-year compliance timeline <span class="text-muted/70">(point-in-time — each year screened on that year's data)</span></div><div class="flex gap-1.5 flex-wrap">${cells}</div>${note}</div>`;
+}
+function classifyHalal(d, i){
+  const dt = d==null?1:(d<33?0:(d<45?1:2));
+  const it = i==null?1:(i<5?0:(i<10?1:2));
+  const sev = Math.max(dt,it);
+  const tier = ["🟢","🟡","🔴"][sev];
+  const dTxt = d==null?"Debt/assets unknown — treated as caution":`Debt/assets ${d}% `+(dt===0?"— well under 33%":(dt===1?"— in the 33–45% caution band":"— exceeds 45% limit"));
+  const iTxt = i==null?"Interest income unknown — treated as caution":`Interest income ${i}% of revenue `+(it===0?"— under 5%":(it===1?"— in the 5–10% caution band":"— exceeds 10% limit"));
+  const reasons = [ (dt===0?"✓ ":(dt===1?"⚠ ":"✗ "))+dTxt, (it===0?"✓ ":(it===1?"⚠ ":"✗ "))+iTxt ];
+  return { tier, verdict:["HALAL","DOUBTFUL — screen + purify","NOT HALAL"][sev], reasons };
+}
+// Citation posture: every verdict cites a named standard + source + verified-on date.
+// Turns the data-freshness weakness into an honesty signal (council #1 / #7).
+function citationHTML(rec){
+  const asof = rec.asof, src = rec.src;
+  const fmt = asof ? new Date(asof).toLocaleDateString('en-IN',{month:'short',year:'numeric'}) : null;
+  const stale = rec.stale;
+  const chip = stale
+    ? `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-pill bg-amber-50 text-amber-700 border border-amber-200 font-semibold">⚠ stale${fmt?' · '+fmt:''}</span>`
+    : `<span class="inline-flex items-center gap-1 px-2 py-1 rounded-pill bg-surface text-muted border border-outline-variant font-semibold">✓ verified${fmt?' · '+fmt:''}</span>`;
+  return `<div class="mt-3 pt-3 border-t border-outline-variant flex items-center gap-2 flex-wrap text-[11px]">
+    ${chip}
+    <span class="text-muted">Standard: <strong class="text-on-surface-variant">AAOIFI ratios</strong> · source: ${src||'—'}</span>
+    <button class="info-btn" onclick="showInfo('halal_screen')">i</button>
+  </div>`;
+}
+function halalCardHTML(t, rec){
+  const c = classifyHalal(rec.d, rec.i);
+  const bg = c.tier==='🟢'?'bg-green-50 border-green-200':(c.tier==='🟡'?'bg-surface-highest border-outline-variant':'bg-red-50 border-red-200');
+  const tc = c.tier==='🟢'?'text-green-600':(c.tier==='🟡'?'text-on-surface':'text-red-500');
+  return `<div class="rounded-card p-5 border ${bg}">
+    <div class="flex items-center justify-between mb-3"><span class="text-lg font-bold">${c.tier} ${t}</span><span class="text-sm font-semibold ${tc}">${c.verdict}</span></div>
+    <ul class="flex flex-col gap-1.5 text-sm text-on-surface">${c.reasons.map(r=>`<li>${r}</li>`).join('')}</ul>
+    ${rec.pur?`<p class="text-xs text-muted mt-3">Dividend purification: <strong>${rec.pur}%</strong> of dividends to charity.</p>`:''}
+    ${timelineHTML(t)}
+    ${citationHTML(rec)}
+    <button onclick="shareVerdict('${t}')" class="mt-3 w-full flex items-center justify-center gap-2 text-xs font-semibold py-2.5 rounded-pill border border-primary/30 text-primary hover:bg-primary hover:text-white transition-colors"><span class="material-symbols-outlined text-[16px]">ios_share</span>Share this verdict</button>
+  </div>`;
+}
+// ---- Shareable verdict card: the viral hook (copy-link + downloadable PNG) ----
+function _verdictSVG(t, rec){
+  const c = classifyHalal(rec.d, rec.i);
+  const accent = c.tier==='🟢'?'#16a34a':(c.tier==='🟡'?'#d97706':'#dc2626');
+  const fmt = rec.asof ? new Date(rec.asof).toLocaleDateString('en-IN',{month:'short',year:'numeric'}) : '—';
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const reasons = c.reasons.map((r,i)=>`<text x="64" y="${560+i*52}" font-family="Inter,Arial,sans-serif" font-size="26" fill="#cbd5e1">${esc(r)}</text>`).join('');
+  const pur = rec.pur?`<text x="64" y="700" font-family="Inter,Arial,sans-serif" font-size="24" fill="#94a3b8">Dividend purification: ${rec.pur}% to charity</text>`:'';
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080">
+    <rect width="1080" height="1080" fill="#0b1220"/>
+    <rect x="0" y="0" width="1080" height="12" fill="${accent}"/>
+    <text x="64" y="120" font-family="Inter,Arial,sans-serif" font-size="34" font-weight="700" fill="#ffffff">Boro · Halal Verdict</text>
+    <text x="64" y="168" font-family="Inter,Arial,sans-serif" font-size="24" fill="#64748b">AAOIFI Shariah screening · verified ${fmt}</text>
+    <text x="64" y="360" font-family="Inter,Arial,sans-serif" font-size="120" font-weight="800" fill="#ffffff">${c.tier} ${esc(t)}</text>
+    <text x="64" y="450" font-family="Inter,Arial,sans-serif" font-size="56" font-weight="700" fill="${accent}">${esc(c.verdict)}</text>
+    ${reasons}
+    ${pur}
+    <text x="64" y="980" font-family="Inter,Arial,sans-serif" font-size="22" fill="#475569">Debt/assets ${rec.d??'—'}% · Interest income ${rec.i??'—'}% · source: ${esc(rec.src||'—')}</text>
+    <text x="64" y="1020" font-family="Inter,Arial,sans-serif" font-size="22" fill="#475569">Screen it yourself — not financial advice.</text>
+  </svg>`;
+}
+function shareVerdict(t){
+  const rec = HALAL_DATA[t]; if(!rec) return;
+  const c = classifyHalal(rec.d, rec.i);
+  let ov = document.getElementById('shareOverlay');
+  if(!ov){ ov=document.createElement('div'); ov.id='shareOverlay';
+    ov.style.cssText='position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:20px;';
+    ov.onclick=e=>{ if(e.target===ov) ov.remove(); };
+    document.body.appendChild(ov); }
+  const link = location.origin+location.pathname+'#halal='+t;
+  ov.innerHTML = `<div style="background:var(--surface-lowest,#fff);border-radius:20px;max-width:420px;width:100%;padding:22px;box-shadow:0 30px 80px -20px rgba(0,0,0,.5);">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <strong style="font-size:16px;">Share verdict</strong>
+        <span onclick="document.getElementById('shareOverlay').remove()" class="material-symbols-outlined" style="cursor:pointer;color:#94a3b8;">close</span>
+      </div>
+      <img id="shareImg" alt="${t} halal verdict" style="width:100%;border-radius:14px;display:block;border:1px solid rgba(0,0,0,.08);"/>
+      <div style="display:flex;gap:10px;margin-top:16px;">
+        <button onclick="copyVerdictLink('${t}')" class="flex-1" style="flex:1;padding:11px;border-radius:10px;border:1px solid var(--outline-variant,#e5e7eb);font-weight:600;font-size:13px;cursor:pointer;background:transparent;">🔗 <span id="copyLbl">Copy link</span></button>
+        <button onclick="downloadVerdict('${t}')" style="flex:1;padding:11px;border-radius:10px;border:none;background:var(--primary,#6366f1);color:#fff;font-weight:600;font-size:13px;cursor:pointer;">⬇ Download image</button>
+      </div>
+      <p style="font-size:11px;color:#94a3b8;margin-top:10px;text-align:center;">${link}</p>
+    </div>`;
+  const svg = _verdictSVG(t, rec);
+  document.getElementById('shareImg').src = 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+}
+function copyVerdictLink(t){
+  const rec=HALAL_DATA[t]; const c=classifyHalal(rec.d,rec.i);
+  const link = location.origin+location.pathname+'#halal='+t;
+  const text = `${c.tier} ${t} — ${c.verdict} (AAOIFI screen). ${link}`;
+  navigator.clipboard.writeText(text).then(()=>{ const l=document.getElementById('copyLbl'); if(l){ l.textContent='Copied!'; setTimeout(()=>l.textContent='Copy link',1500);} });
+}
+function downloadVerdict(t){
+  const rec=HALAL_DATA[t]; const svg=_verdictSVG(t,rec);
+  const img=new Image();
+  img.onload=()=>{ const cv=document.createElement('canvas'); cv.width=1080; cv.height=1080;
+    cv.getContext('2d').drawImage(img,0,0);
+    const a=document.createElement('a'); a.href=cv.toDataURL('image/png'); a.download=`halal-verdict-${t}.png`; a.click(); };
+  img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+}
+// ---- Tier-change alert banner (🟢→🔴 since last quarterly screen) ----
+const HALAL_ALERTS = (window.HALAL_DASH && window.HALAL_DASH.alerts) || [];
+function renderTierBanner(){
+  let html;
+  if(!HALAL_ALERTS.length){
+    html = `<div class="flex items-center gap-3 bg-green-50 border border-green-200 rounded-card px-6 py-4">
+      <span class="text-green-600 text-lg">✓</span>
+      <p class="text-sm font-medium text-green-700">All holdings still Shariah-compliant — no tier changes since the last quarterly screen.</p></div>`;
+  } else {
+    const worse = HALAL_ALERTS.filter(a=>a.worsened).length;
+    const rows = HALAL_ALERTS.map(a=>`<div class="flex items-center justify-between text-sm py-1">
+      <span class="font-semibold">${a.from}→${a.to} ${a.ticker}</span>
+      <span class="text-xs ${a.worsened?'text-red-600':'text-green-600'}">${a.to==='🔴'?'now NON-TRADEABLE — exit / avoid':(a.worsened?'compliance worsened':'improved')}</span></div>`).join('');
+    html = `<div class="bg-red-50 border border-red-200 rounded-card p-6 flex flex-col gap-2">
+      <div class="flex items-center gap-2"><span class="text-lg">⚠️</span><h3 class="font-semibold tracking-tight text-red-700">${worse} holding${worse!==1?'s':''} changed Shariah tier since last screen</h3><button class="info-btn" onclick="showInfo('tier_alerts')">i</button></div>
+      <div class="flex flex-col gap-1">${rows}</div>
+      <p class="text-xs text-red-600/80 mt-1">In production this fires a Telegram push the moment a holding crosses the AAOIFI line.</p></div>`;
+  }
+  ['tierBanner','tierBannerHalal'].forEach(id=>{ const el=document.getElementById(id); if(el) el.innerHTML=html; });
+}
+
+// ---- Screening health ("who screens the screener" — make freshness visible) ----
+const HALAL_HEALTH = (window.HALAL_DASH && window.HALAL_DASH.health) || {};
+function renderScreenHealth(){
+  const el=document.getElementById('screenHealth'); if(!el) return;
+  const h=HALAL_HEALTH, asof=(window.HALAL_DASH&&window.HALAL_DASH.asof)||'';
+  const fmt = asof? new Date(asof).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) : '—';
+  let next='—'; if(asof){ const d=new Date(asof); d.setMonth(d.getMonth()+3); next=d.toLocaleDateString('en-IN',{month:'short',year:'numeric'}); }
+  el.innerHTML = `<div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-4">
+    <div class="flex items-center justify-between flex-wrap gap-2">
+      <h3 class="font-semibold tracking-tight">Who screens the screener?<button class="info-btn" onclick="showInfo('halal_screen')">i</button></h3>
+      <span class="text-xs text-muted">a Shariah verdict is a recurring obligation — re-screened every quarter</span>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-2xl font-bold tracking-tight">${h.screened||0}</p><p class="text-xs text-muted">stocks screened</p></div>
+      <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-2xl font-bold tracking-tight ${h.stale?'text-amber-600':'text-green-600'}">${h.fresh_pct||0}%</p><p class="text-xs text-muted">fresh · ${h.stale||0} stale</p></div>
+      <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-xl font-bold tracking-tight">${fmt}</p><p class="text-xs text-muted">last verified</p></div>
+      <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-xl font-bold tracking-tight">${next}</p><p class="text-xs text-muted">next refresh due</p></div>
+    </div>
+    <p class="text-xs text-muted">Re-screen: <code class="text-[10px]">scripts/refresh_fundamentals.py</code> → <code class="text-[10px]">src.tier_monitor</code> → Telegram. Wiring this into the nightly CI job removes the solo-dev single-point-of-failure.</p>
+  </div>`;
+}
+renderTierBanner(); renderScreenHealth();
+
+function renderHalalLookup(){
+  const q = (document.getElementById('halalSearch').value||"").trim().toUpperCase();
+  const box = document.getElementById('halalResult');
+  if(!q){ box.innerHTML=""; return; }
+  const key = Object.keys(HALAL_DATA).find(k=>k===q || k.startsWith(q));
+  if(key){ box.innerHTML = halalCardHTML(key, HALAL_DATA[key]); return; }
+  box.innerHTML = `<div class="rounded-card p-4 text-sm bg-surface border border-outline-variant text-muted">"${q}" isn't in the quarterly cache. In the app this falls back to a live yfinance screen — try a cached name from the chips above.</div>`;
+}
+function initHalal(){
+  if(!Object.keys(HALAL_DATA).length) return;
+  const chips = ["TCS","RELIANCE","BHARTIARTL","NTPC","TITAN","MARUTI"].filter(t=>HALAL_DATA[t]);
+  document.getElementById('halalChips').innerHTML = chips.map(t=>`<span onclick="document.getElementById('halalSearch').value='${t}';renderHalalLookup()" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-pill border border-outline-variant bg-surface text-xs cursor-pointer hover:border-primary transition-colors">${classifyHalal(HALAL_DATA[t].d,HALAL_DATA[t].i).tier} <strong>${t}</strong></span>`).join('');
+  if(!document.getElementById('halalSearch').value){ document.getElementById('halalSearch').value="TCS"; }
+  renderHalalLookup();
+  const red = Object.keys(HALAL_DATA).filter(t=>classifyHalal(HALAL_DATA[t].d,HALAL_DATA[t].i).tier==="🔴");
+  document.getElementById('tierAlerts').innerHTML = red.map(t=>{ const r=HALAL_DATA[t];
+    return `<div class="flex items-center justify-between text-sm border-b border-outline-variant last:border-0 pb-2"><span class="font-medium">🔴 ${t}</span><span class="text-xs text-muted">D/A ${r.d}% · Int ${r.i}%</span></div>`;
+  }).join('') || '<p class="text-sm text-muted">No cached names fail the screen.</p>';
+}
+
+// ---- Zakat calculator ----
+function calcZakat(){
+  const g=id=>parseFloat(document.getElementById(id).value)||0;
+  const portfolio=g('z_portfolio'), cost=g('z_cost'), cash=g('z_cash'), gold=g('z_gold');
+  const NISAB=45000, RATE=0.025;
+  const total=portfolio+cash+gold, zakat=total*RATE;
+  const gain=portfolio-cost, gainZakat=Math.max(gain,0)*RATE, met=total>=NISAB;
+  const inr=v=>'₹'+Math.round(v).toLocaleString('en-IN');
+  document.getElementById('zakatResult').innerHTML=`
+    <div class="rounded-card p-5 mb-5 border ${met?'bg-green-50 border-green-200':'bg-red-50 border-red-200'}">
+      <p class="text-xs text-muted mb-1">Nisab Check (Silver ~₹45,000)</p>
+      <p class="text-lg font-bold ${met?'text-green-600':'text-red-500'}">${met?'✅ Zakat Applicable':'❌ Below Nisab'}</p>
+      <p class="text-xs text-muted mt-1">Total zakatable wealth: ${inr(total)}</p>
+    </div>
+    <div class="flex flex-col gap-4">
+      <div class="flex justify-between items-baseline border-b border-outline-variant pb-3"><span class="text-sm text-muted">Total Zakat Due (2.5%)</span><span class="text-3xl font-bold tracking-tight">${inr(zakat)}</span></div>
+      <div class="flex justify-between items-baseline"><span class="text-sm text-muted">Zakat on gains only</span><span class="text-lg font-semibold">${inr(gainZakat)}</span></div>
+      <p class="text-xs text-muted mt-2 leading-relaxed">Unrealised gain: ${inr(gain)}. AAOIFI: zakat is due on the full market value of tradeable shares held under one year, not just gains.</p>
+    </div>
+    <div class="flex flex-col sm:flex-row gap-3 mt-5">
+      <button onclick="zakatCertificate()" class="flex-1 inline-flex items-center justify-center gap-2 text-sm font-semibold py-3 rounded-pill bg-primary text-white hover:opacity-90 transition-opacity">📄 Download certificate (PDF)</button>
+      <a href="https://www.launchgood.com" target="_blank" rel="noopener" class="flex-1 inline-flex items-center justify-center gap-2 text-sm font-semibold py-3 rounded-pill border border-primary/30 text-primary hover:bg-primary hover:text-white transition-colors">Donate Zakat now →</a>
+    </div>`;
+}
+// ---- #6: guided Zakat → downloadable PDF certificate (print-to-PDF, no deps) ----
+function zakatCertificate(){
+  const g=id=>parseFloat(document.getElementById(id).value)||0;
+  const portfolio=g('z_portfolio'), cost=g('z_cost'), cash=g('z_cash'), gold=g('z_gold');
+  const NISAB=45000, RATE=0.025;
+  const total=portfolio+cash+gold, zakat=total*RATE, met=total>=NISAB;
+  const inr=v=>'₹'+Math.round(v).toLocaleString('en-IN');
+  const today=new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+  const w=window.open('','_blank','width=820,height=1040');
+  if(!w){ alert('Allow pop-ups to download the Zakat certificate.'); return; }
+  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Zakat Certificate — ${today}</title><style>
+    *{box-sizing:border-box;font-family:Georgia,'Times New Roman',serif;}
+    body{margin:0;padding:48px;color:#1a2233;background:#f6f4ec;}
+    .cert{border:3px double #c4a44a;border-radius:14px;padding:48px;max-width:680px;margin:0 auto;background:#fffdf7;box-shadow:0 10px 40px rgba(0,0,0,.08);}
+    .crest{font-size:44px;text-align:center;line-height:1;}
+    h1{text-align:center;font-size:27px;letter-spacing:1px;margin:10px 0 2px;}
+    .sub{text-align:center;color:#7a7a6a;font-size:13px;margin-bottom:30px;}
+    .row{display:flex;justify-content:space-between;padding:11px 2px;border-bottom:1px solid #ece7d6;font-size:15px;}
+    .row.tot{border-bottom:none;margin-top:16px;align-items:baseline;}
+    .total{font-size:30px;color:#16653a;font-weight:bold;}
+    .note{font-size:11.5px;color:#9a9a8a;margin-top:26px;line-height:1.7;}
+    .sign{display:flex;justify-content:space-between;margin-top:42px;font-size:12px;color:#555;}
+    @media print{ .noprint{display:none;} body{background:#fff;padding:0;} .cert{box-shadow:none;} }
+  </style></head><body>
+    <div class="cert">
+      <div class="crest">🕌</div>
+      <h1>Zakat Certificate</h1>
+      <p class="sub">Annual purification of wealth · AAOIFI method · issued ${today}</p>
+      <div class="row"><span>Zakatable portfolio value</span><span>${inr(portfolio)}</span></div>
+      <div class="row"><span>Cash &amp; savings</span><span>${inr(cash)}</span></div>
+      <div class="row"><span>Gold value</span><span>${inr(gold)}</span></div>
+      <div class="row"><span><strong>Total zakatable wealth</strong></span><span><strong>${inr(total)}</strong></span></div>
+      <div class="row"><span>Nisab status (silver ~₹45,000)</span><span>${met?'✅ Zakat applicable':'❌ Below nisab'}</span></div>
+      <div class="row tot"><span>Zakat due (2.5%)</span><span class="total">${inr(zakat)}</span></div>
+      <p class="note">This certificate records a self-assessed Zakat obligation computed at 2.5% of total zakatable wealth held above the nisab threshold for one lunar year (hawl). Dividend purification is a separate obligation and is not included here. This is a calculation aid, <strong>not a fatwa</strong> — confirm with a qualified scholar.</p>
+      <div class="sign"><span>_______________________<br>Account holder</span><span style="text-align:right;">Boro · Halal Finance<br>generated ${today}</span></div>
+      <button class="noprint" onclick="window.print()" style="display:block;margin:30px auto 0;padding:12px 26px;background:#16653a;color:#fff;border:none;border-radius:8px;font-size:14px;font-family:system-ui,sans-serif;cursor:pointer;">Save as PDF / Print</button>
+    </div>
+    <script>setTimeout(function(){window.print();},450);<\/script>
+  </body></html>`);
+  w.document.close();
+}
+
+// ---- Watchlist ----
+const WATCHLIST = {
+  'RELIANCE':'Energy','TCS':'IT','INFY':'IT','WIPRO':'IT','HCLTECH':'IT','TECHM':'IT','LTIM':'IT','PERSISTENT':'IT','COFORGE':'IT','MPHASIS':'IT',
+  'NIITTECH':'IT','TATAELXSI':'IT','CYIENT':'IT','HAPPSTMNDS':'IT','BIRLASOFT':'IT',
+  'DRREDDY':'Pharma','SUNPHARMA':'Pharma','CIPLA':'Pharma','DIVISLAB':'Pharma','BIOCON':'Pharma','AUROPHARMA':'Pharma','LUPIN':'Pharma','ALKEM':'Pharma',
+  'TORNTPHARM':'Pharma','IPCALAB':'Pharma','NATCOPHARMA':'Pharma','METROPOLIS':'Pharma',
+  'MARUTI':'Auto','TATAMOTORS':'Auto','BAJAJ-AUTO':'Auto','EICHERMOT':'Auto','ASHOKLEY':'Auto','TIINDIA':'Auto','MOTHERSON':'Auto','BOSCHLTD':'Auto',
+  'ONGC':'Energy','NTPC':'Energy','POWERGRID':'Energy','PETRONET':'Energy',
+  'ADANIGREEN':'GreenEnergy','TATAPOWER':'GreenEnergy','SJVN':'GreenEnergy','NHPC':'GreenEnergy','CESC':'GreenEnergy','TORNTPOWER':'GreenEnergy',
+  'HINDUNILVR':'FMCG','ITC':'FMCG','NESTLEIND':'FMCG','BRITANNIA':'FMCG','DABUR':'FMCG','MARICO':'FMCG','EMAMILTD':'FMCG','GODREJCP':'FMCG',
+  'LARSEN':'Infra','ABB':'Infra','THERMAX':'Infra','CUMMINSIND':'Infra','KEC':'Infra','KALPATPOWR':'Infra','APLAPOLLO':'Infra','MINDAIND':'Infra',
+  'NMDC':'Energy','MOIL':'Energy','VEDANT':'FMCG','BLUEDART':'Infra','CLEAN':'GreenEnergy','DEEPAKNTR':'Pharma','ZYDUSLIFE':'Pharma',
+  'PIIND':'Pharma','SUVENPHAR':'Pharma','GRANULES':'Pharma','LALPATHLAB':'Pharma','HDFCLIFE':'FMCG','SBILIFE':'FMCG','BAJAJFINSV':'FMCG',
+  'ULTRACEMCO':'Infra','AMBUJACEM':'Infra','ACC':'Infra','RAMCOCEM':'Infra','SHREECEM':'Infra','JKCEMENT':'Infra','DALMIACERA':'Infra',
+  'TITAN':'FMCG','TRENT':'FMCG','ABFRL':'FMCG','PAGEIND':'FMCG',
+};
+const WL_SIGNALS = ['🟢','🟢','🟢','🟡','🟡','🔴','🟢','🟡','🟢','🟢'];
+const WL_SECTORS = ['All', ...[...new Set(Object.values(WATCHLIST))].sort()];
+let wlFilter = 'All';
+function renderWL(){
+  const q = (document.getElementById('wlSearch')?.value || '').toUpperCase().trim();
+  document.getElementById('wlCount').textContent = Object.keys(WATCHLIST).length;
+  let shown = 0;
+  document.getElementById('wlPills').innerHTML = Object.entries(WATCHLIST).map(([t,sec],i)=>{
+    const sig = WL_SIGNALS[i % WL_SIGNALS.length];
+    const hideSec = wlFilter!=='All' && sec!==wlFilter;
+    const hideQ = q && !(t.toUpperCase().includes(q) || sec.toUpperCase().includes(q));
+    const hide = hideSec || hideQ;
+    if(!hide) shown++;
+    return `<span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-pill border border-outline-variant bg-surface text-xs cursor-pointer hover:border-primary transition-colors" style="display:${hide?'none':'inline-flex'}">${sig} <strong>${t}</strong> <span class="text-muted text-[10px]">${sec}</span></span>`;
+  }).join('');
+  document.getElementById('wlEmpty').classList.toggle('hidden', shown>0);
+}
+document.getElementById('wlFilters').innerHTML = WL_SECTORS.map(s=>`<button data-sec="${s}" class="wl-filter text-xs font-medium px-4 py-2 rounded-pill border ${s==='All'?'bg-primary text-white border-primary':'bg-surface-lowest text-muted border-outline-variant'} transition-colors">${s}</button>`).join('');
+document.getElementById('wlFilters').addEventListener('click', e=>{
+  const b=e.target.closest('.wl-filter'); if(!b) return;
+  wlFilter=b.dataset.sec;
+  document.querySelectorAll('.wl-filter').forEach(x=>{ const on=x.dataset.sec===wlFilter;
+    x.className='wl-filter text-xs font-medium px-4 py-2 rounded-pill border transition-colors '+(on?'bg-primary text-white border-primary':'bg-surface-lowest text-muted border-outline-variant'); });
+  renderWL();
+});
+renderWL();
+calcZakat();
+
+// ---- 52 Features groups ----
+// Real engineered set from feature_engineering.add_features → ensemble.
+// [name, plain-English tip, importance 0-100, core?] — core = one of the 7 scorer drivers.
+const FEATS = {
+  "Price & Returns": { opt:false, items:[
+    ["Return 1d","1-day price change",55],["Return 3d","3-day price change",52],
+    ["Return 5d","5-day momentum — a core scorer input",82,true],
+    ["Return Lag 1","yesterday's return",40],["Return Lag 2","2-days-ago return",38],["Return Lag 3","3-days-ago return",36]] },
+  "Trend & Moving Avgs": { opt:false, items:[
+    ["SMA 5","5-day average price",48],["SMA 20","20-day average",58],["SMA 50","50-day average",60],["SMA 200","200-day average",62],
+    ["Price vs SMA20","above/below 20d — core driver",84,true],["Price vs SMA50","above/below 50d — core driver",83,true],
+    ["Price vs SMA200","above/below long-term avg",66],["SMA5 vs SMA20","short-term crossover",54],
+    ["Golden Cross","50d above 200d (bullish regime)",70],["SMA200 Slope","long-term trend direction",58]] },
+  "Momentum": { opt:false, items:[
+    ["RSI 14","overbought/oversold — core driver",90,true],["RSI 7","fast RSI",62],["RSI 21","slow RSI",58],
+    ["MACD","trend-following momentum",72],["MACD Signal","MACD's own average",60],
+    ["MACD Histogram","MACD minus signal — core driver",88,true],
+    ["ROC 5","5-day rate of change",56],["ROC 10","10-day rate of change",54],["ROC 20","20-day rate of change",52],
+    ["Williams %R","momentum oscillator",50]] },
+  "Volatility": { opt:false, items:[
+    ["ATR 14","average true range (position sizing)",68],["ATR %","ATR relative to price",64],
+    ["Volatility 5d","5-day std of returns",52],["Volatility 10d","10-day std",50],["Volatility 20d","20-day std",54],
+    ["BB Width","Bollinger band width (squeeze)",58],["BB %B","position in the band — core driver",80,true]] },
+  "Volume": { opt:false, items:[
+    ["OBV","on-balance volume (accumulation)",56],["Volume SMA20","20-day average volume",46],
+    ["Volume Ratio","today vs avg — core driver",78,true],["Volume Z-Score","how unusual today's volume is",60],
+    ["MFI 14","money flow index",54],["CMF 20","Chaikin money flow",52]] },
+  "Calendar": { opt:false, items:[
+    ["Day of Week","Mon–Fri seasonality",34],["Month","month-of-year effect",32],["Week of Year","weekly seasonality",30],
+    ["Days to Expiry","NSE F&O expiry proximity",44],["Holiday Proximity","pre/post-holiday drift",36]] },
+  "Market Context": { opt:false, items:[
+    ["Nifty Return 20d","index 20-day momentum",50],["Nifty Rel Strength","stock vs Nifty outperformance",64]] },
+  "Sentiment": { opt:true, items:[
+    ["Sentiment Score","FinBERT news polarity",58],["Sentiment Volume","how much news today",44],["Sentiment Momentum","sentiment trend",48]] },
+  "Macro": { opt:true, items:[
+    ["VIX Level","fear gauge",62],["DXY Index","US dollar strength",46],["Yield Curve Spread","10y–2y spread",50],["Market Breadth","adv/decline health",52]] },
+};
+let featFilter = 'All';
+const FEAT_GROUPS = Object.keys(FEATS);
+const featTotal = FEAT_GROUPS.reduce((n,g)=>n+FEATS[g].items.length,0);
+const featCore  = FEAT_GROUPS.reduce((n,g)=>n+FEATS[g].items.filter(f=>f[3]).length,0);
+const featOpt   = FEAT_GROUPS.filter(g=>FEATS[g].opt).reduce((n,g)=>n+FEATS[g].items.length,0);
+function featImpColor(v){ return v>=78?'#16a34a':(v>=60?'#075cf2':'#70757d'); }
+function featWhy(name, tip, imp, core){
+  document.getElementById('infoCard').classList.add('wide');
+  document.getElementById('infoIcon').textContent = core?'⭐':'🧮';
+  document.getElementById('infoCategory').textContent = core?'Core signal driver':'Engineered feature';
+  document.getElementById('infoTitle').textContent = name;
+  document.getElementById('infoDesc').innerHTML =
+    `<p class="text-sm text-on-surface-variant">${tip}.</p>
+     <div class="mt-4"><div class="flex items-center justify-between text-xs text-muted mb-1"><span>Model importance</span><span>${imp}/100</span></div>
+       <div class="h-2 rounded-pill bg-surface-highest overflow-hidden"><div class="h-full rounded-pill" style="width:${imp}%;background:${featImpColor(imp)}"></div></div></div>`;
+  const rule = document.getElementById('infoRule'); rule.style.display='';
+  rule.innerHTML = core
+    ? '📌 <strong>Core driver:</strong> one of the 7 criteria the live scanner scores directly (see a signal\'s “why” drawer).'
+    : '📌 Feeds the LightGBM + LSTM ensemble as one of '+featTotal+' inputs; importance is the model\'s learned weight.';
+  document.getElementById('infoOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function renderFeats(){
+  const q = (document.getElementById('featSearch')?.value||'').toLowerCase().trim();
+  document.getElementById('featCount').textContent = featTotal;
+  document.getElementById('featStatTotal').textContent = featTotal;
+  document.getElementById('featStatCore').textContent = featCore;
+  document.getElementById('featStatGroups').textContent = FEAT_GROUPS.length;
+  document.getElementById('featStatOpt').textContent = featOpt;
+  document.getElementById('featFilters').innerHTML = ['All',...FEAT_GROUPS].map(g=>{
+    const on = g===featFilter;
+    return `<button onclick="featFilter='${g}';renderFeats()" class="text-xs font-medium px-4 py-2 rounded-pill border transition-colors ${on?'bg-primary text-white border-primary':'bg-surface text-muted border-outline-variant hover:border-primary'}">${g}</button>`;
+  }).join('');
+  let shown=0, delay=0;
+  const html = FEAT_GROUPS.filter(g=>featFilter==='All'||featFilter===g).map(g=>{
+    const grp = FEATS[g];
+    const items = grp.items.filter(f=> !q || f[0].toLowerCase().includes(q) || f[1].toLowerCase().includes(q) || g.toLowerCase().includes(q));
+    if(!items.length) return '';
+    shown += items.length;
+    const chips = items.map(f=>{
+      const [name,tip,imp,core]=f; const d=(delay+=25);
+      return `<button title="${tip}" onclick="featWhy('${name.replace(/'/g,"\\'")}','${tip.replace(/'/g,"\\'")}',${imp},${!!core})"
+        class="feat-chip group text-left px-3 py-2 rounded-2xl bg-surface border ${core?'border-green-200':'border-outline-variant'} hover:border-primary flex flex-col gap-1.5 min-w-[120px]" style="animation-delay:${d}ms">
+        <span class="text-xs font-semibold flex items-center gap-1">${core?'<span class=\'text-green-600\'>★</span>':''}${name}</span>
+        <span class="h-1 rounded-pill bg-surface-highest overflow-hidden"><span class="block h-full rounded-pill" style="width:${imp}%;background:${featImpColor(imp)}"></span></span>
+      </button>`;
+    }).join('');
+    return `<div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-4">
+      <div class="flex items-center justify-between"><h3 class="font-semibold tracking-tight">${g}${grp.opt?' <span class=\'text-[10px] font-medium text-muted\'>· optional</span>':''}</h3><span class="text-xs text-muted font-medium">${items.length} / ${grp.items.length}</span></div>
+      <div class="flex flex-wrap gap-2">${chips}</div></div>`;
+  }).join('');
+  document.getElementById('featGroups').innerHTML = html;
+  document.getElementById('featEmpty').classList.toggle('hidden', shown>0);
+}
+renderFeats();
+// AI Insights sub-tab toggle (merged Explainer + Features)
+function aiSub(which){
+  ['explainer','features'].forEach(k=>{
+    const pane=document.getElementById('aiPane-'+k); if(pane) pane.classList.toggle('hidden', k!==which);
+    const btn=document.querySelector('[data-aisub="'+k+'"]');
+    if(btn){ const on=k===which;
+      btn.classList.toggle('bg-primary', on); btn.classList.toggle('text-white', on);
+      btn.classList.toggle('text-muted', !on); }
+  });
+  if(which==='features') renderFeats();
+}
+// Halal & Zakat sub-tab toggle (merged Halal Screen + Zakat)
+function hzSub(which){
+  ['halal','zakat'].forEach(k=>{
+    const pane=document.getElementById('hzPane-'+k); if(pane) pane.classList.toggle('hidden', k!==which);
+    const btn=document.querySelector('[data-hzsub="'+k+'"]');
+    if(btn){ const on=k===which;
+      btn.classList.toggle('bg-primary', on); btn.classList.toggle('text-white', on);
+      btn.classList.toggle('text-muted', !on); }
+  });
+  if(which==='zakat') calcZakat();
+}
+
+// ---- Drift KS-test table ----
+const DRIFT = [["RSI 14",0.08,0.24,0.02,"Stable"],["MACD",0.09,0.18,0.03,"Stable"],["Volume Ratio",0.16,0.04,0.12,"Slight"],["VIX Close",0.12,0.09,0.08,"Slight"],["BB Width",0.07,0.31,0.01,"Stable"]];
+document.getElementById('driftBody').innerHTML = DRIFT.map(([f,ks,p,psi,st])=>{
+  const ok=st==='Stable'; const cls=ok?'bg-green-50 text-green-600 border-green-200':'bg-surface-highest text-on-surface border-outline-variant';
+  return `<tr class="border-t border-outline-variant">
+    <td class="px-8 py-3 font-medium">${f}</td>
+    <td class="text-right px-4 py-3">${ks.toFixed(2)}</td>
+    <td class="text-right px-4 py-3">${p.toFixed(2)}</td>
+    <td class="text-right px-4 py-3">${psi.toFixed(2)}</td>
+    <td class="text-right px-8 py-3"><span class="text-xs font-semibold px-3 py-1 rounded-pill border ${cls}">${ok?'✓ ':'⚠ '}${st}</span></td>
+  </tr>`;}).join('');
+
+// ---- Lazy charts (canvases hidden at load → draw on first show) ----
+const drawn = {};
+function drawMC(){
+  if(drawn.mc) return; drawn.mc = true;
+  const bins=[76,82,88,94,100,106,112,118,124,130,136,142,148,154,160,166];
+  const counts=[8,18,42,76,110,148,168,152,128,78,44,22,14,8,4,2];
+  const colors=bins.map(b=> b<100 ? 'rgba(239,68,68,.8)' : 'rgba(34,197,94,.8)');
+  new Chart(document.getElementById('mcChart'),{ type:'bar',
+    data:{ labels:bins.map(b=>'₹'+b+'K'), datasets:[{ data:counts, backgroundColor:colors, borderRadius:5, borderSkipped:false }] },
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label:c=>c.parsed.y+' simulations' } } },
+      scales:{ x:{ grid:{display:false}, ticks:{ color:'#70757d', font:{size:10}, maxRotation:0 } },
+               y:{ grid:{ color:'#e7e8ea' }, ticks:{ color:'#70757d', font:{size:10} } } } }
+  });
+}
+function drawFII(){
+  if(drawn.fii) return; drawn.fii = true;
+  const days=['Mon','Tue','Wed','Thu','Fri','Mon','Tue'];
+  new Chart(document.getElementById('fiiChart'),{ type:'bar',
+    data:{ labels:days, datasets:[
+      { label:'FII', data:[-1240,820,-630,-1480,340,-2100,-842], backgroundColor:'rgba(239,68,68,.8)', borderRadius:5, borderSkipped:false },
+      { label:'DII', data:[980,1240,1560,2100,640,2840,1230], backgroundColor:'rgba(34,197,94,.8)', borderRadius:5, borderSkipped:false },
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ labels:{ color:'#70757d', font:{size:12}, usePointStyle:true, pointStyle:'circle', padding:16 } },
+                tooltip:{ callbacks:{ label:c=>c.dataset.label+': ₹'+Math.abs(c.parsed.y)+' Cr' } } },
+      scales:{ x:{ grid:{display:false}, ticks:{ color:'#70757d', font:{size:11} } },
+               y:{ grid:{ color:'#e7e8ea' }, ticks:{ color:'#70757d', font:{size:11}, callback:v=>'₹'+v } } } }
+  });
+}
+// ---- Research Backtest: dispatch + history list + equity chart ----
+async function runBacktest(){
+  const ticker = (document.getElementById('btTicker').value||'').trim().toUpperCase();
+  const years = document.getElementById('btYears').value;
+  const statusEl = document.getElementById('btStatus');
+  if(!/^[A-Za-z0-9.&-]{1,15}$/.test(ticker)){ statusEl.textContent='⚠ Ticker must be 1-15 chars — letters, numbers, . & - only.'; return; }
+  statusEl.textContent = 'Dispatching backtest for '+ticker+' ('+years+'y)…';
+  try{
+    const r = await fetch('/.netlify/functions/dispatch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({job:'research-backtest',ticker,years})});
+    const j = await r.json();
+    statusEl.textContent = j.ok ? ('✓ '+(j.note||'dispatched')) : ('✗ '+(j.error||('failed ('+r.status+')'))+(r.status===404?' — is the Netlify function deployed?':''));
+  }catch(e){ statusEl.textContent = '✗ Cannot reach the dispatch function (deployed on Netlify, or run `netlify dev`): '+e.message; }
+}
+
+let eqChartInstance = null;
+function plotEquityCurve(curve, label, sourceText){
+  const canvas = document.getElementById('eqChart');
+  const empty = document.getElementById('eqEmpty');
+  if(!curve || !curve.length){ empty.classList.remove('hidden'); canvas.style.display='none'; return; }
+  empty.classList.add('hidden'); canvas.style.display='';
+  document.getElementById('eqSource').textContent = sourceText || 'results/';
+  document.getElementById('eqMeta').textContent = label + ' · ' + curve.length + ' trades · ' +
+    (curve[curve.length-1]>=curve[0]?'+':'') + Math.round((curve[curve.length-1]/curve[0]-1)*100) + '%';
+  const up = curve[curve.length-1] >= curve[0];
+  if(eqChartInstance) eqChartInstance.destroy();
+  eqChartInstance = new Chart(canvas,{ type:'line',
+    data:{ labels: curve.map((_,i)=>i+1), datasets:[{ data:curve,
+      borderColor: up?'#16a34a':'#ef4444', backgroundColor: up?'rgba(34,197,94,.08)':'rgba(239,68,68,.08)',
+      borderWidth:2, fill:true, tension:.25, pointRadius:0 }] },
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{ callbacks:{ title:c=>'Trade '+c[0].label, label:c=>'₹'+c.parsed.y.toLocaleString('en-IN') } } },
+      scales:{ x:{ grid:{display:false}, ticks:{ color:'#70757d', font:{size:10}, maxTicksLimit:10 } },
+               y:{ grid:{ color:'#e7e8ea' }, ticks:{ color:'#70757d', font:{size:10}, callback:v=>'₹'+(v/1000)+'K' } } } }
+  });
+}
+function showBacktestRun(i){
+  const run = (window._btSorted||[])[i]; if(!run) return;
+  if(run.status !== 'ok' || !run.equity_curve){ plotEquityCurve([], '', ''); return; }
+  plotEquityCurve(run.equity_curve, run.ticker, 'research-backtest · ' + run.run_at.slice(0,16).replace('T',' '));
+}
+function timeAgo(iso){
+  const d = (Date.now() - new Date(iso).getTime()) / 1000;
+  if(d < 3600) return Math.max(1,Math.round(d/60)) + 'm ago';
+  if(d < 86400) return Math.round(d/3600) + 'h ago';
+  return Math.round(d/86400) + 'd ago';
+}
+function renderBacktestHistory(){
+  const history = (window.BACKTEST_HISTORY||[]).slice().reverse();
+  window._btSorted = history;
+  const box = document.getElementById('btHistory'); if(!box) return;
+  if(!history.length){ box.innerHTML = '<p class="text-sm text-muted">No research backtests run yet — use "Run Backtest" above.</p>'; return; }
+  box.innerHTML = history.map((run,i)=>{
+    const m = run.metrics || {};
+    const ok = run.status === 'ok';
+    const badge = ok ? '<span class="text-green-600 font-semibold">'+m.win_rate_pct+'% win</span>'
+                : run.status === 'no_trades' ? '<span class="text-muted">no trades passed filter</span>'
+                : '<span class="text-red-500">error</span>';
+    return `<button onclick="showBacktestRun(${i})" class="text-left flex items-center justify-between gap-3 px-4 py-3 rounded-2xl border border-outline-variant hover:bg-surface-low transition-colors">
+      <span class="flex items-center gap-3">
+        <span class="font-semibold text-sm">${run.ticker}</span>
+        <span class="text-xs text-muted">${run.years}y · ${timeAgo(run.run_at)}</span>
+      </span>
+      <span class="flex items-center gap-4 text-xs">
+        ${ok ? `<span>Sharpe <b>${m.sharpe}</b></span><span>Return <b class="${m.total_return_pct>=0?'text-green-600':'text-red-500'}">${m.total_return_pct}%</b></span><span>MaxDD <b class="text-red-500">${m.max_drawdown_pct}%</b></span>` : ''}
+        ${badge}
+      </span>
+    </button>`;
+  }).join('');
+}
+function drawEquity(){
+  if(drawn.eq) return; drawn.eq = true;
+  renderBacktestHistory();
+  const history = window._btSorted || [];
+  const firstOk = history.findIndex(r => r.status === 'ok');
+  if(firstOk >= 0){ showBacktestRun(firstOk); return; }
+  // fallback: legacy single curve from dashboard_data.js (pre-history runs)
+  const eq = DASH.equity || {};
+  plotEquityCurve(eq.curve || [], eq.ticker || '', eq.source || 'results/');
+}
+const lazyCharts = { montecarlo: ()=>{ drawMC(); drawEquity(); }, fiidii: drawFII, halal: initHalal, riskguard: renderRiskGuard, explainer: renderFeats, telegram: renderTelegram, macro: renderMacroRegime, technical: renderTechnical };
+
+// ---- Nav switching (generic: any [data-panel] shows; else placeholder) ----
+const phPanel = document.querySelector('[data-panel="placeholder"]');
+document.getElementById('nav').addEventListener('click', e=>{
+  const btn = e.target.closest('.nav-item'); if(!btn) return;
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const tab = btn.dataset.tab;
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  const panel = document.querySelector('[data-panel="'+tab+'"]');
+  if(panel){ panel.classList.add('active'); if(lazyCharts[tab]) lazyCharts[tab](); }
+  else { document.getElementById('phTitle').textContent = btn.querySelector('span:last-child').textContent; phPanel.classList.add('active'); }
+  window.scrollTo(0,0);
+});
+
+// ---- Deep link: #halal=TICKER opens the verdict directly (shareable cards) ----
+(function(){
+  const m = (location.hash||'').match(/halal=([A-Za-z0-9]+)/);
+  if(!m) return;
+  const tk = m[1].toUpperCase();
+  const btn = document.querySelector('[data-tab="halal"]');
+  if(btn) btn.click();
+  const s = document.getElementById('halalSearch');
+  if(s){ s.value = tk; renderHalalLookup(); }
+})();
+
+// ---- Info (ⓘ) modal system — reads window.INFO from info_data.js ----
+const INFO = (window.INFO) || {};
+function showInfo(key){
+  const d = INFO[key]; if(!d){ console.warn('No INFO entry for', key); return; }
+  document.getElementById('infoIcon').textContent = d.icon || '📊';
+  document.getElementById('infoCategory').textContent = d.cat || 'Indicator';
+  document.getElementById('infoTitle').textContent = d.title || key;
+  document.getElementById('infoDesc').innerHTML = d.desc || '';
+  const rule = document.getElementById('infoRule');
+  if(d.rule){ rule.innerHTML = '📌 <strong>Rule of thumb:</strong> ' + d.rule; rule.style.display=''; }
+  else rule.style.display='none';
+  document.getElementById('infoOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeInfoCard(){
+  document.getElementById('infoOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeInfo(e){ if(e.target === document.getElementById('infoOverlay')) closeInfoCard(); }
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeInfoCard(); });
+
+// ---- Mouse-track glow: follow cursor over the dark hero card ----
+function trackMouse(e, card){
+  const r = card.getBoundingClientRect();
+  card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+  card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+}
+
+// ---- Accordion: progressive disclosure ----
+function toggleAccordion(bodyId, headerEl){
+  const body = document.getElementById(bodyId);
+  const icon = headerEl.querySelector('.accordion-icon');
+  const open = body.classList.toggle('open');
+  if(icon) icon.classList.toggle('open', open);
+}
+
+// ---- Today's Signals: render live trade cards from window.DASH ----
+const DASH = window.DASH || {};
+const inr = n => '₹' + Number(n).toLocaleString('en-IN');
+
+// ---- Passive proof figures: live from window.DASH.passive (fallback = static hero) ----
+(function renderPassive(){
+  const p = DASH.passive;
+  if(!p || !p.live) return;                 // offline export → keep hardcoded fallback
+  const set = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+  const pct = n => ((n>0?'+':'')+Math.round(n)+'%').replace('-','−');
+  const bh = p.buy_and_hold||{}, ov = p.overlay_drawdown||{};
+  if(bh.total_return_pct!=null)  set('pv-bh-total', pct(bh.total_return_pct));
+  if(bh.max_drawdown_pct!=null)  set('pv-dd-bh',    pct(bh.max_drawdown_pct));
+  if(ov.max_drawdown_pct!=null)  set('pv-dd-ov',    pct(ov.max_drawdown_pct));
+  if(bh.total_return_pct!=null)  set('pv-ret-bh',   pct(bh.total_return_pct));  // hold
+  if(ov.total_return_pct!=null)  set('pv-ret-ov',   pct(ov.total_return_pct));  // overlay (a cost)
+})();
+
+// ---- Market header cards: live from window.DASH.market + .portfolio ----
+(function renderMarket(){
+  const set=(id,v)=>{const el=document.getElementById(id); if(el) el.textContent=v;};
+  const m = DASH.market || {};
+  if(m.nifty!=null)       set('mkt-nifty', Math.round(m.nifty).toLocaleString('en-IN'));
+  if(m.nifty_ret1w!=null) set('mkt-nifty-chg', (m.nifty_ret1w>0?'+':'')+m.nifty_ret1w+'% 1w');
+  if(m.vix!=null){ set('mkt-vix', m.vix);
+    set('mkt-vix-tag', m.vix<15?'Calm':m.vix<20?'Normal':m.vix<28?'Elevated':'High'); }
+  if(m.usdinr!=null)      set('mkt-usdinr', m.usdinr);
+  const p = DASH.portfolio || {};
+  if(p.total_val!=null)     set('mkt-pf', '₹'+Math.round(p.total_val).toLocaleString('en-IN'));
+  if(p.total_pnl_pct!=null) set('mkt-pf-chg', (p.total_pnl_pct>0?'+':'')+p.total_pnl_pct+'%');
+})();
+
+// ---- Run controls: Cloud (GitHub Actions via Netlify fn) OR Local (control_server) ----
+function ctlCfg(){ return {
+  mode: localStorage.getItem('ctlMode')||'ci',
+  base:(localStorage.getItem('ctlBase')||'http://localhost:8765').replace(/\/+$/,''),
+  token:localStorage.getItem('ctlToken')||'' }; }
+function ctlStatus(m){ const e=document.getElementById('ctlStatus'); if(e) e.textContent=m; }
+function ctlSave(){
+  localStorage.setItem('ctlMode',document.getElementById('ctlMode').value);
+  localStorage.setItem('ctlBase',(document.getElementById('ctlBase').value||'').trim());
+  localStorage.setItem('ctlToken',(document.getElementById('ctlToken').value||'').trim());
+  ctlStatus('Saved. Mode: '+document.getElementById('ctlMode').value);
+}
+async function runCtl(path,busyMsg){
+  const {mode,base,token}=ctlCfg();
+  if(mode==='ci'){
+    const job = path==='/auto-close' ? 'auto-close' : 'nightly-scan';   // scan & briefing → nightly-scan
+    ctlStatus(busyMsg+' — triggering GitHub Actions…');
+    try{
+      const r=await fetch('/.netlify/functions/dispatch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({job})});
+      const j=await r.json();
+      if(j.ok) ctlStatus('✓ '+(j.note||('dispatched '+job))+' This page auto-updates after the run + redeploy.');
+      else ctlStatus('✗ '+(j.error||('failed ('+r.status+')'))+(r.status===404?' — is the Netlify function deployed?':''));
+    }catch(e){ ctlStatus('✗ Cannot reach the dispatch function (deployed on Netlify, or run `netlify dev`): '+e.message); }
+    return;
+  }
+  // local mode → control_server
+  if(!token){ ctlStatus('⚠ Local mode needs a control token (open ⚙).'); return; }
+  ctlStatus(busyMsg+' (can take a minute)…');
+  try{
+    const r=await fetch(base+path,{method:'POST',headers:{'X-Control-Token':token}});
+    const j=await r.json();
+    if(j.ok){ ctlStatus('✓ Done: '+(j.cmd||path)+'. Reloading…'); setTimeout(()=>location.reload(),1200); }
+    else ctlStatus('✗ '+(j.error||('failed ('+r.status+')')));
+  }catch(e){ ctlStatus('✗ Cannot reach control server at '+base+' — is it running? '+e.message); }
+}
+async function refreshPortfolio(){
+  const {mode,base,token}=ctlCfg();
+  if(mode==='ci'){ ctlStatus('Reloading committed feed…'); location.reload(); return; }
+  if(!token){ ctlStatus('⚠ Local mode needs a control token (open ⚙).'); return; }
+  ctlStatus('Fetching portfolio…');
+  try{
+    const r=await fetch(base+'/portfolio',{headers:{'X-Control-Token':token}});
+    const j=await r.json();
+    if(j.ok){ ctlStatus('Portfolio ₹'+Math.round(j.total_val).toLocaleString('en-IN')+' · P&L '+j.total_pnl_pct+'% · '+((j.trades||[]).length)+' recent trades'); }
+    else ctlStatus('✗ '+(j.error||'failed'));
+  }catch(e){ ctlStatus('✗ Cannot reach control server: '+e.message); }
+}
+(function(){ const m=document.getElementById('ctlMode'),b=document.getElementById('ctlBase'),t=document.getElementById('ctlToken');
+  if(m)m.value=localStorage.getItem('ctlMode')||'ci'; if(b)b.value=localStorage.getItem('ctlBase')||''; if(t)t.value=localStorage.getItem('ctlToken')||''; })();
+function signalCardHTML(c){
+  const pass = Object.values(c.criteria||{}).filter(Boolean).length;
+  const tot  = Object.keys(c.criteria||{}).length || 7;
+  const scoreColor = c.score>=80?'text-green-600 bg-green-50 border-green-200'
+    : c.score>=65?'text-secondary bg-accent-soft border-secondary/30'
+    : 'text-on-surface bg-surface-highest border-outline-variant';
+  return `<button onclick="signalWhy('${c.ticker}')" class="text-left bg-surface-lowest border border-outline-variant rounded-card p-5 flex flex-col gap-4 hover:border-primary transition-colors">
+    <div class="flex items-start justify-between">
+      <div>
+        <div class="flex items-center gap-2"><span class="text-lg font-bold tracking-tight">${c.ticker}</span><span class="text-xs font-semibold px-2 py-0.5 rounded-pill bg-green-50 text-green-600 border border-green-200">BUY</span></div>
+        <p class="text-xs text-muted mt-1">${pass}/${tot} criteria · RSI ${c.rsi} · Vol ${c.vol_surge}×</p>
+      </div>
+      <span class="text-xs font-bold px-2.5 py-1 rounded-pill border ${scoreColor}">${c.score}</span>
+    </div>
+    <div class="grid grid-cols-3 gap-2 text-center">
+      <div><p class="text-[10px] uppercase tracking-wider text-muted">Entry</p><p class="text-sm font-semibold">${inr(c.entry)}</p></div>
+      <div><p class="text-[10px] uppercase tracking-wider text-muted">Stop</p><p class="text-sm font-semibold text-red-500">${inr(c.stop)}</p></div>
+      <div><p class="text-[10px] uppercase tracking-wider text-muted">Target</p><p class="text-sm font-semibold text-green-600">${inr(c.target)}</p></div>
+    </div>
+    <div class="flex items-center justify-between text-xs text-muted border-t border-outline-variant pt-3">
+      <span>R:R <strong class="text-on-surface">${c.rr}:1</strong></span>
+      <span><strong class="text-on-surface">${c.shares}</strong> sh · ${inr(c.invest)}</span>
+      <span><strong class="text-on-surface">${c.cap_pct}%</strong> cap</span>
+    </div>
+  </button>`;
+}
+function renderSignals(){
+  const sig = DASH.signals || {}; const cards = sig.cards || [];
+  const box = document.getElementById('sigCards'); if(!box) return;
+  document.getElementById('sigSample').classList.toggle('hidden', !DASH.sample);
+  const r = sig.regime || {};
+  document.getElementById('sigRegime').innerHTML = r.name
+    ? `Regime <strong class="text-on-surface">${r.name}</strong> · VIX ${r.vix} · max ${r.max_positions} positions${sig.sectors&&sig.sectors.length?` · favouring ${sig.sectors.join(', ')}`:''}`
+    : '';
+  if(!cards.length){
+    box.className = '';
+    box.innerHTML = `<div class="bg-surface-lowest border border-outline-variant rounded-card p-8 text-center">
+      <p class="text-lg font-semibold tracking-tight">No signals today</p>
+      <p class="text-sm text-muted mt-1">Market is ${r.name||'quiet'} — the gates blocked everything. Cash is a position. Re-run the scan at 9 AM.</p>
+      ${(sig.blocked&&sig.blocked.length)?`<p class="text-xs text-muted mt-3">Blocked by filters: ${sig.blocked.join(', ')}</p>`:''}</div>`;
+    return;
+  }
+  box.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5';
+  box.innerHTML = cards.map(signalCardHTML).join('');
+}
+// ---- B3: per-signal "why" drawer (reuses the info overlay) ----
+const CRITERIA_META = {
+  rsi_healthy:  "RSI between 40–68 — momentum without being over-extended",
+  macd_bullish: "MACD histogram positive — trend turning up",
+  above_sma20:  "Price above its 20-day average — short-term uptrend",
+  above_sma50:  "Price above its 50-day average — medium-term uptrend",
+  volume_surge: "Volume ≥ 1.2× the 20-day average — real participation",
+  bb_position:  "Bollinger %B in 0.40–0.85 — mid-to-upper band, not stretched",
+  momentum:     "Positive 5-day return — recent strength",
+};
+function signalWhy(ticker){
+  const sig = DASH.signals || {};
+  const all = [...(sig.cards||[]), ...(sig.near_misses||[])];
+  const c = all.find(x=>x.ticker===ticker); if(!c) return;
+  const isNear = !(sig.cards||[]).some(x=>x.ticker===ticker);
+  const crit = c.criteria || {};
+  const pass = Object.values(crit).filter(Boolean).length, tot = Object.keys(crit).length||7;
+  const rows = Object.keys(CRITERIA_META).map(k=>{
+    const ok = !!crit[k];
+    return `<li class="flex items-start gap-2 py-1.5 border-b border-outline-variant last:border-0">
+      <span class="${ok?'text-green-600':'text-red-500'} font-bold mt-px">${ok?'✓':'✗'}</span>
+      <span class="text-sm ${ok?'text-on-surface':'text-muted'}">${CRITERIA_META[k]}</span></li>`;
+  }).join('');
+  // Gates: cards in `cards` cleared all of them; near_misses didn't reach threshold
+  const r = sig.regime||{};
+  const gateRows = [
+    ['Regime', `${r.name||'?'} — scan active`, true],
+    ['Sector rotation', `${(sig.sectors||[]).join(' / ')||'top sectors'}`, true],
+    ['Multi-timeframe', 'daily + weekly agree', !isNear],
+    [`Score ≥ ${r.min_score||57}`, `scored ${c.score}`, c.score>=(r.min_score||57)],
+    ['Risk/Reward ≥ 2.0', `${c.rr}:1`, c.rr>=2.0],
+  ].map(([g,v,ok])=>`<div class="flex items-center justify-between text-xs py-1">
+      <span class="text-muted">${g}</span>
+      <span class="flex items-center gap-1.5 ${ok?'text-on-surface':'text-red-500'}">${v} <span class="${ok?'text-green-600':'text-red-500'}">${ok?'✓':'✗'}</span></span></div>`).join('');
+
+  document.getElementById('infoCard').classList.add('wide');
+  document.getElementById('infoIcon').textContent = isNear ? '⚠️' : '📈';
+  document.getElementById('infoCategory').textContent = isNear ? 'Near miss · not actionable' : 'Signal breakdown · BUY';
+  document.getElementById('infoTitle').textContent = `${c.ticker} — score ${c.score}`;
+  document.getElementById('infoDesc').innerHTML =
+    `<p class="text-sm text-muted mb-2">${pass}/${tot} bullish criteria fired:</p>
+     <ul class="mb-4">${rows}</ul>
+     <p class="text-xs font-semibold uppercase tracking-wider text-muted mb-1">Gates</p>
+     <div class="mb-4">${gateRows}</div>
+     <div class="grid grid-cols-3 gap-2 text-center bg-surface rounded-2xl p-3 border border-outline-variant">
+       <div><p class="text-[10px] uppercase text-muted">Entry</p><p class="text-sm font-semibold">${inr(c.entry)}</p></div>
+       <div><p class="text-[10px] uppercase text-muted">Stop</p><p class="text-sm font-semibold text-red-500">${inr(c.stop)}</p></div>
+       <div><p class="text-[10px] uppercase text-muted">Target</p><p class="text-sm font-semibold text-green-600">${inr(c.target)}</p></div>
+     </div>`;
+  const rule = document.getElementById('infoRule');
+  rule.style.display = '';
+  rule.innerHTML = `📌 <strong>GTT OCO:</strong> buy ${c.shares} @ ${inr(c.entry)} (${c.cap_pct}% cap), then set stop-leg trigger ${inr(c.stop_trigger)} / target-leg trigger ${inr(c.target_trigger)}. Risk ${inr(c.risk_rs)} → reward ${inr(c.reward_rs)}.`;
+  document.getElementById('infoOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+// reset the wide class when closing so plain info popups stay narrow
+const _closeInfoCardOrig = closeInfoCard;
+closeInfoCard = function(){ document.getElementById('infoCard').classList.remove('wide'); _closeInfoCardOrig(); };
+renderSignals();
+
+// ---- B2: Paper Portfolio panel (live from window.DASH.portfolio) ----
+function renderPortfolio(){
+  const box = document.getElementById('portfolioPanel'); if(!box) return;
+  const p = DASH.portfolio || {}; const marked = p.marked || {}; const st = p.stats || {};
+  const positions = Object.entries(marked);
+  const pnlCol = (v)=> v>0?'text-green-600':(v<0?'text-red-500':'text-on-surface');
+  const sign = (v)=> (v>0?'+':'') + inr(v);
+  // exposure = invested fraction of total
+  const exposure = p.total_val ? Math.round((p.positions_val/p.total_val)*100) : 0;
+  if(!positions.length){
+    box.innerHTML = `<div class="bg-surface-lowest border border-outline-variant rounded-card p-8">
+      <div class="flex items-center justify-between"><h2 class="text-2xl font-semibold tracking-tight">Paper Portfolio</h2>
+        <span class="text-xs text-muted">${inr(p.cash||0)} cash · fully in cash</span></div>
+      <p class="text-sm text-muted mt-2">No open positions. The auto-trader places paper trades from the top signals — run <code class="text-xs">python -m src.paper_trader --buy</code> or wait for the next scan.</p></div>`;
+    return;
+  }
+  const rows = positions.map(([t,m])=>`<tr class="border-b border-outline-variant last:border-0">
+    <td class="py-3 font-semibold">${t}</td>
+    <td class="py-3 text-right text-muted">${m.shares}</td>
+    <td class="py-3 text-right text-muted">${inr(m.avg_entry)}</td>
+    <td class="py-3 text-right">${inr(m.current_price)}</td>
+    <td class="py-3 text-right font-medium">${inr(m.market_value)}</td>
+    <td class="py-3 text-right font-semibold ${pnlCol(m.unrealised)}">${sign(m.unrealised)} <span class="text-xs font-normal">(${m.unrealised_pct>0?'+':''}${m.unrealised_pct}%)</span></td>
+  </tr>`).join('');
+  // ---- #4: purification "owed to charity" — impure-dividend slice across holdings ----
+  const DIV_YIELD = 0.015; // est. avg NSE dividend yield (holdings carry no per-stock dividend data here)
+  let purTotal = 0; const purRows = [];
+  positions.forEach(([t,m])=>{
+    const rec = HALAL_DATA[t]; const purPct = (rec && rec.pur) ? rec.pur : 0;
+    const owed = (m.market_value||0) * DIV_YIELD * purPct/100;
+    if(owed>0){ purTotal += owed; purRows.push({t, purPct, owed}); }
+  });
+  const purCard = `
+    <div class="bg-surface-lowest border border-amber-200 rounded-card p-6 flex flex-col gap-3">
+      <div class="flex items-center justify-between flex-wrap gap-2">
+        <h3 class="font-semibold tracking-tight">🧹 Purification owed to charity<button class="info-btn" onclick="showInfo('purification')">i</button></h3>
+        <span class="text-2xl font-bold text-amber-600">${inr(Math.round(purTotal))}</span>
+      </div>
+      <p class="text-xs text-muted">Impure-dividend slice across ${purRows.length} holding${purRows.length!==1?'s':''}, estimated at ${(DIV_YIELD*100).toFixed(1)}% avg yield. Give it away so the gain stays clean.</p>
+      ${purRows.length?`<div class="flex flex-col gap-1 text-sm">${purRows.map(r=>`<div class="flex items-center justify-between border-b border-outline-variant last:border-0 py-1"><span class="font-medium">${r.t} <span class="text-xs text-muted">${r.purPct}% impure</span></span><span class="text-amber-600 font-medium">${inr(Math.round(r.owed))}</span></div>`).join('')}</div>`:'<p class="text-xs text-green-600">All holdings carry zero impure dividends — nothing to purify.</p>'}
+      ${purTotal>0?`<a href="https://www.launchgood.com" target="_blank" rel="noopener" class="mt-1 inline-flex items-center justify-center gap-2 text-sm font-semibold py-2.5 rounded-pill bg-amber-500 text-white hover:bg-amber-600 transition-colors">Donate ${inr(Math.round(purTotal))} now →</a>`:''}
+    </div>`;
+  box.innerHTML = `
+    <div class="flex items-center justify-between flex-wrap gap-2">
+      <h2 class="text-2xl font-semibold tracking-tight">Paper Portfolio<button class="info-btn" onclick="showInfo('portfolio')">i</button></h2>
+      <span class="text-xs text-muted">${positions.length} open · ${st.win_rate!=null?st.win_rate+'% win rate ('+st.wins+'/'+st.total_trades+')':''}</span>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-5"><p class="text-sm text-muted">Total Value</p><p class="text-2xl font-bold tracking-tight mt-1">${inr(p.total_val)}</p></div>
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-5"><p class="text-sm text-muted">Total P&L</p><p class="text-2xl font-bold tracking-tight mt-1 ${pnlCol(p.total_pnl)}">${sign(p.total_pnl)}<span class="text-sm font-medium ml-1">${p.total_pnl_pct>0?'+':''}${p.total_pnl_pct}%</span></p></div>
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-5"><p class="text-sm text-muted">Cash</p><p class="text-2xl font-bold tracking-tight mt-1">${inr(p.cash)}</p></div>
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-5"><p class="text-sm text-muted">Exposure</p><p class="text-2xl font-bold tracking-tight mt-1">${exposure}%</p>
+        <div class="h-1.5 rounded-pill bg-surface-highest overflow-hidden mt-2"><div class="h-full bg-primary rounded-pill" style="width:${exposure}%"></div></div></div>
+    </div>
+    ${purCard}
+    <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead><tr class="text-xs uppercase tracking-wider text-muted text-right"><th class="text-left font-medium pb-2">Stock</th><th class="font-medium pb-2">Shares</th><th class="font-medium pb-2">Avg Entry</th><th class="font-medium pb-2">Current</th><th class="font-medium pb-2">Value</th><th class="font-medium pb-2">Unrealised</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+}
+renderPortfolio();
+
+// ---- B5: Alerts & GTT feed (mirrors what Telegram + Kite received) ----
+function renderAlerts(){
+  const box = document.getElementById('alertsPanel'); if(!box) return;
+  const sig = DASH.signals || {}; const cards = sig.cards || [];
+  const trades = ((DASH.portfolio||{}).trades || []).slice().reverse();
+  const items = [];
+  cards.forEach(c => items.push({ icon:'📲', cls:'bg-accent-soft text-secondary',
+    title:`GTT staged · ${c.ticker}`,
+    detail:`Buy ${c.shares} @ ${inr(c.entry)} → OCO stop-leg ${inr(c.stop_trigger)} / target-leg ${inr(c.target_trigger)}`,
+    tag:'Telegram + Kite' }));
+  trades.forEach(t => items.push({ icon: t.pnl>=0?'✅':'🛑',
+    cls: t.pnl>=0?'bg-green-50 text-green-600':'bg-red-50 text-red-500',
+    title:`${t.reason==='target'?'Target hit':'Stopped out'} · ${t.ticker}`,
+    detail:`Exit ${inr(t.exit)} · realised ${(t.pnl>=0?'+':'')}${inr(t.pnl)}`,
+    tag:t.closed_at }));
+  const blocked = sig.blocked || [];
+  if(blocked.length) items.push({ icon:'⛔', cls:'bg-surface-highest text-muted',
+    title:`Blocked by filters`, detail:`${blocked.join(', ')} — failed backtest / gap-risk / earnings guard`, tag:'pre-trade' });
+
+  if(!items.length){
+    box.innerHTML = `<div class="bg-surface-lowest border border-outline-variant rounded-card p-8"><h2 class="text-2xl font-semibold tracking-tight">Alerts & GTT</h2><p class="text-sm text-muted mt-2">No alerts yet today. When the scan fires, staged GTT orders and Telegram notifications appear here.</p></div>`;
+    return;
+  }
+  box.innerHTML = `
+    <div class="flex items-center justify-between flex-wrap gap-2">
+      <h2 class="text-2xl font-semibold tracking-tight">Alerts & GTT</h2>
+      <span class="text-xs text-muted">mirrors Telegram + Zerodha Kite</span>
+    </div>
+    <div class="bg-surface-lowest border border-outline-variant rounded-card divide-y divide-outline-variant">
+      ${items.map(it=>`<div class="flex items-center gap-4 px-6 py-4">
+        <span class="w-9 h-9 rounded-pill flex items-center justify-center text-sm flex-none ${it.cls}">${it.icon}</span>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-semibold tracking-tight">${it.title}</p>
+          <p class="text-xs text-muted truncate">${it.detail}</p>
+        </div>
+        <span class="text-[11px] font-medium text-muted whitespace-nowrap">${it.tag}</span>
+      </div>`).join('')}
+    </div>`;
+}
+renderAlerts();
+
+// ---- Telegram chat mirror: render bot pushes as chat bubbles ----
+function renderTelegram(){
+  const box = document.getElementById('tgChat'); if(!box) return;
+  const sig = DASH.signals || {}; const r = sig.regime || {};
+  const cards = sig.cards || []; const trades = ((DASH.portfolio||{}).trades||[]).slice().reverse();
+  const msgs = [];
+  // 1) morning briefing
+  msgs.push({ t:'9:00',
+    html:`<strong>☀️ Morning briefing</strong><br>Regime <strong>${r.name||'—'}</strong> · VIX ${r.vix??'—'} · max ${r.max_positions??'—'} positions today.${(sig.sectors&&sig.sectors.length)?` Favouring <strong>${sig.sectors.join(', ')}</strong>.`:''}` });
+  // 2) per-signal GTT pushes
+  if(cards.length){
+    cards.forEach((c,i)=> msgs.push({ t:'9:0'+(i+2), tone:'buy',
+      html:`<strong>🟢 BUY ${c.ticker}</strong> @ ${inr(c.entry)} · score ${c.score}<br>Stop ${inr(c.stop)} · Target ${inr(c.target)} · ${c.shares} sh (${c.cap_pct}% cap)<br><span class="text-muted">GTT OCO staged: stop-leg ${inr(c.stop_trigger)} / target-leg ${inr(c.target_trigger)}</span>` }));
+  } else {
+    msgs.push({ t:'9:02', html:`No signals cleared the gates today. Cash is a position — re-scan tomorrow at 9 AM.` });
+  }
+  // 3) tier-change alerts (or daily all-clear)
+  if(HALAL_ALERTS.length){
+    HALAL_ALERTS.forEach(a=> msgs.push({ t:'9:10', tone: a.worsened?'alert':'',
+      html:`<strong>⚠️ Halal tier change</strong><br>${a.from}→${a.to} ${a.ticker}${a.to==='🔴'?' — now NON-TRADEABLE, exit/avoid':''}` }));
+  } else {
+    msgs.push({ t:'9:10', html:`✅ No halal tier changes since the last quarterly screen — all holdings still compliant.` });
+  }
+  // 4) closed-trade exits
+  trades.forEach((tr,i)=> msgs.push({ t:'15:2'+i, tone: tr.pnl>=0?'buy':'alert',
+    html:`<strong>${tr.pnl>=0?'✅ Target hit':'🛑 Stopped out'}: ${tr.ticker}</strong><br>Exit ${inr(tr.exit)} · realised ${(tr.pnl>=0?'+':'')}${inr(tr.pnl)}` }));
+
+  const toneCls = { buy:'buy', alert:'alert', '':'' };
+  const tgLogo = `<svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>`;
+  box.innerHTML = `<div class="tg-datepill">${(DASH.asof||'').slice(0,10)||'Today'}</div>` + msgs.map(m=>`<div class="tg-row">
+      <span class="tg-av">${tgLogo}</span>
+      <div class="tg-bub ${toneCls[m.tone||'']}">${m.html}<span class="tg-time">${m.t} ✓✓</span></div>
+    </div>`).join('');
+}
+renderTelegram();
+
+// ---- Macro: live market regime + positioning guidance (from window.DASH) ----
+function renderMacroRegime(){
+  const el = document.getElementById('macroRegime'); if(!el) return;
+  const r = (DASH.signals && DASH.signals.regime) || {};
+  if(!r.name){ el.innerHTML=''; return; }
+  const tone = r.name.includes('UP')?'green':(r.name.includes('DOWN')?'red':'secondary');
+  const ring = {green:'bg-green-50 border-green-200 text-green-600', red:'bg-red-50 border-red-200 text-red-500', secondary:'bg-accent-soft border-secondary/30 text-secondary'}[tone];
+  const POS = {
+    RANGING:"Mean-reversion only. Half-size positions, bank profits quickly, don't chase breakouts.",
+    TRENDING_UP:"Risk-on. Full size, let winners run, trail stops behind the trend.",
+    TRENDING_DOWN:"Defensive. Cash is a position — only the strongest setups, tighter stops.",
+    VOLATILE:"Reduce size. Wide stops eat your R:R — wait for VIX to cool before adding."
+  };
+  const pos = POS[r.name] || r.description || '';
+  const vixTone = r.vix<15?'text-green-600':(r.vix<25?'text-muted':'text-red-500');
+  el.innerHTML = `<div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-5">
+    <div class="flex items-start justify-between flex-wrap gap-3">
+      <div>
+        <div class="flex items-center gap-3"><h2 class="text-2xl font-semibold tracking-tight">Live Market Regime</h2>
+          <span class="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-pill border ${ring}">${r.name.replace(/_/g,' ')}</span></div>
+        <p class="text-sm text-muted mt-1">${r.description||''}${r.confidence?' · '+Math.round(r.confidence)+'% confidence':''}</p>
+      </div>
+      <span class="text-xs text-muted">as of ${(DASH.asof||'').slice(0,10)}</span>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-xs text-muted">Nifty 50</p><p class="text-xl font-bold tracking-tight">${r.nifty_price?Math.round(r.nifty_price).toLocaleString('en-IN'):'—'}</p><p class="text-xs ${r.nifty_ret1w>=0?'text-green-600':'text-red-500'}">${r.nifty_ret1w>=0?'+':''}${r.nifty_ret1w}% 1w</p></div>
+      <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-xs text-muted">VIX</p><p class="text-xl font-bold tracking-tight">${r.vix??'—'}</p><p class="text-xs ${vixTone}">${r.vix<15?'calm':(r.vix<25?'normal':'fearful')}</p></div>
+      <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-xs text-muted">Max positions</p><p class="text-xl font-bold tracking-tight">${r.max_positions??'—'}</p><p class="text-xs text-muted">size ×${r.position_size_mul??'—'}</p></div>
+      <div class="bg-surface border border-outline-variant rounded-card p-4"><p class="text-xs text-muted">Min score gate</p><p class="text-xl font-bold tracking-tight">${r.min_score??'—'}</p><p class="text-xs text-muted">to trade today</p></div>
+    </div>
+    <div class="flex items-start gap-3 bg-surface rounded-2xl border border-outline-variant p-4">
+      <span class="material-symbols-outlined text-secondary">lightbulb</span>
+      <div><p class="text-xs font-semibold uppercase tracking-wider text-muted mb-0.5">What this means for positioning</p><p class="text-sm text-on-surface">${pos}</p></div>
+    </div>
+  </div>`;
+}
+renderMacroRegime();
+
+// ---- Technical drill-down: per-ticker indicators from window.DASH.technicals ----
+const TECH = (DASH.technicals && DASH.technicals.data) || {};
+let techChartObj = null;
+function renderTechnical(){
+  const sel = document.getElementById('techTicker'); if(!sel) return;
+  const keys = Object.keys(TECH);
+  if(!keys.length){ document.getElementById('techEmpty').classList.remove('hidden'); return; }
+  if(!sel.options.length) sel.innerHTML = keys.map(k=>`<option value="${k}">${k}</option>`).join('');
+  const t = sel.value || keys[0]; const d = TECH[t]; if(!d) return;
+  const buy = d.signal==='BUY';
+  document.getElementById('techHead').innerHTML =
+    `<div class="flex items-center gap-3 justify-end"><span class="text-2xl font-bold tracking-tight">${inr(d.price)}</span>
+       <span class="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-pill border ${buy?'bg-green-50 text-green-600 border-green-200':'bg-surface-highest text-muted border-outline-variant'}">${d.signal}</span></div>
+     <p class="text-xs text-muted mt-1">score ${Math.round(d.score)} · vol ${d.vol_surge}× · 5d ${d.ret_5d>=0?'+':''}${d.ret_5d}%</p>`;
+  // 60-day price sparkline (real closes)
+  const ctx = document.getElementById('techChart');
+  if(techChartObj) techChartObj.destroy();
+  const up = d.closes[d.closes.length-1] >= d.closes[0];
+  const g = ctx.getContext('2d').createLinearGradient(0,0,0,192);
+  g.addColorStop(0, up?'rgba(34,197,94,.10)':'rgba(239,68,68,.10)'); g.addColorStop(1,'rgba(0,0,0,0)');
+  techChartObj = new Chart(ctx,{ type:'line',
+    data:{ labels:d.closes.map((_,i)=>'D-'+(d.closes.length-i)), datasets:[{ data:d.closes, borderColor:up?'#16a34a':'#ef4444', borderWidth:2, fill:true, backgroundColor:g, tension:.3, pointRadius:0, pointHoverRadius:4 }] },
+    options:{ responsive:true, maintainAspectRatio:false, animation:{duration:600},
+      interaction:{intersect:false,mode:'index'},
+      plugins:{ legend:{display:false}, tooltip:{ displayColors:false, backgroundColor:'#080909', cornerRadius:10, callbacks:{ title:i=>i[0].label, label:c=>'₹'+c.parsed.y.toLocaleString('en-IN') } } },
+      scales:{ x:{display:false}, y:{display:false} } }
+  });
+  // indicators
+  const rsiTone = (d.rsi>=70||d.rsi<=30)?'#ef4444':((d.rsi>=40&&d.rsi<=68)?'#16a34a':'#70757d');
+  const rsiZone = d.rsi>=70?'Overbought':(d.rsi<=30?'Oversold':((d.rsi>=40&&d.rsi<=68)?'Healthy (40–68)':'Neutral'));
+  const macdBull = d.macd_hist>=0;
+  const bbPct = Math.max(0,Math.min(100, d.bb_pctb*100));
+  document.getElementById('techIndicators').innerHTML = `
+    <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-4">
+      <div class="flex justify-between items-start"><p class="text-sm font-medium text-muted">RSI · Momentum<button class="info-btn" onclick="showInfo('rsi')">i</button></p><span class="text-2xl font-semibold">${d.rsi}</span></div>
+      <div><div class="h-2 rounded-pill bg-surface-highest relative overflow-hidden"><div class="absolute inset-y-0 left-0 rounded-pill transition-all" style="width:${d.rsi}%;background:${rsiTone}"></div></div>
+        <div class="flex justify-between text-[11px] text-muted mt-2"><span>0 · Oversold</span><span>Overbought · 100</span></div></div>
+      <p class="text-xs text-muted">14-day · ${rsiZone}</p>
+    </div>
+    <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-4">
+      <p class="text-sm font-medium text-muted">MACD · Trend Momentum<button class="info-btn" onclick="showInfo('macd')">i</button></p>
+      <div class="flex items-center gap-2"><span class="text-2xl ${macdBull?'text-green-600':'text-red-500'}">${macdBull?'▲':'▼'}</span><span class="text-lg font-semibold ${macdBull?'text-green-600':'text-red-500'}">${macdBull?'Bullish':'Bearish'}</span></div>
+      <p class="text-xs text-muted">Histogram ${macdBull?'positive — momentum building':'negative — momentum fading'}</p>
+    </div>
+    <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-4">
+      <p class="text-sm font-medium text-muted">Bollinger %B<button class="info-btn" onclick="showInfo('bollinger')">i</button></p>
+      <span class="text-2xl font-semibold">${(d.bb_pctb*100).toFixed(0)}%</span>
+      <div><div class="h-2 rounded-pill bg-surface-highest relative overflow-hidden"><div class="absolute inset-y-0 left-0 bg-secondary rounded-pill transition-all" style="width:${bbPct}%"></div></div>
+        <div class="flex justify-between text-[11px] text-muted mt-2"><span>Lower band</span><span>Upper band</span></div></div>
+      <p class="text-xs text-muted">SMA20 ${inr(Math.round(d.sma20))} · SMA50 ${inr(Math.round(d.sma50))}</p>
+    </div>`;
+  // Support/Resistance ladder (recent 20d range + ATR bands)
+  const atr = d.atr || d.price*0.015;
+  const levels = [
+    {name:'Resistance 2', val:Math.round(d.price+2*atr), tag:'ATR band', cls:'bg-red-50 text-red-500 border-red-200'},
+    {name:'Resistance 1', val:d.hi20, tag:'20-day high', cls:'bg-surface-highest text-on-surface border-outline-variant'},
+    {name:'Current Price', val:Math.round(d.price), tag:'Live', cls:'bg-primary text-white border-primary', cur:true},
+    {name:'Support 1', val:d.lo20, tag:'20-day low', cls:'bg-green-50 text-green-600 border-green-200'},
+    {name:'Support 2', val:Math.round(d.price-2*atr), tag:'ATR band', cls:'bg-green-50 text-green-600 border-green-200'},
+  ].sort((a,b)=>b.val-a.val);
+  document.getElementById('techLadder').innerHTML = levels.map((lv,i)=>`
+    <div class="px-8 py-4 ${i<levels.length-1?'border-b border-outline-variant':''} flex items-center justify-between ${lv.cur?'bg-surface-low':''}">
+      <span class="text-sm ${lv.cur?'font-bold':'font-medium text-muted'} w-28">${lv.name}</span>
+      <span class="${lv.cur?'text-lg font-bold':'text-base font-semibold'}">${inr(lv.val)}</span>
+      <span class="text-xs font-semibold px-3 py-1 rounded-pill border ${lv.cls}">${lv.tag}</span></div>`).join('');
+}
+renderTechnical();
+</script>
+
+<!-- Info (ⓘ) modal overlay — Boro-skinned -->
+<div class="info-overlay" id="infoOverlay" onclick="closeInfo(event)">
+  <div class="info-card" id="infoCard">
+    <button class="info-card-close" onclick="closeInfoCard()" aria-label="Close">✕</button>
+    <div class="ic" id="infoIcon">📊</div>
+    <div class="cat" id="infoCategory">Indicator</div>
+    <h3 id="infoTitle">Term</h3>
+    <p class="desc" id="infoDesc">Description</p>
+    <div class="rule" id="infoRule"></div>
+  </div>
+</div>
+</body>
+</html>

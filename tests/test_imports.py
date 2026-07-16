@@ -66,6 +66,22 @@ def test_import_scanner():
     assert callable(scan)
 
 
+def test_import_walk_forward():
+    from src.walk_forward import (
+        walk_forward, compare_strategies, criteria_correlation,
+    )
+    assert callable(walk_forward)
+    assert callable(compare_strategies)
+    assert callable(criteria_correlation)
+
+
+def test_import_control_server():
+    from src.control_server import run, _portfolio, _run_module
+    assert callable(run)
+    assert callable(_portfolio)
+    assert callable(_run_module)
+
+
 def test_import_notify():
     from src.notify import _send, send_trade_cards
     assert callable(_send)
