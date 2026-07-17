@@ -630,7 +630,7 @@ If it fails, it never ships. We rejected 5 indicators this way.
 
 ---
 
-*Last updated: June 2024 | Version 1.0 (V-1.0 branch) | Status: Production-ready*
+*Last updated: July 2026 | Version 1.0 (V-1.0 branch) | Status: Production-ready*
 
 <br><br>
 
