@@ -646,7 +646,7 @@ If it fails, it never ships. We rejected 5 indicators this way.
 
 <p align="center">
   <img src="https://img.shields.io/badge/Location-Global-8B5CF6?style=for-the-badge&logo=google-maps&logoColor=white" />
-  <img src="https://img.shields.io/badge/Education-B.S.%20Computer%20Science-000000?style=for-the-badge&logo=academia&logoColor=white" />
+  <img src="https://img.shields.io/badge/Education-Computer%20Science%20Engineer-000000?style=for-the-badge&logo=academia&logoColor=white" />
 </p>
 
 <p align="center">
@@ -660,75 +660,49 @@ If it fails, it never ships. We rejected 5 indicators this way.
 
 ---
 
-<details>
-<summary><b><kbd>▶ REVEAL: ABOUT ME (GARAGE DOOR EFFECT)</kbd></b></summary>
-<br>
+### 📖 About Me
+I am a Software Engineer with a profound focus on AI/ML systems and Full Stack Development. I specialize in building enterprise-grade applications, robust distributed systems, and implementing scalable machine learning solutions in production environments. My engineering philosophy revolves around a strong product mindset, ensuring that the technology not only meets rigorous technical standards but also delivers exceptional user experiences. 
 
-> I am a Software Engineer with a profound focus on AI/ML systems and Full Stack Development. I specialize in building enterprise-grade applications, robust distributed systems, and implementing scalable machine learning solutions in production environments. My engineering philosophy revolves around a strong product mindset, ensuring that the technology not only meets rigorous technical standards but also delivers exceptional user experiences. 
-> 
-> **Open To:** Senior Software Engineering roles, AI Engineer positions, and high-impact open-source contributions.
+**Open To:** Senior Software Engineering roles, AI Engineer positions, and high-impact open-source contributions.
 
-</details>
+---
 
-<details>
-<summary><b><kbd>▶ TOGGLE: TECH STACK SPEC-SHEET</kbd></b></summary>
-<br>
+### ⚙️ Tech Stack
 
-### Languages
+**Languages**
 <p align="left">
   <a href="https://skillicons.dev"><img src="https://skillicons.dev/icons?i=py,ts,js,java,cpp,go,rust&theme=dark" /></a>
 </p>
 
-### Frontend & Backend
+**Frontend & Backend**
 <p align="left">
   <a href="https://skillicons.dev"><img src="https://skillicons.dev/icons?i=react,nextjs,tailwind,nodejs,postgres,mongodb,redis&theme=dark" /></a>
 </p>
 
-### Cloud & DevOps
+**Cloud & DevOps**
 <p align="left">
   <a href="https://skillicons.dev"><img src="https://skillicons.dev/icons?i=aws,gcp,docker,kubernetes,githubactions&theme=dark" /></a>
 </p>
 
-</details>
+---
 
-<details>
-<summary><b><kbd>▶ TOGGLE: AI / ML EXPERTISE (SPEC-SHEET TOOLTIPS)</kbd></b></summary>
-<br>
+### 🤖 AI / ML Expertise
 
-| Domain | Proficiency | Spec-Sheet (Hover) |
+| Domain | Proficiency | Details |
 | :--- | :---: | :--- |
-| **Large Language Models (LLMs)** | Advanced | <abbr title="Prompt Engineering, RAG Architectures, Agentic Systems, MCP">Hover for details</abbr> |
-| **Machine Learning** | Advanced | <abbr title="Predictive Modeling, Classification, Regression, Ensemble Methods">Hover for details</abbr> |
-| **Deep Learning** | Intermediate | <abbr title="Neural Networks, CNNs, NLP, PyTorch, TensorFlow">Hover for details</abbr> |
-| **MLOps** | Intermediate | <abbr title="Model Deployment, Monitoring, CI/CD for ML, Data Pipelines">Hover for details</abbr> |
+| **Large Language Models (LLMs)** | Advanced | Prompt Engineering, RAG Architectures, Agentic Systems, MCP |
+| **Machine Learning** | Advanced | Predictive Modeling, Classification, Regression, Ensemble Methods |
+| **Deep Learning** | Intermediate | Neural Networks, CNNs, NLP, PyTorch, TensorFlow |
+| **MLOps** | Intermediate | Model Deployment, Monitoring, CI/CD for ML, Data Pipelines |
 
-</details>
+---
 
-<details>
-<summary><b><kbd>▶ REVEAL: FEATURED PROJECTS</kbd></b></summary>
-<br>
+### 🏆 Featured Projects
 
 - **[Taaqib Portfolio](https://github.com/taaqib-masood/Taaqib-Portfolio)**: Global Edge Delivery, 99+ Lighthouse Score.
 - **[Predictive Maintenance](https://github.com/taaqib-masood/predictive-maintenance-industrial-machinery)**: High accuracy failure prediction on real-time sensor data.
 - **[Salon Booking SaaS](https://github.com/taaqib-masood/salon-booking-saas)**: Multi-tenant architecture with secure Stripe payments.
 - **[Majestic Constructions](https://github.com/taaqib-masood/majestic-constructions)**: High-traffic enterprise site with fast server-side rendering.
-
-</details>
-
----
-
-<div align="center">
-  <h3> 📊 GitHub Analytics & Snake </h3>
-</div>
-
-<p align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=taaqib-masood&show_icons=true&theme=tokyonight&hide_border=true&bg_color=0D1117&title_color=8B5CF6&icon_color=ffffff" alt="GitHub Stats" />
-  <img src="https://github-readme-streak-stats.herokuapp.com/?user=taaqib-masood&theme=tokyonight&hide_border=true&background=0D1117&ring=8B5CF6&fire=ffffff&currStreakLabel=8B5CF6" alt="GitHub Streak" />
-</p>
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/taaqib-masood/taaqib-masood/output/github-contribution-grid-snake-dark.svg" alt="Contribution Snake" />
-</p>
 
 <div align="center">
   <img src="https://capsule-render.vercel.app/api?type=waving&color=8B5CF6&height=100&section=footer" />
