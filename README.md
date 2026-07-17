@@ -663,7 +663,7 @@ If it fails, it never ships. We rejected 5 indicators this way.
 ### 📖 About Me
 I am a Software Engineer with a profound focus on AI/ML systems and Full Stack Development. I specialize in building enterprise-grade applications, robust distributed systems, and implementing scalable machine learning solutions in production environments. My engineering philosophy revolves around a strong product mindset, ensuring that the technology not only meets rigorous technical standards but also delivers exceptional user experiences. 
 
-**Open To:** Senior Software Engineering roles, AI Engineer positions, and high-impact open-source contributions.
+**Open To:** Junior Software Engineering roles, AI Engineer positions, and high-impact open-source contributions.
 
 ---
 
