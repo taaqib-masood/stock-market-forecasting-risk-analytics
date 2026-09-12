@@ -14,6 +14,8 @@ CLI Usage:
 """
 
 import argparse
+import hashlib
+import json
 import logging
 import os
 from pathlib import Path
@@ -266,9 +268,9 @@ class DriftDetector:
     # ── Alert ─────────────────────────────────────────────────────────────
 
     def _send_alert(self, report: dict):
-        """Send a Telegram alert via notify.py."""
+        """Queue a consent-bound Telegram drift alert via notify.py."""
         try:
-            from src.notify import send
+            from src.notify import queue_audience_message
 
             ticker = report.get("ticker", "UNKNOWN")
             dd = report["data_drift"]
@@ -305,9 +307,17 @@ class DriftDetector:
             else:
                 lines.append("👀 <b>Action: Monitor closely</b>")
 
-            send("\n".join(lines))
+            text = "\n".join(lines)
+            signal_id = "drift:" + hashlib.sha256(
+                json.dumps(report, sort_keys=True, default=str).encode("utf-8")
+            ).hexdigest()[:24]
+            result = queue_audience_message(text, signal_id)
+            if result.get("blockers"):
+                logger.info("Drift alert delivery gated: %s", result["blockers"])
+            return result
         except Exception as e:
             logger.error("Failed to send drift alert: %s", e)
+            return {"queued": 0, "created": 0, "error": str(e)}
 
 
 # ---------------------------------------------------------------------------

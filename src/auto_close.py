@@ -16,11 +16,13 @@ Run manually:
 """
 
 import argparse
+import os
 import sys
 from datetime import datetime
 
-from src.paper_trader import _load, _save, live_prices, sell, portfolio_value, trade_stats
-from src.notify import _send
+from src.paper_trader import _load, _save, live_prices, sell, portfolio_value
+from src.notify import queue_audience_message
+from src import strategy_presets as sp
 
 # ── ANSI ──────────────────────────────────────────────────────────────────────
 R = "\033[31m"; G = "\033[32m"; Y = "\033[33m"
@@ -34,6 +36,10 @@ def check_and_close(dry_run: bool = False) -> list[dict]:
     Close any that hit stop or target.
     Returns list of closed trade results.
     """
+    if os.environ.get("BORO_EXECUTION_MODE", "paper").lower() == "live":
+        print("  LIVE_AUTO_CLOSE_DISABLED — use broker GTT protection and reconciliation.")
+        return []
+
     state     = _load()
     positions = state["positions"]
 
@@ -44,7 +50,8 @@ def check_and_close(dry_run: bool = False) -> list[dict]:
     tickers = list(positions.keys())
     prices  = live_prices(tickers)
     closed  = []
-    now     = datetime.now().strftime("%H:%M")
+    # Holding-period time-exit: the active preset caps how long a swing may run.
+    max_days = sp.max_hold_days(sp.active())
 
     print(f"\n{BOLD}{C}  AUTO CLOSE — {datetime.now().strftime('%a %d %b %Y  %H:%M')}{RESET}\n")
     print(f"  {'Ticker':<12} {'Shares':>6} {'Entry':>8} "
@@ -66,6 +73,16 @@ def check_and_close(dry_run: bool = False) -> list[dict]:
         hit_stop   = stop   and price <= stop
         hit_target = target and price >= target
 
+        # Time-exit: held longer than the active preset allows.
+        hit_maxhold = False
+        ed = pos.get("entry_date")
+        if ed:
+            try:
+                held = (datetime.now() - datetime.strptime(ed, "%Y-%m-%d %H:%M")).days
+                hit_maxhold = held >= max_days
+            except ValueError:
+                pass
+
         stop_str   = f"₹{stop:,.2f}"   if stop   else "  none "
         target_str = f"₹{target:,.2f}" if target else "  none "
 
@@ -73,6 +90,8 @@ def check_and_close(dry_run: bool = False) -> list[dict]:
             status_str = f"{R}⛔ STOP HIT{RESET}"
         elif hit_target:
             status_str = f"{G}🎯 TARGET HIT{RESET}"
+        elif hit_maxhold:
+            status_str = f"{Y}⏳ MAX-HOLD ({max_days}d){RESET}"
         else:
             unreal = (price - entry) * shares
             col    = G if unreal >= 0 else R
@@ -82,56 +101,43 @@ def check_and_close(dry_run: bool = False) -> list[dict]:
               f"₹{entry:>7,.2f} ₹{price:>8,.2f} "
               f"{stop_str:>9} {target_str:>9}  {status_str}")
 
-        if (hit_stop or hit_target) and not dry_run:
+        if (hit_stop or hit_target or hit_maxhold) and not dry_run:
             result = sell(ticker, shares=shares, price=price, state=state)
             if result["ok"]:
-                result["reason"] = "stop" if hit_stop else "target"
+                result["reason"] = ("stop" if hit_stop else
+                                    "target" if hit_target else "max_hold")
                 closed.append(result)
 
-    if dry_run and (any(
-        (pos.get("stop") and prices.get(t, 0) <= pos["stop"]) or
-        (pos.get("target") and prices.get(t, 0) >= pos["target"])
-        for t, pos in positions.items()
-    )):
+    def _would_close(t, pos) -> bool:
+        if pos.get("stop") and prices.get(t, 0) <= pos["stop"]:
+            return True
+        if pos.get("target") and prices.get(t, 0) >= pos["target"]:
+            return True
+        ed = pos.get("entry_date")
+        if ed:
+            try:
+                return (datetime.now() - datetime.strptime(ed, "%Y-%m-%d %H:%M")).days >= max_days
+            except ValueError:
+                return False
+        return False
+
+    if dry_run and any(_would_close(t, pos) for t, pos in positions.items()):
         print(f"\n  {Y}[DRY RUN] Above positions would be closed.{RESET}")
 
     return closed
 
 
 def _telegram_summary(closed: list[dict], state: dict):
-    """Send Telegram message with close outcomes + portfolio update."""
+    """Queue a non-personal operational notice through the consented audience."""
     if not closed:
-        return
-
-    pv    = portfolio_value(state)
-    stats = trade_stats(state)
-    now   = datetime.now().strftime("%a %d %b  %H:%M")
-
-    lines = [f"🔔 <b>Auto-Close Report — {now}</b>\n"]
-
-    for t in closed:
-        icon = "✅" if t["pnl"] > 0 else "❌"
-        lines.append(
-            f"{icon} <b>{t['ticker']}</b> closed — {t['reason'].upper()}\n"
-            f"   Entry ₹{t['entry']:,.2f} → Exit ₹{t['exit']:,.2f}\n"
-            f"   P&L: ₹{t['pnl']:+,.2f} ({t['pnl_pct']:+.1f}%)\n"
-        )
-
-    lines.append(
-        f"\n📊 <b>Portfolio</b>\n"
-        f"Value : ₹{pv['total_val']:,.2f}  "
-        f"({pv['total_pnl_pct']:+.2f}%)\n"
-        f"Cash  : ₹{pv['cash']:,.2f}"
+        return {"queued": 0, "created": 0, "blockers": []}
+    signal_id = "auto-close:" + datetime.now().strftime("%Y-%m-%d")
+    return queue_audience_message(
+        "🔔 <b>Paper auto-close completed</b>\n"
+        f"{len(closed)} position(s) were processed. Review the authenticated cockpit "
+        "for position and performance details.",
+        signal_id,
     )
-
-    if stats:
-        lines.append(
-            f"\n🏆 Overall: {stats['win_rate']}% win rate  |  "
-            f"PF: {stats['profit_factor']}  |  "
-            f"Total P&L: ₹{stats['total_pnl']:+,.2f}"
-        )
-
-    _send("\n".join(lines))
 
 
 def run(dry_run: bool = False):

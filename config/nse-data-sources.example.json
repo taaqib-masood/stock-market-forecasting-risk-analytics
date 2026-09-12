@@ -1,0 +1,32 @@
+{
+  "as_of": "2026-07-10",
+  "output": "../data/reliability/nse-bundle.json",
+  "quality_report": "../data/reliability/nse-quality.json",
+  "max_price_age_days": 7,
+  "max_fundamental_age_days": 200,
+  "security_snapshots": [
+    {
+      "path": "../data/reliability/raw/NSE_CM_security_10072026.csv",
+      "snapshot_date": "2026-07-10",
+      "available_at": "2026-07-10T03:00:00Z"
+    }
+  ],
+  "bhavcopies": [
+    {
+      "path": "../data/reliability/raw/BhavCopy_NSE_CM_20260710.csv",
+      "available_at": "2026-07-10T18:00:00Z"
+    }
+  ],
+  "corporate_actions": [
+    {
+      "path": "../data/reliability/raw/corporate-actions-20260710.csv",
+      "available_at": "2026-07-10T12:00:00Z"
+    }
+  ],
+  "financials": [
+    "../data/reliability/raw/filing-financials-20260710.csv"
+  ],
+  "business_classifications": [
+    "../data/reliability/raw/business-classifications-20260710.csv"
+  ]
+}

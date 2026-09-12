@@ -36,10 +36,12 @@ on:
 
 env:
   TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+  TELEGRAM_WEBHOOK_SECRET: ${{ secrets.TELEGRAM_WEBHOOK_SECRET }}
   GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
   FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
   PYTHONPATH: ${{ github.workspace }}
+  BORO_RELIABILITY_MODE: ${{ vars.BORO_RELIABILITY_MODE || 'legacy' }}
+  BORO_RELIABILITY_DB: results/reliability.db
 
 jobs:
   # ── CI Tests (on every push to main) ──────────────────────────────────────
@@ -74,8 +76,31 @@ jobs:
           from src import mlflow_tracker, drift_detector
           from src import walk_forward
           from src import control_server
+          from src import strategy_presets
+          from src.reliability import store, statistics, walk_forward
+          from src.reliability import ledger, outbox, controls, governance, shadow, importers
+          from src.reliability import nse_normalizers, nse_bundle, nse_pipeline, activation
+          from src.engine import AlphaModel, PortfolioModel, RiskModel, ExecutionModel, TradingEngine
           print('All imports OK')
           "
+
+      - name: Run reliability contract tests
+        run: >-
+          pytest
+          tests/test_reliability_store.py
+          tests/test_reliability_importers.py
+          tests/test_reliability_statistics.py
+          tests/test_signal_ledger.py
+          tests/test_delivery_outbox.py
+          tests/test_reliability_controls.py
+          tests/test_reliability_governance.py
+          tests/test_reliability_integration.py
+          tests/test_nse_normalizers.py
+          tests/test_nse_bundle_builder.py
+          tests/test_nse_pipeline.py
+          tests/test_shadow_activation.py
+          tests/test_daily_shadow_dispatch.py
+          -v --tb=short
 
       - name: Run tests
         run: |
@@ -88,11 +113,12 @@ jobs:
 
       - name: Notify CI failure
         if: failure()
+        env:
+          NOTICE_SIGNAL_ID: "github:ci-failure:${{ github.run_id }}"
+          NOTICE_TEXT: "Boro service update delayed. No recommendation was sent; please check the dashboard."
         run: |
-          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
-            -d chat_id="${TELEGRAM_CHAT_ID}" \
-            -d parse_mode="HTML" \
-            -d text="❌ <b>CI FAILED</b>%0ARepo: ${{ github.repository }}%0ACommit: ${{ github.sha }}%0A<a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>View logs</a>"
+          python scripts/queue_telegram_notice.py \
+            --signal-id "$NOTICE_SIGNAL_ID" --text "$NOTICE_TEXT" || true
 
   # ── Nightly Scan (9:00 AM IST, Mon–Fri) ───────────────────────────────────
   nightly-scan:
@@ -157,11 +183,12 @@ jobs:
 
       - name: Notify on failure
         if: failure()
+        env:
+          NOTICE_SIGNAL_ID: "github:nightly-scan-failure:${{ github.run_id }}"
+          NOTICE_TEXT: "Boro's scheduled market update was delayed. Please check the dashboard before acting."
         run: |
-          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
-            -d chat_id="${TELEGRAM_CHAT_ID}" \
-            -d parse_mode="HTML" \
-            -d text="❌ <b>NIGHTLY SCAN FAILED</b>%0ACheck: <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>GitHub Actions</a>"
+          python scripts/queue_telegram_notice.py \
+            --signal-id "$NOTICE_SIGNAL_ID" --text "$NOTICE_TEXT" || true
 
   # ── Auto-Close Check (3:45 PM IST, Mon–Fri) ───────────────────────────────
   auto-close:
@@ -206,15 +233,16 @@ jobs:
 
       - name: Notify on failure
         if: failure()
+        env:
+          NOTICE_SIGNAL_ID: "github:auto-close-failure:${{ github.run_id }}"
+          NOTICE_TEXT: "Boro's scheduled paper close update was delayed. Please check the dashboard."
         run: |
-          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
-            -d chat_id="${TELEGRAM_CHAT_ID}" \
-            -d parse_mode="HTML" \
-            -d text="❌ <b>AUTO-CLOSE FAILED</b>%0ACheck: <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>GitHub Actions</a>"
+          python scripts/queue_telegram_notice.py \
+            --signal-id "$NOTICE_SIGNAL_ID" --text "$NOTICE_TEXT" || true
 
-  # ── Weekly Backtest (Sunday 10:00 AM IST) ─────────────────────────────────
+  # ── Weekly OOS Validation (Sunday 10:00 AM IST) ───────────────────────────
   weekly-backtest:
-    name: Weekly Backtest
+    name: Weekly OOS Validation
     if: |
       github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'weekly-backtest' ||
       github.event_name == 'schedule' && startsWith(github.event.schedule, '30 4')
@@ -238,26 +266,44 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run backtest — RELIANCE
-        run: python -m src.pipeline --ticker RELIANCE --years 5
+      - name: Create validation output directory
+        run: mkdir -p results/weekly-validation
 
-      - name: Run backtest — TCS
-        run: python -m src.pipeline --ticker TCS --years 5
+      - name: Portfolio walk-forward versus Nifty
+        run: |
+          set -o pipefail
+          python -m src.walk_forward --portfolio --years 5 --splits 4 \
+            | tee results/weekly-validation/portfolio.txt
 
-      - name: Upload backtest results
+      - name: Compare daily-bar V2 challenger
+        run: |
+          set -o pipefail
+          python -m src.walk_forward --compare-v2 --ticker RELIANCE --years 5 --splits 4 \
+            | tee results/weekly-validation/v2-reliance.txt
+          python -m src.walk_forward --compare-v2 --ticker TCS --years 5 --splits 4 \
+            | tee results/weekly-validation/v2-tcs.txt
+
+      - name: Test regime and relative-strength selection
+        run: |
+          set -o pipefail
+          python -m src.walk_forward --selection --years 3 --splits 4 \
+            | tee results/weekly-validation/selection.txt
+
+      - name: Upload validation reports
         uses: actions/upload-artifact@v4
         with:
-          name: backtest-results-${{ github.run_id }}
-          path: results/
-          retention-days: 30
+          name: weekly-oos-validation-${{ github.run_id }}
+          path: results/weekly-validation/
+          retention-days: 90
 
       - name: Notify on failure
         if: failure()
+        env:
+          NOTICE_SIGNAL_ID: "github:weekly-validation-failure:${{ github.run_id }}"
+          NOTICE_TEXT: "Boro's weekly research validation was delayed. Recommendations remain gated."
         run: |
-          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
-            -d chat_id="${TELEGRAM_CHAT_ID}" \
-            -d parse_mode="HTML" \
-            -d text="❌ <b>WEEKLY BACKTEST FAILED</b>%0ACheck: <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>GitHub Actions</a>"
+          python scripts/queue_telegram_notice.py \
+            --signal-id "$NOTICE_SIGNAL_ID" --text "$NOTICE_TEXT" || true
 
   # ── Research Backtest (on-demand, from the dashboard) ─────────────────────
   research-backtest:
@@ -305,11 +351,12 @@ jobs:
 
       - name: Notify on failure
         if: failure()
+        env:
+          NOTICE_SIGNAL_ID: "github:research-backtest-failure:${{ github.run_id }}"
+          NOTICE_TEXT: "Boro's requested research backtest was delayed. Please check the dashboard."
         run: |
-          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
-            -d chat_id="${TELEGRAM_CHAT_ID}" \
-            -d parse_mode="HTML" \
-            -d text="❌ <b>RESEARCH BACKTEST FAILED</b> (${BT_TICKER})%0ACheck: <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>GitHub Actions</a>"
+          python scripts/queue_telegram_notice.py \
+            --signal-id "$NOTICE_SIGNAL_ID" --text "$NOTICE_TEXT" || true
 
   # ── Quarterly Halal Re-screen (1st of Jan/Apr/Jul/Oct) ─────────────────────
   # Kills the "who screens the screener" SPOF: refresh fundamentals → rebuild the
@@ -368,8 +415,9 @@ jobs:
 
       - name: Notify on failure
         if: failure()
+        env:
+          NOTICE_SIGNAL_ID: "github:quarterly-rescreen-failure:${{ github.run_id }}"
+          NOTICE_TEXT: "Boro's scheduled halal re-screen was delayed. Existing recommendation gates remain active."
         run: |
-          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
-            -d chat_id="${TELEGRAM_CHAT_ID}" \
-            -d parse_mode="HTML" \
-            -d text="❌ <b>QUARTERLY RE-SCREEN FAILED</b>%0ACheck: <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>GitHub Actions</a>"
+          python scripts/queue_telegram_notice.py \
+            --signal-id "$NOTICE_SIGNAL_ID" --text "$NOTICE_TEXT" || true

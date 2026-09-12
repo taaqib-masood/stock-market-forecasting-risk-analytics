@@ -141,8 +141,8 @@ def _series(values):
 
 def test_backtest_winning_long_hits_target():
     prices = _series([100, 100, 110, 110])
-    signals = _series([0, 1, 0, 0])
-    confs = _series([0, 1.0, 1.0, 1.0])
+    signals = _series([1, 0, 0, 0])
+    confs = _series([1.0, 0, 0, 0])
     atrs = _series([2, 2, 2, 2])
     log = backtest_with_risk(prices, signals, confs, atrs)
     # entry filled @100.1 (0.1% slip), 50 shares, target 108 hit at price 110
@@ -151,6 +151,10 @@ def test_backtest_winning_long_hits_target():
     row = log.iloc[0]
     assert bool(row["won"]) is True
     assert row["exit_reason"] == "target"
+    assert row["entry_date"] == prices.index[1]
+    assert row["signal_date"] == prices.index[0]
+    assert row["confidence"] == 1.0
+    assert row["date"] == prices.index[2]
     assert row["commission"] == 0.5
     assert row["pnl"] == 489.0
     assert row["equity"] == 100489.0
@@ -158,8 +162,8 @@ def test_backtest_winning_long_hits_target():
 
 def test_backtest_losing_long_hits_stop():
     prices = _series([100, 100, 90, 90])
-    signals = _series([0, 1, 0, 0])
-    confs = _series([0, 1.0, 1.0, 1.0])
+    signals = _series([1, 0, 0, 0])
+    confs = _series([1.0, 0, 0, 0])
     atrs = _series([2, 2, 2, 2])
     log = backtest_with_risk(prices, signals, confs, atrs)
     row = log.iloc[0]
@@ -175,3 +179,32 @@ def test_backtest_no_signals_returns_empty():
     atrs = _series([2, 2, 2, 2])
     log = backtest_with_risk(prices, flat, flat, atrs)
     assert log.empty
+
+
+def test_backtest_enters_at_next_session_open_not_close():
+    closes = _series([100, 110, 120, 120])
+    opens = _series([100, 102, 120, 120])
+    signals = _series([1, 0, 0, 0])
+    confs = _series([1.0, 0, 0, 0])
+    atrs = _series([2, 2, 2, 2])
+
+    log = backtest_with_risk(closes, signals, confs, atrs, entry_prices=opens)
+
+    assert log.iloc[0]["entry"] == pytest.approx(102.102)
+    assert log.iloc[0]["entry_date"] == closes.index[1]
+
+
+def test_intraday_low_triggers_long_stop_even_when_close_recovers():
+    closes = _series([100, 100, 100, 100])
+    opens = _series([100, 100, 100, 100])
+    highs = _series([101, 101, 101, 101])
+    lows = _series([99, 99, 90, 99])
+    signals = _series([1, 0, 0, 0])
+    confs = _series([1.0, 0, 0, 0])
+    atrs = _series([2, 2, 2, 2])
+
+    log = backtest_with_risk(
+        closes, signals, confs, atrs, entry_prices=opens, highs=highs, lows=lows
+    )
+
+    assert log.iloc[0]["exit_reason"] == "stop"
