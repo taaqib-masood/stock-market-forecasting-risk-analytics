@@ -10,7 +10,10 @@ Run after the quarterly refresh:
     python -m src.tier_monitor
 """
 import json
+import hashlib
+import os
 from pathlib import Path
+from datetime import datetime, timezone
 from typing import Optional
 
 from src.halal_screen import screen_cached, GREEN, YELLOW, RED
@@ -72,6 +75,32 @@ def format_changes(changes: list) -> str:
     return "\n".join(lines)
 
 
+def queue_tier_change_alert(changes: list, *, now: str | datetime | None = None) -> dict:
+    """Queue tier changes only for approved, explicitly-consented recipients."""
+    if not changes:
+        return {"queued": 0, "created": 0, "blockers": []}
+    from src.notify import queue_recommendation_for_audience, send_outbox_payload
+    from src.reliability.outbox import DeliveryOutbox
+    from src.reliability.store import ReliabilityStore
+    from src.reliability.telegram_audience import TelegramAudience
+
+    point = now or datetime.now(timezone.utc)
+    database = os.environ.get("BORO_RELIABILITY_DB", "results/reliability.db")
+    signal_hash = hashlib.sha256(
+        json.dumps(changes, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()[:16]
+    signal_id = f"halal-tier:{point.date().isoformat()}:{signal_hash}"
+    with ReliabilityStore(database) as store:
+        audience = TelegramAudience(store.connection)
+        outbox = DeliveryOutbox(store.connection)
+        queued = queue_recommendation_for_audience(
+            format_changes(changes), signal_id, audience, outbox, now=point
+        )
+        if not queued.get("queued"):
+            return queued
+        return {**queued, "delivery": outbox.deliver_due(send_outbox_payload, now=point)}
+
+
 if __name__ == "__main__":
     import sys
 
@@ -80,8 +109,8 @@ if __name__ == "__main__":
     print(msg)
 
     # --notify: push tier transitions to Telegram (used by the quarterly CI re-screen).
-    # Only sends when something actually changed, so a clean quarter stays quiet.
+    # Only queues changed tiers for approved, explicitly-consented recipients.
     if "--notify" in sys.argv and changes:
-        from src.notify import _send
-        sent = _send(msg)
-        print(f"[tier_monitor] telegram push: {'sent' if sent else 'skipped (no creds / send failed)'}")
+        result = queue_tier_change_alert(changes)
+        delivered = result.get("delivery", {}).get("delivered", 0)
+        print(f"[tier_monitor] telegram push: {'sent' if delivered else 'skipped (gate, consent, credentials, or delivery)'}")

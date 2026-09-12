@@ -281,19 +281,47 @@ def trade_stats(state: dict) -> dict:
         exit_ = datetime.strptime(t["closed_at"], "%Y-%m-%d %H:%M")
         holding_days.append((exit_ - entry).total_seconds() / 86400)
 
+    avg_win  = sum(wins)   / len(wins)   if wins   else 0.0
+    avg_loss = sum(losses) / len(losses) if losses else 0.0
+
+    # Longest winning / losing streaks (chronological).
+    win_streak = loss_streak = cur_w = cur_l = 0
+    for t in trades:
+        if t["pnl"] > 0:
+            cur_w += 1; cur_l = 0
+        else:
+            cur_l += 1; cur_w = 0
+        win_streak  = max(win_streak, cur_w)
+        loss_streak = max(loss_streak, cur_l)
+
+    # Max drawdown of the realised-equity curve (cumulative closed P&L over capital).
+    eq = STARTING_CAPITAL
+    peak = STARTING_CAPITAL
+    max_dd = 0.0
+    for p in pnls:
+        eq += p
+        peak = max(peak, eq)
+        max_dd = max(max_dd, (peak - eq) / peak if peak else 0.0)
+
     return {
         "total":         len(trades),
         "wins":          len(wins),
         "losses":        len(losses),
         "win_rate":      round(len(wins) / len(trades) * 100, 1) if trades else 0,
         "total_pnl":     round(sum(pnls), 2),
-        "avg_win":       round(sum(wins)   / len(wins),   2) if wins   else 0,
-        "avg_loss":      round(sum(losses) / len(losses), 2) if losses else 0,
+        "avg_win":       round(avg_win,  2),
+        "avg_loss":      round(avg_loss, 2),
         "profit_factor": round(sum(wins) / abs(sum(losses)), 2)
                          if losses and sum(losses) != 0 else float("inf"),
         "best":          round(max(pnls), 2),
         "worst":         round(min(pnls), 2),
         "avg_days_held": round(sum(holding_days) / len(holding_days), 1) if holding_days else 0,
+        # ── scorecard extras ──
+        "expectancy":    round(sum(pnls) / len(trades), 2) if trades else 0.0,   # avg ₹ per trade
+        "win_loss_ratio":round(avg_win / abs(avg_loss), 2) if avg_loss else float("inf"),
+        "max_drawdown_pct": round(max_dd * 100, 1),
+        "max_win_streak":   win_streak,
+        "max_loss_streak":  loss_streak,
     }
 
 

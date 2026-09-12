@@ -107,6 +107,38 @@ def test_compare_strategies_returns_verdict():
     assert isinstance(res["challenger_wins"], bool)
 
 
+def test_compare_strategies_rejects_small_losing_challenger(monkeypatch):
+    outcomes = iter([
+        {"oos": {"total_trades": 23, "win_rate": 30.4, "profit_factor": 0.59,
+                 "total_pnl": -1113.0}},
+        {"oos": {"total_trades": 3, "win_rate": 33.3, "profit_factor": 0.66,
+                 "total_pnl": -143.0}},
+    ])
+    monkeypatch.setattr("src.walk_forward.walk_forward", lambda *a, **k: next(outcomes))
+
+    result = compare_strategies(pd.DataFrame(), RuleStrategy(), RuleStrategy(min_criteria=4))
+
+    assert result["challenger_wins"] is False
+    assert "INSUFFICIENT_OOS_TRADES" in result["promotion_blockers"]
+    assert "NEGATIVE_NET_PNL" in result["promotion_blockers"]
+    assert "PROFIT_FACTOR" in result["promotion_blockers"]
+
+
+def test_compare_strategies_requires_standalone_edge_and_relative_lift(monkeypatch):
+    outcomes = iter([
+        {"oos": {"total_trades": 30, "win_rate": 50.0, "profit_factor": 1.1,
+                 "total_pnl": 100.0}},
+        {"oos": {"total_trades": 30, "win_rate": 53.0, "profit_factor": 1.3,
+                 "total_pnl": 250.0}},
+    ])
+    monkeypatch.setattr("src.walk_forward.walk_forward", lambda *a, **k: next(outcomes))
+
+    result = compare_strategies(pd.DataFrame(), RuleStrategy(), RuleStrategy(min_criteria=4))
+
+    assert result["challenger_wins"] is True
+    assert result["promotion_blockers"] == []
+
+
 # ── _pool_stats ──────────────────────────────────────────────────────────────────
 
 def test_pool_stats_empty():

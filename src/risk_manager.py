@@ -162,6 +162,9 @@ def backtest_with_risk(
     capital: float = 100_000,
     slippage_pct: float = 0.001,        # 0.1% slippage on each fill
     commission_per_share: float = 0.005, # $0.005/share (IBKR rate)
+    entry_prices: pd.Series | None = None,
+    highs: pd.Series | None = None,
+    lows: pd.Series | None = None,
     **rm_kwargs,
 ) -> pd.DataFrame:
     """
@@ -176,10 +179,14 @@ def backtest_with_risk(
 
     for i in range(1, len(prices)):
         price = prices.iloc[i]
-        sig = signals.iloc[i]
-        conf = confidences.iloc[i]
-        atr = atrs.iloc[i]
-        vix_val = float(vix.iloc[i]) if vix is not None else 15.0
+        market_open = float(entry_prices.iloc[i]) if entry_prices is not None else float(price)
+        # A close-derived signal is only executable on the following bar. Using
+        # signals.iloc[i] here would fill at the same close that created it.
+        signal_index = i - 1
+        sig = signals.iloc[signal_index]
+        conf = confidences.iloc[signal_index]
+        atr = atrs.iloc[signal_index]
+        vix_val = float(vix.iloc[signal_index]) if vix is not None else 15.0
 
         # Close existing position first
         if in_trade is not None:
@@ -190,10 +197,12 @@ def backtest_with_risk(
             shares = in_trade["shares"]
 
             # Check stop / target hit (use today's price as proxy)
-            hit_stop = (direction == 1 and price <= stop) or \
-                       (direction == -1 and price >= stop)
-            hit_target = (direction == 1 and price >= target) or \
-                         (direction == -1 and price <= target)
+            day_high = float(highs.iloc[i]) if highs is not None else float(price)
+            day_low = float(lows.iloc[i]) if lows is not None else float(price)
+            hit_stop = (direction == 1 and day_low <= stop) or \
+                       (direction == -1 and day_high >= stop)
+            hit_target = (direction == 1 and day_high >= target) or \
+                         (direction == -1 and day_low <= target)
 
             # Exit on stop, target, or a GENUINE reversal (opposite signal) — NOT
             # merely because the entry signal turned flat (sig == 0). The score is
@@ -204,8 +213,17 @@ def backtest_with_risk(
             # exits become purely stop/target.
             if hit_stop or hit_target or sig == -1:
                 # Slippage on exit: adverse to position direction
-                exit_slip = price * slippage_pct * (-direction)
-                exit_price = price + exit_slip
+                if highs is not None and lows is not None:
+                    if hit_stop:
+                        base_exit = min(stop, market_open) if direction == 1 else max(stop, market_open)
+                    elif hit_target:
+                        base_exit = target
+                    else:
+                        base_exit = float(price)
+                else:
+                    base_exit = float(price)
+                exit_slip = base_exit * slippage_pct * (-direction)
+                exit_price = base_exit + exit_slip
                 commission = shares * commission_per_share * 2  # open + close
 
                 raw_pnl = (exit_price - entry) * shares * direction
@@ -215,11 +233,16 @@ def backtest_with_risk(
                 rm.record_outcome(won)
                 trades.append({
                     "date": prices.index[i],
+                    "entry_date": in_trade["entry_date"],
+                    "signal_date": in_trade["signal_date"],
+                    "confidence": in_trade["confidence"],
                     "entry": entry,
                     "exit": round(exit_price, 4),
                     "direction": direction,
                     "shares": shares,
-                    "slippage_cost": round(abs(exit_slip) * shares + price * slippage_pct * shares, 2),
+                    "slippage_cost": round(
+                        abs(exit_slip) * shares + market_open * slippage_pct * shares, 2
+                    ),
                     "commission": round(commission, 2),
                     "pnl": round(pnl, 2),
                     "equity": round(equity, 2),
@@ -231,7 +254,7 @@ def backtest_with_risk(
         # Open new trade
         if sig != 0 and in_trade is None:
             decision = rm.evaluate(
-                entry_price=price,
+                entry_price=market_open,
                 atr=atr,
                 confidence=conf,
                 direction=sig,
@@ -239,14 +262,17 @@ def backtest_with_risk(
             )
             if decision["approved"]:
                 # Slippage on entry: adverse to intended direction
-                entry_slip = price * slippage_pct * sig
-                filled_entry = price + entry_slip
+                entry_slip = market_open * slippage_pct * sig
+                filled_entry = market_open + entry_slip
                 in_trade = {
+                    "signal_date": prices.index[signal_index],
+                    "entry_date": prices.index[i],
                     "entry": round(filled_entry, 4),
                     "direction": sig,
                     "stop": decision["stop_price"],
                     "target": decision["target_price"],
                     "shares": decision["shares"],
+                    "confidence": float(conf),
                 }
 
     return pd.DataFrame(trades)

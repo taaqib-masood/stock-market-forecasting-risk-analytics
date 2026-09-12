@@ -104,7 +104,9 @@ def _window_backtest(feats: pd.DataFrame, sig: pd.DataFrame,
     vix = feats["vix_close"] if "vix_close" in feats.columns else None
     return backtest_with_risk(
         prices=feats["Close"], signals=sig["signal"], confidences=sig["confidence"],
-        atrs=feats["atr_14"], vix=vix, capital=capital, **cost_kwargs, **rm_kwargs,
+        atrs=feats["atr_14"], vix=vix, entry_prices=feats["Open"],
+        highs=feats["High"], lows=feats["Low"], capital=capital,
+        **cost_kwargs, **rm_kwargs,
     )
 
 
@@ -217,13 +219,15 @@ def compare_strategies(
     challenger: Strategy,
     capital: float = 100_000,
     min_win_rate_lift: float = 2.0,
+    min_oos_trades: int = 20,
+    min_profit_factor: float = 1.0,
     **wf_kwargs,
 ) -> dict:
     """
     Run both strategies through identical walk-forward windows and report the
-    challenger's MARGINAL lift. `challenger_wins` is the live-promotion gate:
-    challenger must add >= `min_win_rate_lift` pp OOS win rate AND not lose money
-    relative to base (higher net pnl). Tune the threshold to taste.
+    challenger's MARGINAL lift. A challenger cannot pass merely by losing less:
+    it needs enough OOS observations, standalone positive net P&L and PF, plus
+    improved win rate and net P&L relative to the base.
     """
     b = walk_forward(df, strategy=base, capital=capital, **wf_kwargs)
     c = walk_forward(df, strategy=challenger, capital=capital, **wf_kwargs)
@@ -233,11 +237,24 @@ def compare_strategies(
     d_wr = round(c["oos"]["win_rate"] - b["oos"]["win_rate"], 1)
     d_pf = round(c["oos"]["profit_factor"] - b["oos"]["profit_factor"], 2)
     d_pnl = round(c["oos"]["total_pnl"] - b["oos"]["total_pnl"], 2)
+    challenger_oos = c["oos"]
+    blockers = []
+    if challenger_oos["total_trades"] < min_oos_trades:
+        blockers.append("INSUFFICIENT_OOS_TRADES")
+    if challenger_oos["total_pnl"] <= 0:
+        blockers.append("NEGATIVE_NET_PNL")
+    if challenger_oos["profit_factor"] <= min_profit_factor:
+        blockers.append("PROFIT_FACTOR")
+    if d_wr < min_win_rate_lift:
+        blockers.append("WIN_RATE_LIFT")
+    if d_pnl <= 0:
+        blockers.append("NET_PNL_NOT_BETTER")
     return {
         "base": {"name": base.name, "oos": b["oos"]},
         "challenger": {"name": challenger.name, "oos": c["oos"]},
         "delta": {"win_rate_pp": d_wr, "profit_factor": d_pf, "net_pnl": d_pnl},
-        "challenger_wins": bool(d_wr >= min_win_rate_lift and d_pnl > 0),
+        "challenger_wins": not blockers,
+        "promotion_blockers": blockers,
         "caveat": SURVIVORSHIP_CAVEAT,
     }
 
@@ -611,6 +628,33 @@ def _print_walk_forward(r: dict) -> None:
     print(f"  {r['caveat']}")
 
 
+def _print_strategy_comparison(r: dict) -> None:
+    if "error" in r:
+        print(f"  comparison failed: {r['error']}")
+        return
+    base, challenger, delta = r["base"], r["challenger"], r["delta"]
+    print(f"\n  Base: {base['name']}  OOS={base['oos']}")
+    print(f"  Challenger: {challenger['name']}  OOS={challenger['oos']}")
+    print(f"  Delta: win={delta['win_rate_pp']}pp  PF={delta['profit_factor']}  "
+          f"net P&L={delta['net_pnl']}")
+    print(f"  Promotion gate: {'PASS' if r['challenger_wins'] else 'FAIL'}")
+    if r["promotion_blockers"]:
+        print(f"  Blockers: {', '.join(r['promotion_blockers'])}")
+    print(f"  {r['caveat']}")
+
+
+def _print_selection_comparison(r: dict) -> None:
+    if "error" in r:
+        print(f"  selection comparison failed: {r['error']}")
+        return
+    print(f"\n  Evaluated names: {r['n_evaluated']}")
+    for name, stats in r["results"].items():
+        print(f"  {name:<12} trades={stats['total_trades']:>4}  win={stats['win_rate']:>5}%  "
+              f"PF={stats['profit_factor']:>5}  net={stats['total_pnl']:>10}")
+    print(f"  Nifty buy-and-hold: {r['nifty_buy_hold_pct']}%")
+    print(f"  {r['caveat']}")
+
+
 def main() -> None:
     import argparse
 
@@ -620,10 +664,19 @@ def main() -> None:
     p.add_argument("--splits", type=int, default=4)
     p.add_argument("--capital", type=float, default=100_000)
     p.add_argument("--costs", default="nse_delivery", choices=list(COST_PRESETS))
-    p.add_argument("--universe", action="store_true",
+    p.add_argument("--preset", default=None,
+                   help="gate a holding-period preset (e.g. intra_week, intra_month) "
+                        "through walk-forward; passes its risk params and records the "
+                        "result so the cockpit can mark it validated")
+    modes = p.add_mutually_exclusive_group()
+    modes.add_argument("--universe", action="store_true",
                    help="criteria-correlation across the DEFAULT_SCAN watchlist")
-    p.add_argument("--portfolio", action="store_true",
+    modes.add_argument("--portfolio", action="store_true",
                    help="universe-aggregate walk-forward (pooled OOS vs NIFTY)")
+    modes.add_argument("--compare-v2", action="store_true",
+                       help="compare RuleStrategy V1 and daily-bar V2 OOS on one ticker")
+    modes.add_argument("--selection", action="store_true",
+                       help="compare base signals with regime and relative-strength selection")
     args = p.parse_args()
 
     if args.portfolio:
@@ -653,6 +706,64 @@ def main() -> None:
         else:
             print("    none — your 7 criteria look reasonably independent.")
         print(f"\n  {SURVIVORSHIP_CAVEAT}")
+        return
+
+    if args.selection:
+        from src.watchlist import DEFAULT_SCAN
+        print(f"Selection-aware walk-forward across {len(DEFAULT_SCAN)} names "
+              f"({args.years}y, {args.splits} splits)")
+        _print_selection_comparison(compare_selection_universe(
+            DEFAULT_SCAN, years=args.years, n_splits=args.splits,
+            capital=args.capital, costs=args.costs,
+        ))
+        return
+
+    if args.compare_v2:
+        from src.strategy import RuleStrategyV2
+        print(f"V1 vs V2 walk-forward: {args.ticker}  {args.years}y  {args.splits} splits")
+        df = _load(args.ticker, args.years)
+        if df.empty or len(df) < 60:
+            print("  insufficient data")
+            return
+        _print_strategy_comparison(compare_strategies(
+            df, RuleStrategy(), RuleStrategyV2(), capital=args.capital,
+            n_splits=args.splits, costs=args.costs,
+        ))
+        return
+
+    if args.preset:
+        from src import strategy_presets as sp
+        if args.preset not in sp.PRESETS:
+            print(f"  ✗ unknown preset {args.preset!r}; choose {list(sp.PRESETS)}")
+            return
+        rmk = sp.rm_kwargs(args.preset)
+        print(f"Gating preset '{args.preset}' on {args.ticker}  {args.years}y "
+              f"({args.splits} splits)  risk={rmk}  max_hold={sp.max_hold_days(args.preset)}d")
+        df = _load(args.ticker, args.years)
+        if df.empty or len(df) < 60:
+            print("  ✗ insufficient data")
+            return
+        r = walk_forward(df, n_splits=args.splits, capital=args.capital,
+                         costs=args.costs, **rmk)
+        _print_walk_forward(r)
+        if "error" in r:
+            return
+        o = r["oos"]
+        # Gate: enough OOS trades, net-positive, profit factor >= 1 → bless it.
+        passed = (o["total_trades"] >= 10 and o["total_pnl"] > 0
+                  and o["profit_factor"] >= 1.0)
+        if passed:
+            sp.mark_validated(args.preset, {
+                "ticker": args.ticker, "years": args.years,
+                "oos_win_rate": o["win_rate"], "oos_pf": o["profit_factor"],
+                "oos_net_pnl": o["total_pnl"], "oos_trades": o["total_trades"],
+            })
+            print(f"\n  ✓ PASSED — '{args.preset}' marked validated "
+                  f"(OOS win {o['win_rate']}%  PF {o['profit_factor']}  "
+                  f"net ₹{o['total_pnl']}).")
+        else:
+            print(f"\n  ✗ NOT VALIDATED — '{args.preset}' did not clear the gate "
+                  f"(need ≥10 OOS trades, net>0, PF≥1.0). Stays 'unvalidated'.")
         return
 
     print(f"Walk-forward: {args.ticker}  {args.years}y  {args.splits} splits")

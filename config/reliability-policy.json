@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "mode": "shadow",
+  "data": {
+    "min_point_in_time_coverage": 1.0,
+    "max_market_data_age_hours": 48,
+    "unknown_halal_status": "block"
+  },
+  "statistics": {
+    "confidence": 0.95,
+    "min_probability_outperformance": 0.95,
+    "min_deflated_sharpe_probability": 0.95,
+    "min_observations": 504,
+    "required_regimes": ["BULL", "BEAR", "SIDEWAYS"]
+  },
+  "portfolio": {
+    "max_drawdown": 0.15,
+    "max_gross_exposure": 0.8,
+    "max_sector_exposure": 0.3,
+    "max_pairwise_correlation": 0.8
+  },
+  "release": {
+    "min_shadow_days": 180,
+    "min_delivery_rate": 0.995,
+    "min_delivery_samples": 100,
+    "max_duplicate_signals": 0,
+    "max_unresolved_incidents": 0,
+    "required_approvals": ["quantitative", "shariah", "legal"]
+  }
+}
+

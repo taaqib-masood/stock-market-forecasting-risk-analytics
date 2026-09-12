@@ -17,19 +17,47 @@ Run manually:
 """
 
 import argparse
-from datetime import datetime
+import json
+import os
+from datetime import datetime, timezone
+from pathlib import Path
 
 from src.scanner        import scan
 from src.earnings_guard import filter_cards
 from src.gtt_generator  import print_gtt
 from src.paper_trader   import _load, portfolio_value, trade_stats, auto_scan_and_place
-from src.notify         import _send, send_journal_summary
+from src.notify         import _send, acknowledge_shadow_payload, send_journal_summary
+from src.strategy       import RuleStrategy
+from src.reliability.controls import ControlDecision
 
 # ── ANSI ──────────────────────────────────────────────────────────────────────
 R = "\033[31m"; G = "\033[32m"; Y = "\033[33m"
 C = "\033[36m"; W = "\033[37m"; DIM = "\033[2m"
 BOLD = "\033[1m"; RESET = "\033[0m"
 BAR = "━" * 66
+
+
+def _release_gate() -> dict:
+    """Evaluate the retained release evidence before any direct recommendation send."""
+    from src.reliability.governance import evaluate_release, load_policy
+
+    evidence_path = Path(os.environ.get(
+        "BORO_RELEASE_EVIDENCE", "data/reliability/current-release-evidence.json"
+    ))
+    policy_path = Path(os.environ.get(
+        "BORO_RELEASE_POLICY", "config/reliability-policy.json"
+    ))
+    try:
+        evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+        policy = load_policy(policy_path)
+        from src.reliability.governance import load_release_corporate_action_audit
+        result = evaluate_release(
+            evidence, policy,
+            corporate_action_audit=load_release_corporate_action_audit(),
+        )
+    except (OSError, TypeError, ValueError, json.JSONDecodeError) as error:
+        return {"approved": False, "blockers": ["RELEASE_EVIDENCE_INVALID"], "error": str(error)}
+    return result
 
 
 def _market_regime() -> tuple[str, str, float]:
@@ -59,20 +87,16 @@ def _market_regime() -> tuple[str, str, float]:
         return "UNKNOWN", "❓", 0.0
 
 
-def _telegram_briefing(cards: list, blocked: list, regime: str,
-                        emoji: str, nifty: float, capital: float,
-                        state: dict, near_misses: list = None):
-    """Build and send the full Telegram morning message."""
-    pv    = portfolio_value(state)
-    stats = trade_stats(state)
+def _build_telegram_briefing(cards: list, blocked: list, regime: str,
+                              emoji: str, nifty: float, capital: float,
+                              state: dict, near_misses: list = None) -> str:
+    """Build the full Telegram morning message without performing network I/O."""
     date  = datetime.now().strftime("%a %d %b %Y")
 
     lines = [
         f"🌅 <b>MORNING BRIEFING — {date}</b>",
         f"",
         f"Market : {emoji} <b>{regime}</b>  |  Nifty ₹{nifty:,.0f}",
-        f"Capital: ₹{capital:,.0f}  |  Portfolio: ₹{pv['total_val']:,.2f} "
-        f"({pv['total_pnl_pct']:+.2f}%)",
         f"",
     ]
 
@@ -120,15 +144,170 @@ def _telegram_briefing(cards: list, blocked: list, regime: str,
             f"3. Log trade: <code>python -m src.paper_trader --buy TICKER N PRICE</code>",
         ]
 
-    if stats and stats.get("total", 0) > 0:
-        lines += [
-            f"",
-            f"📊 <b>Your stats</b>: {stats['win_rate']}% win rate  |  "
-            f"PF: {stats['profit_factor']}  |  "
-            f"P&L: ₹{stats['total_pnl']:+,.2f}",
-        ]
+    lines += [
+        f"",
+        f"⚠️ <i>Educational market information, not individualized financial advice. "
+        f"Verify price, liquidity, halal status, and risk before acting. Send /stop to unsubscribe.</i>",
+    ]
 
-    _send("\n".join(lines))
+    return "\n".join(lines)
+
+
+def _dispatch_briefing(message: str, cards: list, now: datetime | None = None):
+    """Queue only through the durable, gated delivery path."""
+    mode = os.environ.get("BORO_RELIABILITY_MODE", "research").lower()
+    if mode != "shadow":
+        gate = _release_gate()
+        if mode not in {"private", "public"} or not gate.get("approved"):
+            return {
+                "queued": False,
+                "blockers": ["RELEASE_GATE_NOT_APPROVED", *gate.get("blockers", [])],
+                "release": gate,
+            }
+        from src.notify import (
+            queue_recommendation_for_audience,
+            send_outbox_payload,
+        )
+        from src.reliability.activation import assess_shadow_readiness
+        from src.reliability.ledger import SignalLedger
+        from src.reliability.outbox import DeliveryOutbox
+        from src.reliability.shadow import ShadowCoordinator
+        from src.reliability.store import ReliabilityStore
+        from src.reliability.telegram_audience import TelegramAudience
+
+        point = now or datetime.now(timezone.utc)
+        db_path = os.environ.get("BORO_RELIABILITY_DB", "results/reliability.db")
+        with ReliabilityStore(db_path) as store:
+            coordinator = ShadowCoordinator(
+                SignalLedger(store.connection), DeliveryOutbox(store.connection)
+            )
+            manifest = store.connection.execute(
+                """
+                SELECT content_hash FROM manifests
+                WHERE available_at <= ? ORDER BY available_at DESC LIMIT 1
+                """,
+                (point.astimezone(timezone.utc).isoformat(timespec="seconds"),),
+            ).fetchone()
+            if manifest is None:
+                return {"queued": False, "blockers": ["DATA_MANIFEST_MISSING"], "release": gate}
+
+            from src.reliability.governance import load_release_corporate_action_audit
+            corporate_action_audit = load_release_corporate_action_audit()
+            readiness = assess_shadow_readiness(
+                store, coordinator.ledger, coordinator.outbox,
+                as_of=point, corporate_action_audit=corporate_action_audit,
+            )
+            if not readiness["ready"]:
+                return {"queued": False, "blockers": readiness["blockers"],
+                        "readiness": readiness, "release": gate}
+
+            tickers = sorted({
+                str(card.get("ticker", "")).upper()
+                for card in cards if card.get("ticker")
+            })
+            universe = set(store.eligible_universe(point))
+            if any(ticker not in universe for ticker in tickers):
+                return {"queued": False, "blockers": ["SIGNAL_NOT_IN_UNIVERSE"],
+                        "readiness": readiness, "release": gate}
+            if any(
+                not store.halal_as_of(ticker, point, max_age_days=200).get("tradeable", False)
+                for ticker in tickers
+            ):
+                return {"queued": False, "blockers": ["SIGNAL_HALAL_BLOCKED"],
+                        "readiness": readiness, "release": gate}
+            snapshot = {
+                "ticker": "BRIEFING:" + (",".join(tickers) if tickers else "NO_SIGNAL"),
+                "decision_session": point.date().isoformat(),
+                "strategy_version": RuleStrategy.version,
+                "data_manifest_hash": manifest["content_hash"],
+                "cards": cards,
+                "release_mode": mode,
+                "readiness_metrics": readiness["metrics"],
+            }
+            signal = coordinator.record_signal(
+                snapshot,
+                message,
+                ControlDecision(allowed=True, hard_failures=()),
+                now=point,
+                enqueue=False,
+            )
+            audience_db = os.environ.get("BORO_TELEGRAM_AUDIENCE_DB", db_path)
+            audience_context = (
+                TelegramAudience(store.connection)
+                if os.path.abspath(str(audience_db)) == os.path.abspath(str(db_path))
+                else TelegramAudience(audience_db)
+            )
+            with audience_context as audience:
+                queued = queue_recommendation_for_audience(
+                    message,
+                    signal["signal_id"],
+                    audience,
+                    coordinator.outbox,
+                    now=point,
+                )
+            if not queued.get("queued"):
+                return {**signal, **queued, "release": gate}
+            delivery = coordinator.deliver_due(send_outbox_payload, now=point)
+            return {**signal, **queued, "delivery": delivery, "release": gate}
+
+    from src.reliability.activation import assess_shadow_readiness, queue_shadow_briefing
+    from src.reliability.governance import load_release_corporate_action_audit
+    from src.reliability.ledger import SignalLedger
+    from src.reliability.outbox import DeliveryOutbox
+    from src.reliability.shadow import ShadowCoordinator
+    from src.reliability.store import ReliabilityStore
+
+    point = now or datetime.now(timezone.utc)
+    db_path = os.environ.get("BORO_RELIABILITY_DB", "results/reliability.db")
+    with ReliabilityStore(db_path) as store:
+        coordinator = ShadowCoordinator(
+            SignalLedger(store.connection), DeliveryOutbox(store.connection)
+        )
+        manifest = store.connection.execute(
+            """
+            SELECT content_hash FROM manifests
+            WHERE available_at <= ? ORDER BY available_at DESC LIMIT 1
+            """,
+            (point.astimezone(timezone.utc).isoformat(timespec="seconds"),),
+        ).fetchone()
+        if manifest is None:
+            readiness = assess_shadow_readiness(
+                store,
+                coordinator.ledger,
+                coordinator.outbox,
+                as_of=point,
+                corporate_action_audit=load_release_corporate_action_audit(),
+            )
+            return {
+                "queued": False,
+                "blockers": ["DATA_MANIFEST_MISSING", *readiness["blockers"]],
+                "readiness": readiness,
+            }
+        queued = queue_shadow_briefing(
+            cards=cards,
+            message=message,
+            store=store,
+            coordinator=coordinator,
+            as_of=point,
+            strategy_version=RuleStrategy.version,
+            data_manifest_hash=manifest["content_hash"],
+            corporate_action_audit=load_release_corporate_action_audit(),
+        )
+        if not queued.get("queued"):
+            return queued
+        # Shadow mode measures the durable outbox/ledger path without contacting
+        # Telegram or relying on the retired default-chat delivery path.
+        delivery = coordinator.deliver_due(acknowledge_shadow_payload, now=point)
+        return {**queued, "delivery": delivery}
+
+
+def _telegram_briefing(cards: list, blocked: list, regime: str,
+                        emoji: str, nifty: float, capital: float,
+                        state: dict, near_misses: list = None):
+    message = _build_telegram_briefing(
+        cards, blocked, regime, emoji, nifty, capital, state, near_misses
+    )
+    return _dispatch_briefing(message, cards)
 
 
 def run(capital: float = 50_000, paper_auto_place: bool = False):
@@ -196,13 +375,20 @@ def run(capital: float = 50_000, paper_auto_place: bool = False):
 
     # ── Telegram ──────────────────────────────────────────────────────────────
     print(f"\n  {C}Sending Telegram briefing...{RESET}")
-    _telegram_briefing(safe_cards[:3], blocked, regime, emoji, nifty, capital, state, near_misses)
-    import os
-    if os.environ.get("TELEGRAM_TOKEN") and os.environ.get("TELEGRAM_CHAT_ID"):
+    delivery = _telegram_briefing(
+        safe_cards[:3], blocked, regime, emoji, nifty, capital, state, near_misses
+    )
+    if isinstance(delivery, dict):
+        delivered = delivery.get("delivery", {}).get("delivered", 0)
+        if delivered:
+            print(f"  {G}✓ Shadow briefing persisted and acknowledged{RESET}")
+        else:
+            blockers = ", ".join(delivery.get("blockers", [])) or "delivery pending"
+            print(f"  {Y}⚠ Shadow briefing blocked: {blockers}{RESET}")
+    elif delivery:
         print(f"  {G}✓ Telegram sent{RESET}")
     else:
-        print(f"  {Y}⚠ Telegram not configured "
-              f"(add TELEGRAM_TOKEN + TELEGRAM_CHAT_ID to .env){RESET}")
+        print(f"  {Y}⚠ Telegram not configured or send failed{RESET}")
 
     print(f"\n{C}{BAR}{RESET}\n")
 

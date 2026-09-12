@@ -2,12 +2,161 @@
 
 > **"Why are retail investors still managing risk like it's 1995?"**
 
-A production-grade Python + JavaScript system that automates portfolio screening, risk management, trade execution, and compliance audits — with zero infrastructure overhead. Built for individual traders, fintech platforms, and institutional investors who want institutional-quality automation without the institutional complexity.
+A Python + JavaScript research and decision-control system for portfolio screening,
+risk management, shadow execution, and compliance audits. The controls are functional;
+the strategy has not earned a reliable-profit claim or live release.
+
+## Reliability Preregistration
+
+`nse-halal-residual-momentum-v7` is the current unopened preregistration at
+`data/reliability/preregistrations/nse-halal-residual-momentum-v7.json`.
+Canonical SHA-256: `33a66476da97965cf964ffaf1eb82b2af60f7e8fdc4c04e9a2b9244fa9d12030`.
+The sealed protocol uses NIFTY 500, NIFTY 50 TRI GROSS, 2013-12-01 through
+2014-12-31 warmup, and the 2015-01-01 through 2019-12-31 scored holdout; 2020-01-01
+through 2024-06-30 remains burned. It records six prior trials, an effective trial
+count of seven, a 365-day halal-classification freshness limit, and
+`validation_values_opened: false`. No evaluation has occurred.
+
+The retained v1-v6 preregistrations and registry rows remain byte-preserved evidence.
+v5 is an invalid unopened seal because an evicted non-empty source was hashed as empty.
+v6 is unopened but source-stale after material governance changes. v7 preserves the
+frozen strategy semantics, seals the current 14-file evaluation boundary, records
+`validation_values_opened: false`, and has one `PREREGISTERED` event with no evaluation.
+It contains no performance evidence and grants no release authority.
+
+Corporate-action review now uses a strict packet verifier, single-snapshot audit
+reconciliation, exact reviewed-factor provenance overlays, and adjustment-boundary
+controls. The canonical no-review report SHA-256 is
+`90964ce4e3f388fb8eb479db40a8326851aad111b116d9f7dc77a34bf6117308`; the canonical
+pending reviewed report SHA-256 is `d4f34e75f8839bba2c8b026b80de3926e8d25fcdd510358a19c147b4bd13d9f0`.
+The v2 packet manifest SHA-256 is
+`d8cad6876de94c8923cddbab1a7c6a7c215687f00975ba8304eabb44025e07a1`, and the empty
+reviewer-policy SHA-256 is
+`ca19925bb12adafa92d9839b4a18278029dfabaddf4e8bad328548511a5b7d78`.
+All 862 visibility and 195 factor rows remain `PENDING`; the policy authorizes nobody.
+An independent external corporate-action reviewer must supply retained primary evidence,
+identity, UTC availability/review timestamps, and a reproducible `(0, 1]` factor where
+required before an authorized policy update and rerun can resolve a row. Actual
+adjusted-price backfill and release remain blocked.
+
+## Current Release Posture
+
+Telegram, paid signals, and public release are disabled. `REJECTED` corporate-action
+decisions require the same retained human evidence, authorization, UTC timestamps, and
+rationale as accepted decisions; neither `PENDING` nor `REJECTED` clears the release
+gate. Policy v2 can bind a human reviewer and separate governance-owner approval record,
+but the retained production policy authorizes no principal, and software cannot prove a
+person's real-world identity or independence.
+
+Shadow activation and release governance require a process-local, exact-identity audit
+capability that is revalidated against retained audit, packet, policy, governance, and
+baseline evidence when used. Paths, hashes, CLI flags, and AI output cannot create it.
+The daily dispatcher and compliance CLI therefore provide no capability and remain
+blocked. AI evidence proposals are non-authoritative assistance only.
+
+The current compliance audit is rejected (`approved: false`), SHA-256
+`92086b8fc49a9d686756286deb1008f06da501ec946af955d36f99163ea83400`. Its blockers are
+`CORPORATE_ACTION_REVIEW_MISSING`, `DATASET_NOT_POINT_IN_TIME`, `DATASET_COVERAGE`,
+`STATISTICAL_EVIDENCE`, `SHADOW_EVIDENCE_MISSING`, `APPROVAL_QUANTITATIVE_MISSING`,
+`APPROVAL_SHARIAH_MISSING`, and `APPROVAL_LEGAL_MISSING`. Quantitative, qualified
+Shariah, and SEBI/RA legal approvals remain externally required.
+
+The Boro dashboard now exposes a Release Readiness view and labels Telegram as a
+simulation mirror while delivery is blocked. Direct recommendation sends are
+fail-closed unless the retained release gate approves an explicit `private` or
+`public` mode. The control server exposes authenticated `GET /readiness`; its
+`/buy` and `/close` remain paper-portfolio actions by default. A gated Zerodha
+adapter now exists for CNC orders, holdings-based exits, and order-status checks,
+but it requires either an approved release or the private owner acknowledgement
+`BORO_PERSONAL_LIVE_TRADING_ACK=I_UNDERSTAND_PERSONAL_LIVE_TRADING`, plus
+`BORO_EXECUTION_MODE=live`, an explicit live
+confirmation value, validated credentials, and valid entry/stop/target values before
+it can contact Kite. Live BUY protection uses a two-leg OCO GTT; manual live closes
+require and cancel that protection ID before submitting the sell, and the cockpit
+reconciles both the order and GTT status. Manual live execution is restricted to
+`BORO_LIVE_SYMBOL` (default `RELIANCE`) and enforces a 2% maximum-loss rule plus a
+20% notional cap from the configured personal capital.
+The broker gateway repeats the Reliance-only scope and BUY stop/risk checks for
+direct module callers. The cockpit's **Preview risk** control calls the read-only
+`/broker/risk-preview` preflight and shows the exact risk, notional, and two-leg GTT
+checks before a live confirmation.
+Live BUY requests also require an idempotency key so a browser retry cannot submit
+the same broker order twice. Live CLOSE requests use the same durable claim/finish
+record so a retry cannot submit a duplicate Reliance sell before the first fill is
+visible.
+The cockpit's authenticated **Reconcile broker** action compares current holdings and
+the daily order book, records reconciled lifecycle events, and flags non-Reliance,
+non-NSE, or non-CNC orders for operator review.
+Set `BORO_OPERATIONAL_KILL_SWITCH=true` to pause new live entries and all
+recommendation delivery immediately; the pause is fail-closed and leaves read-only
+holdings and order reconciliation available.
+Signed Kite order postbacks are accepted at `/broker/postback` and written to the
+broker ledger only after checksum verification with `KITE_API_SECRET`.
+
+If a broker BUY is accepted but the OCO protection call fails, the local cockpit
+exposes an idempotent **Retry OCO protection** action through
+`POST /broker/gtt/protect`. It reuses the Reliance, risk, session, and release gates
+and records successful recovery in the broker ledger.
+
+Kite sessions are backend-only. The local cockpit can open the Zerodha login URL
+and exchange the one-time request token through authenticated `GET /broker/login-url`
+and `POST /broker/session/exchange`; it stores the resulting short-lived token in
+the owner-only `KITE_ACCESS_TOKEN_FILE` (default `results/kite_access_token`) and
+returns only profile metadata. The CLI equivalents use the same owner-only token
+file through
+`python scripts/zerodha_session.py login-url` and `python scripts/zerodha_session.py
+exchange REQUEST_TOKEN`. The token expires at the next 6 AM session boundary; never
+place `KITE_API_SECRET` or `KITE_ACCESS_TOKEN` in frontend/localStorage or shell
+history.
+The readiness panel also renders a live activation checklist for evidence,
+Telegram consent/delivery, Kite session, execution posture, and the operational
+pause, so blocked channels expose their concrete next reason.
+
+After the backend session is validated, the cockpit can read holdings, daily order
+history, order status, and GTT status even while release approval keeps new live
+orders disabled. Mutating broker actions remain fail-closed behind the release,
+live-mode, confirmation, symbol, and risk gates.
+
+The older `src.web_dashboard` is loopback-bound and read-only by default. Its legacy
+paper trade endpoints require `WEB_TRADE_TOKEN` plus the `X-Web-Trade-Token` header;
+use the main Boro cockpit for paper and broker controls.
+
+The older TradingView receiver (`src.webhook_server`) is also loopback-bound and
+requires `X-Webhook-Secret`. Its Alpaca execution is disabled by default and rejects
+live Alpaca endpoints; Zerodha/Reliance through the authenticated Boro control server
+is the only supported broker path.
+
+Telegram enrollment is now explicit and user-controlled: configure the BotFather
+`TELEGRAM_TOKEN`, `TELEGRAM_WEBHOOK_SECRET`, and exact HTTPS `TELEGRAM_WEBHOOK_URL`, expose the authenticated control server over HTTPS, and
+register the endpoint with `python scripts/set_telegram_webhook.py` (it reads
+`TELEGRAM_WEBHOOK_URL` and `TELEGRAM_WEBHOOK_SECRET` from the environment; an
+optional URL argument remains supported). A user sends `/start terms-v1` to opt
+in, `/status` checks that chat's current consent, and `/stop` revokes consent. The
+`/help` command explains the controls. The webhook never accepts a manually supplied
+recipient list; it uses the chat ID supplied by Telegram. Recommendation delivery
+still requires the complete release decision and at least one active consent.
+Run `python scripts/readiness_check.py --json` for a secret-safe backend preflight;
+it reports separate Telegram/broker reasons and private-ack state, and exits non-zero
+until the requested channels satisfy their current gates.
+For retry recovery outside the scan process, run
+`python scripts/deliver_telegram_outbox.py --json` from a scheduled worker. It
+delivers only due, consent-bound rows, reports dead-letter/unreconciled health, and
+exits non-zero when delivery is blocked or degraded.
+The local Telegram panel also exposes **Retry due delivery**, an authenticated
+one-shot invocation of the same gated worker.
+GitHub Actions failure notices use `scripts/queue_telegram_notice.py` and the same
+audience/outbox path; the workflow has no direct chat-ID delivery fallback.
+The local cockpit's **Verify Bot & webhook** action performs read-only `getMe` and
+`getWebhookInfo` checks without exposing the token or secret. **Register webhook**
+uses the same authenticated backend path as `scripts/set_telegram_webhook.py`,
+requires the configured HTTPS URL and secret, and only registers the consent
+webhook; it does not send a recommendation. Once verified, **Open bot & opt in**
+generates a `t.me` deep link for users to start the current consent flow directly.
 
 [![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow.svg)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-138%20passing-brightgreen.svg)](#testing--validation)
+[![Status](https://img.shields.io/badge/status-activation%20blocked-red.svg)](#-quality-assurance)
 [![GitHub Actions](https://img.shields.io/badge/Automation-GitHub%20Actions-black.svg)](.github/workflows/trading_pipeline.yml)
 [![Netlify](https://api.netlify.com/api/v1/badges/c2d7b0e6-4805-45ec-a2f5-700ee30f5537/deploy-status)](https://app.netlify.com/projects/stocks-proj/deploys)
 
@@ -58,7 +207,8 @@ If you trade on a stock exchange in a regulated market (India NSE, UAE, Singapor
 - You might need to screen for specific criteria (ESG, dividend stability, sector alignment)
 
 **Spreadsheet?** Hours per month.  
-**Boro?** Automatic JSON audit trail.
+**Boro?** A hash-chained shadow-signal ledger with versioned rationale and delivery state.
+It is research evidence, not a substitute for broker, tax, or regulatory records.
 
 ### **Question 4: What If You Could Backtest Before You Risk Real Money?**
 
@@ -77,12 +227,12 @@ Paper trading is the bridge. But most platforms:
 
 | What | Why It Matters | For Whom |
 |-----|-----------------|---------|
-| **Automated Portfolio Screening** | Know *exactly* which holdings meet your criteria (debt ratios, dividend stability, sector alignment) before you buy | Individual investors, fund managers |
+| **Point-in-Time Portfolio Screening** | Reconstruct what was knowable on each date; missing or stale halal inputs block new entries | Research and controlled shadow trading |
 | **Real-Time Risk Sizing** | Every position is sized by volatility — no more "I'll buy 100 shares" guessing | Traders who want to sleep at night |
 | **Rule-Based Daily Signals** | Scanner runs at 9:15 AM, flags stocks that pass your checklist, sends alerts | Time-poor traders, busy professionals |
 | **Paper Trading Cockpit** | Test your entire strategy (entry, exit, sizing, risk) with fake money before going live | New traders, strategy developers |
 | **Walk-Forward Validation** | New trading rules must prove they work out-of-sample (not just in backtests) before they ship | Quants, serious traders |
-| **Automated Compliance Audit** | Every trade logged with entry/exit, P&L, risk taken — ready for tax/regulatory reports | Investors in regulated markets |
+| **Append-Only Decision Evidence** | Hash-chained signal snapshots preserve data, strategy, risk, rationale, and delivery versions | Reviewers and system operators |
 | **ML Ensemble for Backtesting** | ARIMA + LightGBM on 52 features (technicals, sentiment, macro) for research mode | Researchers, systematic traders |
 | **Annual Tax Calculator** | Compute annual obligations (gains-based or full-value) for any investment structure | Investors with specific criteria |
 | **Drawdown Guard** | Monitors market conditions; automatically grades risk exposure from green → yellow → red | Risk-averse investors |
@@ -130,11 +280,14 @@ The system scales. Your capital just changes position size.
 
 Honest answer: **Not much.**
 
-On RELIANCE (5 years, OOS):
-- **Simple rules** (7 technical criteria + regime gate): 52.1% win rate, 1.18 profit factor
-- **ML ensemble** (ARIMA + LightGBM on 52 features): 51.2% win rate, 1.04 profit factor
+Earlier single-ticker comparisons are not release evidence: they used a current-survivor
+universe and the old engine could fill close-derived signals at the same close. The current
+engine executes on the next bar and evaluates shared portfolio capital.
 
-ML loses. Why?
+The corrected dynamic-universe rule diagnostic returned 99.38% versus 107.11% for the
+retained NIFTYBEES proxy. It failed excess-return confidence, deflated-Sharpe, drawdown,
+and every regime gate. V2 and a bull-only overlay were also rejected. ML remains
+research-only. Why?
 - Markets are non-stationary (what worked in 2022 doesn't work in 2024)
 - Adding features → overfitting (harness caught it, rejected 5 new indicators)
 - Simple rules are more robust
@@ -153,7 +306,8 @@ Most traders lose because they:
 - Exit winners too early (taking quick profit)
 - Oversize bad trades (revenge trading)
 
-Boro removes all three. You *can't* override the rules. Discipline wins every time.
+Boro makes these rules explicit and testable. Discipline reduces avoidable errors; it
+does not create a guaranteed market edge.
 
 **#2: Risk-Adjusted Returns**  
 A strategy with 52% win rate (barely better than a coin flip) still makes money if:
@@ -161,16 +315,19 @@ A strategy with 52% win rate (barely better than a coin flip) still makes money 
 - Average loss = ₹3,000
 - Profit factor = 1.67 (you make ₹1.67 for every ₹1 risked)
 
-Boro doesn't promise "beat the market." It promises "if you follow the rules, the math works."
+Boro does not promise to beat the market. Promotion now requires statistically credible
+net benchmark outperformance across untouched regimes.
 
-**#3: Time is Leverage**  
-A 1% monthly return compounds to 12.7% annually. Boro's signals don't need to be perfect; they need to be *consistent*.
+**#3: Auditability Before Automation**  
+Signals are useful only when their data, rule version, risk decision, and delivery outcome
+can be reproduced. Boro records that chain and blocks entries when evidence is incomplete.
 
 ---
 
 ### **"Can I actually make money with this?"**
 
-Yes. But:
+Not proven. Activation is blocked while point-in-time halal fundamentals, statistical
+evidence, shadow history, and external approvals remain incomplete.
 
 ✅ If you:
 - Follow the rules (don't override signals)
@@ -184,19 +341,20 @@ Yes. But:
 - Trade on 5-day holds (costs kill the profit)
 - Don't set a hard stop-loss
 
-**Historical test (RELIANCE, 2019–2024):**
-- Profit factor (net of costs): 1.04
-- Win rate: 54%
-- Sharpe ratio: 0.67
-- Max drawdown: 18%
+**Current dynamic-universe diagnostic (2020–2024):**
+- Portfolio return: 99.38% versus 107.11% benchmark
+- Outperformance probability: 45.95%
+- Deflated-Sharpe probability: 2.54% (required: 95%)
+- Maximum drawdown: 29.12% (limit: 15%)
+- Regime gate: failed in bull, bear, and sideways samples
 
-**Translation:** You make money, but not fast. ₹1M capital → ~₹40K/year (realistic, boring, sustainable).
+**Translation:** A promising headline return is not enough. The release gate rejects it.
 
 ---
 
 ## ✨ How It Works (The Sales Pitch)
 
-### **The Daily Routine (Automated)**
+### **Target Daily Routine (Activation Currently Blocked)**
 
 ```
 9:15 AM IST → Boro runs the scanner
@@ -206,7 +364,7 @@ Scores 78 stocks against your criteria
 Applies gates: Is the market in bull mode? Are we in strong sectors?
              Do we have earnings risk? Did this signal work historically?
   ↓
-Flags 1–5 BUY signals → Ships to Telegram
+Flags eligible signals → Retained for shadow reconciliation only; no Telegram release
   ↓
 You see the alert, review, decide to buy (or skip)
   ↓
@@ -325,7 +483,7 @@ You get:
 
 ## 📊 The Numbers (No BS)
 
-### **Backtest Results (RELIANCE, 2019–2024)**
+### **Legacy Backtest Snapshot (RELIANCE, 2019–2024)**
 
 | Metric | Result | What It Means |
 |--------|--------|---------------|
@@ -342,13 +500,11 @@ You get:
 
 ### **What This Really Means**
 
-On ₹50,000 capital:
-- You'd make ~₹2,000–₹3,000/month
-- But drawdowns are real (18% → ₹9K loss)
-- You'd be up ~₹40K/year *if* you don't panic
-
-**Is that good?** Yes, for a part-time system with zero overhead.  
-**Is that "get rich quick?"** No. (Anyone selling you that is lying.)
+It is not enough to establish reliability. See `PROOF_RESULT.md`: the broader active
+result is fair-weather, survivorship-biased, and dominated by the passive benchmark.
+Current promotion gates require frozen point-in-time data, confidence bounds on net
+excess returns, regime stability, portfolio drawdown controls, and reconciled shadow
+evidence.
 
 ---
 
@@ -377,7 +533,7 @@ python -m src.halal_screen --ticker RELIANCE
 
 # Run today's daily scan
 python -m src.daily_briefing --capital 50000
-# Output: 2 BUY signals → Telegram alert
+# Output: local briefing; Telegram delivery remains activation-gated
 ```
 
 ### **Step 3: See the Dashboard (5 min)**
@@ -525,7 +681,7 @@ Modular. Plug and play.
 
 ## 🧪 Quality Assurance
 
-### **138 Tests Passing**
+### **Automated Test Coverage**
 
 ```
 ✓ Import tests (all 15+ modules load cleanly)
@@ -534,15 +690,19 @@ Modular. Plug and play.
 ✓ Monte Carlo (200 sims, stable)
 ✓ Risk manager (sizing logic correct)
 ✓ Walk-forward (OOS harness gates bad rules)
-✓ Compliance (no shorts, no margin, audit logs)
+✓ Point-in-time visibility and fail-closed halal inputs
+✓ Bootstrap benchmark-outperformance and multiple-testing gates
+✓ Hash-chained signal evidence and idempotent delivery outbox
+✓ Portfolio kill switches and release governance
 ```
 
 ### **Walk-Forward Validation (The Secret Sauce)**
 
-Every new rule must:
-1. Backtest profitably (in-sample)
-2. Validate on unseen data (OOS)
-3. Beat minimum: 52% win rate, 1.2 profit factor
+Every promoted rule must:
+1. Run on frozen, point-in-time data with realistic costs
+2. Validate on untouched rolling windows across bull, bear, and sideways regimes
+3. Produce a positive lower 95% confidence bound on net benchmark excess return
+4. Survive multiple-testing penalties and portfolio drawdown limits
 
 If it fails, it never ships. We rejected 5 indicators this way.
 
@@ -550,13 +710,23 @@ If it fails, it never ships. We rejected 5 indicators this way.
 
 ## 📋 Roadmap
 
-### **Phase 1: Live ✅**
+### **Phase 1: Shadow Reliability Beta**
 - [x] Daily scanner (rule-based)
 - [x] Risk manager (2% max risk)
 - [x] Paper trading
 - [x] Backtesting (ARIMA + LightGBM)
-- [x] Portfolio screening + audit trail
+- [x] Point-in-time data contract + append-only signal ledger
+- [x] Statistical benchmark gates + delivery outbox + kill switches
+- [x] Integrity-checked NSE archive acquisition and equity-only normalization
+- [x] Reconcile 79 archive gaps to retained, hash-verified official holiday evidence
+- [x] Retained corporate-action/filing snapshots and fail-closed XBRL fact extraction
+- [x] Deterministic, fail-closed split/bonus/dividend OHLCV adjustment engine
 - [x] Zero-infrastructure deployment
+- [ ] Import a delisted-inclusive historical NSE dataset
+- [x] Retain paired 2019-2024 NSE action and announcement snapshots
+- [ ] Resolve 862 action visibility cases and 195 reviewed adjustment factors
+- [ ] Complete 180+ reconciled shadow days at ≥99.5% acknowledged delivery
+- [ ] Record independent quantitative, Shariah, and SEBI/RA legal reviews
 
 ### **Phase 2: Coming Soon**
 - [ ] Cross-market (UAE ADX, Singapore, Malaysia)
@@ -574,13 +744,16 @@ If it fails, it never ships. We rejected 5 indicators this way.
 ## ❓ FAQ
 
 ### **Q: Can I actually make money?**
-**A:** Yes. ₹40K/year on ₹50K capital if you follow the rules.
+**A:** Not established. Current evidence supports controlled shadow trading, not an
+income forecast or reliable-profit claim.
 
 ### **Q: What if the market crashes?**
-**A:** Drawdown guard reduces exposure. Max loss: 18% historically.
+**A:** Drawdown and exposure controls block new entries at configured limits, but no
+historical maximum guarantees a future maximum loss.
 
 ### **Q: How is this different from my broker's screener?**
-**A:** Your broker screens *now*. Boro screens *historically*, validates OOS, enforces risk, and auto-executes.
+**A:** Your broker screens the current market. Boro is building point-in-time screening,
+benchmark-relative validation, explicit risk controls, and traceable shadow alerts.
 
 ### **Q: Do I need to know coding?**
 **A:** No. Use the dashboard. Coding helps if you want to customize.
@@ -623,87 +796,11 @@ If it fails, it never ships. We rejected 5 indicators this way.
 
 1. **Try it:** [Live dashboard](https://stocks-proj.netlify.app)
 2. **Test it:** Run a backtest
-3. **Deploy it:** Fork the repo, customize, go live
-4. **Scale it:** Integrate into your platform
+3. **Shadow it:** Record timestamped signals and simulated fills
+4. **Promote it:** Go live only after every release gate passes
 
-**No risk. No cost. Just results.**
-
----
-
-*Last updated: July 2026 | Version 1.0 (V-1.0 branch) | Status: Production-ready*
-
-<br><br>
+**Measured process. Explicit blockers. No guaranteed results.**
 
 ---
 
-## 👨‍💻 About the Author
-
-<div align="center">
-
-# <img src="https://readme-typing-svg.herokuapp.com?font=Inter&weight=600&size=30&pause=1000&color=8B5CF6&center=true&vCenter=true&width=500&lines=Quantitative+Finance;Risk+Modeling;Algorithmic+Trading" alt="Typing SVG" />
-
-<img src="https://capsule-render.vercel.app/api?type=waving&color=8B5CF6&height=200&section=header&text=Taaqib%20Masood&fontSize=50&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Financial%20Machine%20Learning&descAlignY=55&descAlign=50" />
-
-<p align="center">
-  <img src="https://img.shields.io/badge/Location-Global-8B5CF6?style=for-the-badge&logo=google-maps&logoColor=white" />
-  <img src="https://img.shields.io/badge/Education-Computer%20Science%20Engineer-000000?style=for-the-badge&logo=academia&logoColor=white" />
-</p>
-
-<p align="center">
-  <a href="https://taaqib-portfolio.vercel.app/"><img src="https://img.shields.io/badge/Portfolio-8B5CF6?style=for-the-badge&logo=vercel&logoColor=white" /></a>
-  <a href="https://www.linkedin.com/in/taaqib-masood/"><img src="https://img.shields.io/badge/LinkedIn-000000?style=for-the-badge&logo=linkedin&logoColor=white" /></a>
-  <a href="mailto:taaqibmasood@gmail.com"><img src="https://img.shields.io/badge/Email-8B5CF6?style=for-the-badge&logo=gmail&logoColor=white" /></a>
-  <a href="https://github.com/taaqib-masood"><img src="https://img.shields.io/badge/GitHub-000000?style=for-the-badge&logo=github&logoColor=white" /></a>
-</p>
-
-</div>
-
----
-
-### 📖 About Me
-I am a Software Engineer with a profound focus on AI/ML systems and Full Stack Development. I specialize in building enterprise-grade applications, robust distributed systems, and implementing scalable machine learning solutions in production environments. My engineering philosophy revolves around a strong product mindset, ensuring that the technology not only meets rigorous technical standards but also delivers exceptional user experiences. 
-
-**Open To:** Junior Software Engineering roles, AI Engineer positions, and high-impact open-source contributions.
-
----
-
-### ⚙️ Tech Stack
-
-**Languages**
-<p align="left">
-  <a href="https://skillicons.dev"><img src="https://skillicons.dev/icons?i=py,ts,js,java,cpp,go,rust&theme=dark" /></a>
-</p>
-
-**Frontend & Backend**
-<p align="left">
-  <a href="https://skillicons.dev"><img src="https://skillicons.dev/icons?i=react,nextjs,tailwind,nodejs,postgres,mongodb,redis&theme=dark" /></a>
-</p>
-
-**Cloud & DevOps**
-<p align="left">
-  <a href="https://skillicons.dev"><img src="https://skillicons.dev/icons?i=aws,gcp,docker,kubernetes,githubactions&theme=dark" /></a>
-</p>
-
----
-
-### 🤖 AI / ML Expertise
-
-| Domain | Proficiency | Details |
-| :--- | :---: | :--- |
-| **Large Language Models (LLMs)** | Advanced | Prompt Engineering, RAG Architectures, Agentic Systems, MCP |
-| **Machine Learning** | Advanced | Predictive Modeling, Classification, Regression, Ensemble Methods |
-| **Deep Learning** | Intermediate | Neural Networks, CNNs, NLP, PyTorch, TensorFlow |
-| **MLOps** | Intermediate | Model Deployment, Monitoring, CI/CD for ML, Data Pipelines |
-
----
-
-### 🏆 Featured Projects
-
-- **[Taaqib Portfolio](https://github.com/taaqib-masood/Taaqib-Portfolio)**: Global Edge Delivery, 99+ Lighthouse Score.
-- **[Predictive Maintenance](https://github.com/taaqib-masood/predictive-maintenance-industrial-machinery)**: High accuracy failure prediction on real-time sensor data.
-- **[Salon Booking SaaS](https://github.com/taaqib-masood/salon-booking-saas)**: Multi-tenant architecture with secure Stripe payments.
-- **[Majestic Constructions](https://github.com/taaqib-masood/majestic-constructions)**: High-traffic enterprise site with fast server-side rendering.
-
-<div align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=8B5CF6&height=100&section=footer" />
-</div>
+*Last updated: July 2026 | Version 1.0 (V-1.0 branch) | Status: Shadow reliability beta*

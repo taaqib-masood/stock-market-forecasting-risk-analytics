@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "policy_version": "draft-2026-07-11",
+  "authorized_data_reviewers": [],
+  "decisions": {
+    "lease_liabilities_to_total_debt": {
+      "status": "PENDING",
+      "source_candidate": "lease_liabilities",
+      "target_fact": "total_debt",
+      "question": "Should lease liabilities be included in the AAOIFI debt numerator?"
+    },
+    "cashflow_interest_adjustment_to_interest_income": {
+      "status": "PENDING",
+      "source_candidate": "cashflow_interest_income_adjustment",
+      "target_fact": "interest_income",
+      "question": "Can the cash-flow reconciliation adjustment evidence interest income when the income-statement note is unavailable?"
+    },
+    "deposit_interest_received_to_interest_income": {
+      "status": "PENDING",
+      "source_candidate": "interest_received_on_deposits",
+      "target_fact": "interest_income",
+      "question": "Can interest received on deposits serve as the complete non-permissible income numerator?"
+    },
+    "xbrl_interest_adjustment_to_interest_income": {
+      "status": "PENDING",
+      "source_candidate": "AdjustmentsForInterestIncome",
+      "target_fact": "interest_income",
+      "question": "Can the annual cash-flow adjustment be used as the complete non-permissible interest-income numerator?"
+    },
+    "xbrl_investing_interest_received_to_interest_income": {
+      "status": "PENDING",
+      "source_candidate": "InterestReceivedClassifiedAsInvestingActivities",
+      "target_fact": "interest_income",
+      "question": "Does investing cash-flow interest received completely represent non-permissible interest income without double counting?"
+    },
+    "xbrl_operating_interest_received_to_interest_income": {
+      "status": "PENDING",
+      "source_candidate": "InterestReceivedClassifiedAsOperatingActivities",
+      "target_fact": "interest_income",
+      "question": "Does operating cash-flow interest received completely represent non-permissible interest income without double counting?"
+    },
+    "xbrl_interest_earned_to_interest_income": {
+      "status": "PENDING",
+      "source_candidate": "InterestEarned",
+      "target_fact": "interest_income",
+      "question": "How should InterestEarned be treated for entities routed through the financial-business screen?"
+    }
+  }
+}

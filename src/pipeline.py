@@ -252,6 +252,9 @@ def run(ticker: str = "AAPL", years: int = 5, capital: float = 100_000,
         confidences=conf_series,
         atrs=test_atrs,
         vix=test_vix,
+        entry_prices=test_df["Open"].squeeze(),
+        highs=test_df["High"].squeeze(),
+        lows=test_df["Low"].squeeze(),
         capital=capital,
         slippage_pct=0.001,          # 0.1% per fill
         commission_per_share=0.005,  # $0.005/share (IBKR)

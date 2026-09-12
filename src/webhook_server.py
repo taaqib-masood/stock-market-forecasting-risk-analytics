@@ -30,6 +30,7 @@ Endpoints:
 """
 
 import json
+import hmac
 import os
 import threading
 from collections import deque
@@ -40,6 +41,8 @@ from src.risk_manager import RiskManager
 
 PORT = int(os.environ.get("WEBHOOK_PORT", 8080))
 CAPITAL = float(os.environ.get("WEBHOOK_CAPITAL", 100_000))
+BIND_HOST = os.environ.get("WEBHOOK_BIND_HOST", "127.0.0.1")
+WEBHOOK_SECRET = os.environ.get("WEBHOOK_SECRET", "")
 
 # In-memory log (last 100 signals)
 _signal_log: deque = deque(maxlen=100)
@@ -60,9 +63,13 @@ def _execute_alpaca(ticker: str, shares: int, direction: int):
     Submit a market order to Alpaca (paper or live).
     Requires ALPACA_API_KEY, ALPACA_SECRET_KEY, ALPACA_BASE_URL in environment.
     """
+    if os.environ.get("WEBHOOK_ENABLE_ALPACA", "").strip() != "I_UNDERSTAND_LEGACY_ALPACA_PAPER":
+        return {"status": "skipped", "reason": "LEGACY_ALPACA_EXECUTION_DISABLED"}
     api_key    = os.environ.get("ALPACA_API_KEY")
     secret_key = os.environ.get("ALPACA_SECRET_KEY")
     base_url   = os.environ.get("ALPACA_BASE_URL", "https://paper-api.alpaca.markets")
+    if "paper-api.alpaca.markets" not in base_url:
+        return {"status": "skipped", "reason": "LEGACY_ALPACA_LIVE_ENDPOINT_DISABLED"}
 
     if not api_key:
         return {"status": "skipped", "reason": "ALPACA_API_KEY not set"}
@@ -109,10 +116,17 @@ class WebhookHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(raw)
 
+    def _authorized(self) -> bool:
+        supplied = self.headers.get("X-Webhook-Secret", "")
+        return bool(WEBHOOK_SECRET) and hmac.compare_digest(supplied, WEBHOOK_SECRET)
+
     def do_GET(self):
         if self.path == "/health":
             self._send(200, {"status": "ok", "timestamp": datetime.utcnow().isoformat()})
         elif self.path == "/signals":
+            if not self._authorized():
+                self._send(401, {"error": "webhook secret required"})
+                return
             with _log_lock:
                 self._send(200, {"signals": list(_signal_log)})
         else:
@@ -121,6 +135,9 @@ class WebhookHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         if self.path != "/webhook":
             self._send(404, {"error": "not found"})
+            return
+        if not self._authorized():
+            self._send(401, {"error": "webhook secret required"})
             return
 
         length = int(self.headers.get("Content-Length", 0))
@@ -170,12 +187,12 @@ class WebhookHandler(BaseHTTPRequestHandler):
 
 
 def run():
-    server = HTTPServer(("0.0.0.0", PORT), WebhookHandler)
+    server = HTTPServer((BIND_HOST, PORT), WebhookHandler)
     print(f"""
 ╔══════════════════════════════════════════════════════╗
 ║        TradingView Webhook Server — Ready            ║
 ╠══════════════════════════════════════════════════════╣
-║  Listening on  : http://0.0.0.0:{PORT:<24}║
+║  Listening on  : http://{BIND_HOST}:{PORT:<24}║
 ║  Health check  : GET  /health                        ║
 ║  Signal log    : GET  /signals                       ║
 ║  Webhook URL   : POST /webhook                       ║
