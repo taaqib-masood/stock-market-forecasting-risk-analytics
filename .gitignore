@@ -1,6 +1,14 @@
 __pycache__/
 *.pyc
+.venv-reliability/
 .env
 results/
 *.png
 *.csv
+.DS_Store
+.netlify/
+.superpowers/
+docs/superpowers/
+graphify-out/
+data/reliability/
+data/**/.DS_Store

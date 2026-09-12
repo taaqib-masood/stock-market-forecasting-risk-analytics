@@ -54,6 +54,7 @@ class RuleStrategy(Strategy):
     """
 
     name = "rule_7criteria"
+    version = "rule_7criteria-v1"
 
     REQUIRED_COLS = [
         "rsi_14", "macd_hist", "price_vs_sma20", "price_vs_sma50",

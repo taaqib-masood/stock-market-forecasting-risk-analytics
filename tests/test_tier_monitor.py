@@ -5,7 +5,7 @@ Run: pytest tests/test_tier_monitor.py -v
 """
 import datetime
 
-from src.tier_monitor import current_tiers, diff_tiers, format_changes
+from src.tier_monitor import current_tiers, diff_tiers, format_changes, queue_tier_change_alert
 from src.halal_screen import GREEN, YELLOW, RED
 
 
@@ -44,3 +44,15 @@ def test_format_changes_empty_and_nonempty():
     assert "No halal tier changes" in format_changes([])
     msg = format_changes([{"ticker": "X", "from": GREEN, "to": RED, "worsened": True}])
     assert "X" in msg and "NON-TRADEABLE" in msg
+
+
+def test_tier_alert_requires_approved_consent_path(monkeypatch, tmp_path):
+    monkeypatch.setenv("BORO_RELIABILITY_DB", str(tmp_path / "tier.db"))
+    monkeypatch.setattr(
+        "src.notify.queue_recommendation_for_audience",
+        lambda *args, **kwargs: {"queued": 0, "created": 0, "blockers": ["RELEASE_GATE_NOT_APPROVED"]},
+    )
+    result = queue_tier_change_alert([
+        {"ticker": "X", "from": GREEN, "to": RED, "worsened": True}
+    ])
+    assert result["blockers"] == ["RELEASE_GATE_NOT_APPROVED"]

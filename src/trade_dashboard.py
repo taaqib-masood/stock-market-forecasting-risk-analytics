@@ -13,7 +13,8 @@ import sys
 import time
 import argparse
 import threading
-from datetime import datetime
+import hashlib
+from datetime import datetime, timezone
 
 try:
     from dotenv import load_dotenv
@@ -23,7 +24,10 @@ except ImportError:
 
 from src.scanner  import scan, DEFAULT_SCAN
 from src.journal  import log_signal, close_trade, load_all, summary as journal_summary
-from src.notify   import send_trade_cards, send_journal_summary
+from src.notify   import send_outbox_payload, send_trade_cards, send_journal_summary
+from src.reliability.outbox import DeliveryOutbox
+from src.reliability.store import ReliabilityStore
+from src.reliability.telegram_audience import TelegramAudience
 from src.watchlist import NIFTY_50
 
 # ── ANSI ──────────────────────────────────────────────────────────────────────
@@ -242,7 +246,29 @@ def run(capital: float = 100_000, auto_notify: bool = False):
 
         if auto_notify:
             date_str = datetime.now().strftime("%a %d %b")
-            ok = send_trade_cards(cards, date_str)
+            now = datetime.now(timezone.utc)
+            card_fingerprint = hashlib.sha256(
+                repr([(c.get("ticker"), c.get("signal"), c.get("entry")) for c in cards]).encode()
+            ).hexdigest()[:16]
+            signal_id = f"dashboard:{now.date().isoformat()}:{card_fingerprint}"
+            database = os.environ.get(
+                "BORO_TELEGRAM_AUDIENCE_DB",
+                os.environ.get("BORO_RELIABILITY_DB", "results/reliability.db"),
+            )
+            with ReliabilityStore(database) as store:
+                audience = TelegramAudience(store.connection)
+                outbox = DeliveryOutbox(store.connection)
+                recipient_count = len(audience.active_subscribers())
+                queued = send_trade_cards(
+                    cards,
+                    date_str,
+                    signal_id=signal_id,
+                    audience=audience,
+                    outbox=outbox,
+                    now=now,
+                )
+                delivery = outbox.deliver_due(send_outbox_payload, now=now)
+            ok = queued and delivery["delivered"] == recipient_count
             if ok:
                 print(f"  {G}✓ Telegram notification sent{RESET}\n")
 

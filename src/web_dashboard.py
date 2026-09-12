@@ -11,7 +11,7 @@ New in v2:
   - Dynamic stop type indicator
   - Mobile-first responsive layout
 
-Run: python -m src.web_dashboard --capital 50000
+Run: WEB_TRADE_TOKEN=local-secret python -m src.web_dashboard --capital 50000
 """
 
 import json, os, threading, argparse, contextlib, io
@@ -26,6 +26,8 @@ except ImportError:
 
 PORT    = int(os.environ.get("WEB_PORT", 5000))
 CAPITAL = float(os.environ.get("WEBHOOK_CAPITAL", 50_000))
+BIND_HOST = os.environ.get("WEB_BIND_HOST", "127.0.0.1")
+TRADE_TOKEN = os.environ.get("WEB_TRADE_TOKEN", "")
 
 # ── API ───────────────────────────────────────────────────────────────────────
 
@@ -729,6 +731,10 @@ class Handler(BaseHTTPRequestHandler):
         n=int(self.headers.get("Content-Length",0))
         try: return json.loads(self.rfile.read(n))
         except: return {}
+    def _trade_authed(self):
+        """Require an explicit header token for legacy paper mutations."""
+        supplied = self.headers.get("X-Web-Trade-Token", "")
+        return bool(TRADE_TOKEN) and supplied == TRADE_TOKEN
     def do_GET(self):
         p=urlparse(self.path).path
         try:
@@ -743,6 +749,8 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         p=urlparse(self.path).path;b=self._body()
         try:
+            if p in {"/api/log_trade", "/api/close_trade"} and not self._trade_authed():
+                return self._json(401, {"ok": False, "reason": "trade API token required"})
             if   p=="/api/log_trade":   self._json(200,_log_trade(b["ticker"],b["shares"],b["price"]))
             elif p=="/api/close_trade": self._json(200,_close_trade(b["ticker"],b["price"]))
             else: self._json(404,{"error":"not found"})
@@ -753,13 +761,13 @@ def run(port=PORT,capital=CAPITAL):
     global CAPITAL; CAPITAL=capital
     import socket
     ip=socket.gethostbyname(socket.gethostname())
-    server=HTTPServer(("0.0.0.0",port),Handler)
+    server=HTTPServer((BIND_HOST,port),Handler)
     print(f"""
 ╔══════════════════════════════════════════════════════╗
 ║      NSE Trade Intelligence v2 — Web Dashboard      ║
 ╠══════════════════════════════════════════════════════╣
 ║  Local   : http://localhost:{port}                     ║
-║  Network : http://{ip}:{port}                ║
+║  Bind    : {BIND_HOST}:{port}                ║
 ╠══════════════════════════════════════════════════════╣
 ║  5 tabs: Overview · Signals · Portfolio              ║
 ║          Analytics · Market Regime                   ║

@@ -76,10 +76,36 @@ def test_import_walk_forward():
 
 
 def test_import_control_server():
-    from src.control_server import run, _portfolio, _run_module
+    from src.control_server import (
+        run, _portfolio, _run_module,
+        _positions, _buy, _close, _config_get, _config_set,
+    )
     assert callable(run)
     assert callable(_portfolio)
     assert callable(_run_module)
+    assert callable(_positions)
+    assert callable(_buy)
+    assert callable(_close)
+    assert callable(_config_get)
+    assert callable(_config_set)
+
+
+def test_import_engine():
+    from src.engine import (
+        AlphaModel, PortfolioModel, RiskModel, ExecutionModel, TradingEngine,
+    )
+    eng = TradingEngine()
+    assert isinstance(eng.alpha, AlphaModel)
+    assert isinstance(eng.execution, ExecutionModel)
+
+
+def test_import_strategy_presets():
+    from src.strategy_presets import (
+        PRESETS, DEFAULT, get, rm_kwargs, max_hold_days,
+        is_validated, list_presets, active, set_active,
+    )
+    assert DEFAULT in PRESETS
+    assert callable(get) and callable(rm_kwargs) and callable(set_active)
 
 
 def test_import_notify():

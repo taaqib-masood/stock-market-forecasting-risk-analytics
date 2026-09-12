@@ -17,7 +17,7 @@
 // these become workflow_dispatch inputs, validated here before they ever
 // reach the Actions run.
 
-const ALLOWED = new Set(["nightly-scan", "auto-close", "weekly-backtest", "research-backtest"]);
+const ALLOWED = new Set(["nightly-scan", "auto-close", "weekly-backtest", "research-backtest", "quarterly-rescreen"]);
 const TICKER_RE = /^[A-Za-z0-9.&-]{1,15}$/;
 
 function resp(statusCode, body) {

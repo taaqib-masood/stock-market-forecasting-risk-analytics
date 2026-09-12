@@ -35,8 +35,9 @@
   body { font-family: 'Inter', sans-serif; }
   .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
   .nav-item.active { background:#f1f3f5; color:#080909; font-weight:600; }
+  html { scroll-behavior:smooth; }
   .tab-panel { display:none; }
-  .tab-panel.active { display:flex; }
+  .tab-panel.active { display:flex; animation:boroRise .34s cubic-bezier(.16,1,.3,1); }
   ::-webkit-scrollbar { width:8px; } ::-webkit-scrollbar-thumb { background:#e0ddda; border-radius:8px; }
   /* ── Info (ⓘ) tooltip system — Boro-skinned ── */
   .info-btn { display:inline-flex; align-items:center; justify-content:center; width:16px; height:16px;
@@ -84,6 +85,93 @@
   .sent-range.on { background:#080909; color:#fff; border-color:#080909; }
   #sentDist .seg { transition:opacity .15s ease; }
   #sentDist .seg.dim { opacity:.35; }
+
+  /* ════════════════════════════════════════════════════════════════════════
+     Boro motion system — one shared easing/duration vocabulary. Reused, not
+     re-invented per element. Everything below is additive polish on the existing
+     Boro look and degrades to "no motion" under prefers-reduced-motion.
+     ════════════════════════════════════════════════════════════════════════ */
+  :root { --boro-ease:cubic-bezier(.16,1,.3,1); --boro-fast:.16s; --boro-base:.32s; --boro-slow:.5s; }
+  @keyframes boroRise { from{ opacity:0; transform:translateY(10px);} to{ opacity:1; transform:none;} }
+  @keyframes boroFade { from{ opacity:0;} to{ opacity:1;} }
+  @keyframes boroShimmer { 0%{ background-position:-460px 0;} 100%{ background-position:460px 0;} }
+  @keyframes boroToastIn { from{ opacity:0; transform:translateY(14px) scale(.97);} to{ opacity:1; transform:none;} }
+  /* fade-in-up + optional stagger (set --i on children) */
+  .rise { animation:boroRise var(--boro-base) var(--boro-ease) backwards; }
+  .stagger > * { animation:boroRise var(--boro-base) var(--boro-ease) backwards; animation-delay:calc(var(--i,0)*60ms); }
+  /* hover lift for cards/rows — GPU transform only, no layout thrash */
+  .lift { transition:transform var(--boro-fast) var(--boro-ease), box-shadow var(--boro-fast) var(--boro-ease), border-color var(--boro-fast) var(--boro-ease); }
+  .lift:hover { transform:translateY(-2px); box-shadow:0 8px 24px -12px rgba(8,9,9,.18); }
+  /* button press feedback (cockpit actions) */
+  .press { transition:transform var(--boro-fast) var(--boro-ease), opacity var(--boro-fast) var(--boro-ease), box-shadow var(--boro-fast) var(--boro-ease); }
+  .press:active { transform:scale(.96); }
+  .press:disabled { opacity:.5; cursor:not-allowed; }
+  /* skeleton / shimmer loaders */
+  .skeleton { background:linear-gradient(90deg,#f1edec 25%,#e5e2e1 37%,#f1edec 63%); background-size:920px 100%;
+    animation:boroShimmer 1.25s linear infinite; border-radius:10px; color:transparent !important; }
+  /* animated P&L colour transition */
+  .pnl { transition:color var(--boro-base) var(--boro-ease); }
+  .pnl.up { color:#16a34a; } .pnl.down { color:#ef4444; }
+
+  /* ── Progress-bar glow on hover — colour-matched to each bar ──
+     The .bar-track must NOT clip (no overflow-hidden) so the glow can bleed out;
+     the fill keeps its own rounded-pill shape so it still looks clean.
+     .glow-bar also carries the reveal transition (width 0→target on first view). */
+  .glow-bar { transition:box-shadow var(--boro-base) var(--boro-ease), filter var(--boro-base) var(--boro-ease), width var(--boro-slow) var(--boro-ease); }
+  .bar-row { cursor:default; }
+  .bar-row:hover .glow-bar { filter:saturate(1.18) brightness(1.07); }
+  /* colour-matched glow for Tailwind-classed bars */
+  .bar-row:hover .glow-bar.bg-green-500 { box-shadow:0 0 11px 1px rgba(34,197,94,.75); }
+  .bar-row:hover .glow-bar.bg-red-500   { box-shadow:0 0 11px 1px rgba(239,68,68,.75); }
+  .bar-row:hover .glow-bar.bg-primary   { box-shadow:0 0 11px 1px rgba(8,9,9,.45); }
+  .bar-row:hover .glow-bar.bg-secondary { box-shadow:0 0 11px 1px rgba(7,92,242,.8); }
+  /* generic fallback for inline-coloured bars: set style="--glow:<rgba>" */
+  .bar-row:hover .glow-bar[style*="--glow"] { box-shadow:0 0 11px 1px var(--glow); }
+
+  /* ── Number-change flash (live updates) ── */
+  @keyframes boroFlash { 0%{ background-color:var(--flash,rgba(7,92,242,.16)); } 100%{ background-color:transparent; } }
+  .flash { animation:boroFlash .9s var(--boro-ease); border-radius:8px; }
+  .flash-up   { --flash:rgba(34,197,94,.20); } .flash-down { --flash:rgba(239,68,68,.20); }
+
+  /* ── Chart caption strip (the "more detail" line under each graph) ── */
+  .chart-cap { font-size:11px; color:#70757d; display:flex; flex-wrap:wrap; gap:10px 16px; margin-top:10px; }
+  .chart-cap b { color:#1c1b1b; font-weight:600; }
+  .chart-cap .dot { display:inline-block; width:8px; height:8px; border-radius:9999px; margin-right:5px; vertical-align:middle; }
+
+  /* ── Cockpit confirm-modal (reuses infoPop keyframe + Boro card chrome) ── */
+  .ck-overlay { display:none; position:fixed; inset:0; z-index:9100; background:rgba(8,9,9,.45);
+    backdrop-filter:blur(6px); align-items:center; justify-content:center; padding:24px; animation:boroFade var(--boro-fast) ease; }
+  .ck-overlay.open { display:flex; }
+  .ck-card { position:relative; background:#fff; border:1px solid #e7e8ea; border-radius:24px; padding:28px;
+    max-width:420px; width:100%; color:#1c1b1b; animation:infoPop .22s var(--boro-ease); }
+  .ck-card h3 { font-size:20px; font-weight:600; letter-spacing:-.01em; color:#080909; margin-bottom:6px; }
+  .ck-row { display:flex; justify-content:space-between; gap:12px; padding:8px 0; border-bottom:1px solid #f1edec; font-size:14px; }
+  .ck-row:last-of-type { border-bottom:none; }
+  .ck-row .k { color:#70757d; } .ck-row .v { font-weight:600; color:#1c1b1b; }
+
+  /* ── Toast notifications (replace static status text for results) ── */
+  #ckToasts { position:fixed; right:20px; bottom:20px; z-index:9200; display:flex; flex-direction:column; gap:10px; max-width:340px; }
+  .ck-toast { background:#fff; border:1px solid #e7e8ea; border-left:4px solid #70757d; border-radius:14px;
+    padding:12px 14px; font-size:13px; color:#1c1b1b; box-shadow:0 12px 32px -12px rgba(8,9,9,.28);
+    animation:boroToastIn var(--boro-base) var(--boro-ease); }
+  .ck-toast.ok { border-left-color:#16a34a; } .ck-toast.err { border-left-color:#ef4444; }
+  .ck-toast.busy { border-left-color:#075cf2; }
+
+  /* ── Strategy preset chips ── */
+  .preset-chip { transition:all var(--boro-fast) var(--boro-ease); cursor:pointer; }
+  .preset-chip.active { background:#080909; color:#fff; border-color:#080909; }
+  .preset-badge { font-size:10px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; padding:2px 7px; border-radius:9999px; }
+
+  /* ── Honour reduced-motion: kill all the above animation, keep final state ── */
+  @media (prefers-reduced-motion: reduce) {
+    .rise, .stagger > *, .ck-overlay, .ck-card, .ck-toast, .tab-panel.active, .flash { animation:none !important; }
+    .glow-bar { transition:box-shadow var(--boro-base) ease !important; }
+    html { scroll-behavior:auto !important; }
+    .skeleton { animation:none !important; }
+    .lift:hover, .press:active { transform:none !important; }
+    .pnl { transition:none !important; }
+    * { scroll-behavior:auto !important; }
+  }
 </style>
 </head>
 <body class="bg-surface text-on-surface min-h-screen">
@@ -101,6 +189,7 @@
   </div>
   <div id="nav" class="flex flex-col gap-1 w-full">
     <button data-tab="sentiment" class="nav-item active flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">analytics</span><span class="text-sm">Sentiment</span></button>
+    <button data-tab="performance" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">leaderboard</span><span class="text-sm">Performance</span></button>
     <button data-tab="technical" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">monitoring</span><span class="text-sm">Technical</span></button>
     <button data-tab="macro" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">public</span><span class="text-sm">Macro</span></button>
     <button data-tab="screener" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">filter_alt</span><span class="text-sm">Screener</span></button>
@@ -113,6 +202,7 @@
     <button data-tab="watchlist" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">visibility</span><span class="text-sm">Watchlist</span></button>
     <button data-tab="halal" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">verified</span><span class="text-sm">Halal &amp; Zakat</span></button>
     <button data-tab="riskguard" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">security</span><span class="text-sm">Risk Guard</span></button>
+    <button data-tab="readiness" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">fact_check</span><span class="text-sm">Release Readiness</span></button>
     <button data-tab="telegram" class="nav-item flex items-center gap-3 px-4 py-3 text-muted rounded-pill hover:bg-surface-low transition-colors text-left"><span class="material-symbols-outlined text-xl">send</span><span class="text-sm">Telegram</span></button>
   </div>
 </nav>
@@ -127,7 +217,7 @@
     <div class="flex items-center gap-4">
       <div class="flex items-center gap-2 bg-green-50 text-green-600 px-3 py-1.5 rounded-pill border border-green-200">
         <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-        <span class="text-xs font-bold tracking-wider">Live · RELIANCE</span>
+        <span class="text-xs font-bold tracking-wider">Research · NSE data</span>
       </div>
       <div class="flex items-center gap-2 text-muted">
         <span class="material-symbols-outlined">schedule</span>
@@ -240,28 +330,105 @@
         </div>
       </div>
 
-      <!-- Run controls — talk to src.control_server so you never need the terminal -->
-      <div class="bg-surface-lowest border border-outline-variant rounded-card p-5 flex flex-col gap-3">
+      <!-- Trading cockpit — trigger actions without a terminal (Cloud: GitHub Actions · Local: control_server) -->
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-5 flex flex-col gap-4 rise">
         <div class="flex items-center justify-between flex-wrap gap-2">
-          <p class="text-sm font-semibold text-on-surface">Run controls <span class="text-xs text-muted font-normal">— runs the paper-trading commands via the control server</span></p>
-          <button onclick="document.getElementById('ctlCfg').classList.toggle('hidden')" class="text-xs text-muted underline">connection ⚙</button>
+          <p class="text-sm font-semibold text-on-surface">Trading cockpit
+            <span class="text-xs text-muted font-normal">— BUY-only · paper-first · halal-guarded</span>
+          </p>
+          <div class="flex items-center gap-3">
+            <span id="ckExecutionBadge" class="preset-badge" style="background:#fff7ed;color:#b45309;border:1px solid #fed7aa" title="No real money — virtual ₹50,000 paper account">● PAPER</span>
+            <span id="ckModeBadge" class="preset-badge bg-surface-highest text-muted border border-outline-variant">cloud</span>
+            <button onclick="document.getElementById('ctlCfg').classList.toggle('hidden')" class="text-xs text-muted underline">connection ⚙</button>
+          </div>
         </div>
         <div id="ctlCfg" class="hidden flex flex-wrap gap-2 text-xs items-center">
-          <select id="ctlMode" class="border border-outline-variant rounded-pill px-3 py-1.5">
+          <select id="ctlMode" onchange="ctlSave()" class="border border-outline-variant rounded-pill px-3 py-1.5">
             <option value="ci">Cloud (GitHub Actions)</option>
             <option value="local">Local (control server)</option>
           </select>
           <input id="ctlBase" placeholder="http://localhost:8765 (local only)" class="border border-outline-variant rounded-pill px-3 py-1.5 flex-1 min-w-[200px]" />
           <input id="ctlToken" type="password" placeholder="control token (local only)" class="border border-outline-variant rounded-pill px-3 py-1.5 flex-1 min-w-[160px]" />
-          <button onclick="ctlSave()" class="px-3 py-1.5 rounded-pill bg-surface-highest border border-outline-variant">Save</button>
+          <button onclick="ctlSave()" class="press px-3 py-1.5 rounded-pill bg-surface-highest border border-outline-variant">Save</button>
         </div>
+
+        <!-- Holding-period preset selector -->
+        <div class="flex flex-col gap-2">
+          <p class="text-xs font-semibold text-muted">Holding-period strategy <span class="font-normal">— one engine, three horizons</span></p>
+          <div id="presetRow" class="flex flex-wrap gap-2 stagger">
+            <div class="skeleton h-8 w-28"></div><div class="skeleton h-8 w-28"></div><div class="skeleton h-8 w-28"></div>
+          </div>
+        </div>
+
+        <!-- Bulk actions -->
         <div class="flex flex-wrap gap-2">
-          <button onclick="runCtl('/scan','Scanning…')" class="px-4 py-2 rounded-pill bg-primary text-white text-sm font-semibold hover:opacity-90">▶ Run scan</button>
-          <button onclick="runCtl('/auto-close','Closing positions…')" class="px-4 py-2 rounded-pill bg-surface-highest border border-outline-variant text-sm font-semibold">⏹ Auto-close</button>
-          <button onclick="runCtl('/daily-briefing','Running full briefing…')" class="px-4 py-2 rounded-pill bg-surface-highest border border-outline-variant text-sm font-semibold">📋 Daily briefing</button>
-          <button onclick="refreshPortfolio()" class="px-4 py-2 rounded-pill bg-surface-highest border border-outline-variant text-sm font-semibold">↻ Portfolio</button>
+          <button onclick="runCtl('/scan','Scanning…')" class="press px-4 py-2 rounded-pill bg-primary text-white text-sm font-semibold hover:opacity-90">▶ Run scan</button>
+          <button onclick="runCtl('/auto-close','Closing positions…')" title="Paper positions only; live positions use broker GTT protection" class="press px-4 py-2 rounded-pill bg-surface-highest border border-outline-variant text-sm font-semibold">⏹ Auto-close <span class="text-[10px] text-muted">paper</span></button>
+          <button onclick="runCtl('/daily-briefing','Running full briefing…')" class="press px-4 py-2 rounded-pill bg-surface-highest border border-outline-variant text-sm font-semibold">📋 Daily briefing</button>
+          <button onclick="refreshPositions()" class="press px-4 py-2 rounded-pill bg-surface-highest border border-outline-variant text-sm font-semibold">↻ Positions</button>
+          <button onclick="toggleCmdCenter()" class="press px-4 py-2 rounded-pill bg-surface-highest border border-outline-variant text-sm font-semibold">⌘ Commands</button>
         </div>
-        <p id="ctlStatus" class="text-xs text-muted">Idle · <b>Cloud mode</b> (default): buttons trigger GitHub Actions, no server needed (works on the deployed Netlify site). Switch to <b>Local</b> under ⚙ to drive a local <code>control_server</code>.</p>
+
+        <!-- Command center — run the full command reference without a terminal -->
+        <div id="cmdCenter" class="hidden flex flex-col gap-3 border-t border-outline-variant pt-4">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <p class="text-xs font-semibold text-muted">Command center <span class="font-normal">— cloud (GitHub) or local (terminal-free)</span></p>
+            <div class="flex items-center gap-2 text-xs">
+              <input id="cmdTicker" placeholder="TICKER" class="border border-outline-variant rounded-pill px-3 py-1 text-xs uppercase w-24" />
+              <input id="cmdYears" type="number" min="1" max="10" value="5" title="years" class="border border-outline-variant rounded-pill px-3 py-1 text-xs w-16" />
+              <span class="text-muted hidden sm:inline">for ticker/years commands</span>
+            </div>
+          </div>
+          <div id="cmdGroups" class="flex flex-col gap-3"><div class="skeleton h-8 w-full"></div></div>
+          <pre id="cmdOut" class="hidden text-[11px] leading-relaxed bg-surface-high border border-outline-variant rounded-card p-3 max-h-72 overflow-auto whitespace-pre-wrap"></pre>
+        </div>
+
+        <!-- Performance summary strip (FreqUI-style) -->
+        <div id="ckPerf" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
+
+        <!-- Activity log (FreqUI-style action / trade stream) -->
+        <div class="flex flex-col gap-1">
+          <p class="text-xs font-semibold text-muted">Activity</p>
+          <div id="ckLog" class="flex flex-col gap-1 text-xs text-muted max-h-40 overflow-y-auto pr-1"></div>
+        </div>
+
+        <!-- Discrete trade controls — LOCAL MODE ONLY (never exposed over serverless) -->
+        <div id="cockpitLocal" class="hidden flex flex-col gap-3 border-t border-outline-variant pt-4">
+          <div class="flex flex-col gap-2">
+            <p class="text-xs font-semibold text-muted">Place BUY <span class="font-normal">— paper by default; live broker scope is Reliance only after private owner acknowledgement or approved release</span></p>
+            <div class="flex flex-wrap gap-2 items-center">
+              <input id="buyTicker" placeholder="RELIANCE" class="border border-outline-variant rounded-pill px-3 py-1.5 text-sm uppercase w-28" />
+              <input id="buyShares" type="number" min="1" placeholder="shares" class="border border-outline-variant rounded-pill px-3 py-1.5 text-sm w-24" />
+              <input id="buyPrice" type="number" min="0" step="0.05" placeholder="price (0=live)" class="border border-outline-variant rounded-pill px-3 py-1.5 text-sm w-32" />
+              <input id="buyStop" type="number" min="0" step="0.05" placeholder="stop (live)" class="border border-outline-variant rounded-pill px-3 py-1.5 text-sm w-28" />
+              <input id="buyTarget" type="number" min="0" step="0.05" placeholder="target (live)" class="border border-outline-variant rounded-pill px-3 py-1.5 text-sm w-28" />
+              <button onclick="previewBrokerRiskFromForm()" class="press px-3 py-1.5 rounded-pill bg-surface-highest border border-outline-variant text-xs font-semibold">Preview risk</button>
+              <button onclick="cockpitBuy()" class="press px-4 py-1.5 rounded-pill bg-green-600 text-white text-sm font-semibold">Buy</button>
+            </div>
+            <span id="riskPreviewStatus" class="text-xs text-muted">Live BUY preview shows the 2% risk, 20% notional, and two-leg GTT checks before confirmation.</span>
+          </div>
+          <div class="flex flex-col gap-2">
+            <p class="text-xs font-semibold text-muted">Open positions</p>
+            <div id="positionsTable" class="text-sm text-muted">No positions loaded — hit <b>↻ Positions</b>.</div>
+          </div>
+          <div class="flex flex-wrap gap-2 items-center border-t border-outline-variant pt-3">
+            <input id="liveOrderId" placeholder="Zerodha order ID" class="border border-outline-variant rounded-pill px-3 py-1.5 text-sm w-40" />
+            <button onclick="checkBrokerOrder()" class="press px-3 py-1.5 rounded-pill bg-surface-highest border border-outline-variant text-xs font-semibold">Check order status</button>
+            <button onclick="cancelBrokerOrder()" class="press px-3 py-1.5 rounded-pill bg-red-50 border border-red-200 text-red-700 text-xs font-semibold">Cancel order</button>
+            <button onclick="refreshBrokerOrders()" class="press px-3 py-1.5 rounded-pill bg-surface-highest border border-outline-variant text-xs font-semibold">Refresh orders</button>
+            <button onclick="reconcileBroker()" class="press px-3 py-1.5 rounded-pill bg-surface-highest border border-outline-variant text-xs font-semibold">Reconcile broker</button>
+            <input id="liveGttId" placeholder="GTT ID" class="border border-outline-variant rounded-pill px-3 py-1.5 text-sm w-28" />
+            <button onclick="checkBrokerGtt()" class="press px-3 py-1.5 rounded-pill bg-surface-highest border border-outline-variant text-xs font-semibold">Check GTT</button>
+            <button id="retryProtectionBtn" onclick="retryLiveProtection()" class="hidden press px-3 py-1.5 rounded-pill bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold">Retry OCO protection</button>
+            <button onclick="cancelBrokerGtt()" class="press px-3 py-1.5 rounded-pill bg-red-50 border border-red-200 text-red-700 text-xs font-semibold">Cancel GTT</button>
+            <span id="liveOrderStatus" class="text-xs text-muted">Accepted orders are not fills — reconcile them here.</span>
+          </div>
+          <div id="liveOrderBook" class="text-xs text-muted"></div>
+          <p id="brokerObservationHint" class="text-[11px] text-muted">Read-only holdings and order reconciliation become available after Zerodha session validation; live mutations require the private owner acknowledgement or an approved public release.</p>
+          <div id="brokerReconcileStatus" class="text-xs text-muted"></div>
+        </div>
+
+        <p id="ctlStatus" class="text-xs text-muted">Idle · <b>Cloud mode</b> (default): buttons trigger GitHub Actions, no server needed (works on the deployed Netlify site). Switch to <b>Local</b> under ⚙ to place trades via <code>control_server</code>.</p>
       </div>
 
       <!-- News Sentiment -->
@@ -282,6 +449,7 @@
             <span id="sentRangeLabel" class="text-xs text-muted"></span>
           </div>
           <div class="w-full h-56"><canvas id="sentChart"></canvas></div>
+          <div class="chart-cap"><span><span class="dot" style="background:#080909"></span>Daily news sentiment, 0–100%</span><span>Higher = more bullish coverage</span><span>Hover any point for the exact reading</span></div>
           <div id="sentDist" class="flex flex-col gap-3"></div>
         </div>
         <div class="flex flex-col" id="newsList"></div>
@@ -313,6 +481,103 @@
       </div>
     </section>
 
+    <!-- PERFORMANCE — paper-trading scorecard (live from window.DASH.portfolio) -->
+    <section data-panel="performance" class="tab-panel flex-col gap-8">
+
+      <!-- Hero: net strategy profit -->
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col md:flex-row md:items-end md:justify-between gap-6 rise">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-widest text-muted mb-2">Net Strategy Profit<button class="info-btn" onclick="showInfo('portfolio')">i</button></p>
+          <div class="flex items-baseline gap-3">
+            <h2 class="text-5xl font-semibold tracking-tight" id="perf-net">₹0</h2>
+            <span class="text-xl font-semibold" id="perf-net-pct">+0.0%</span>
+          </div>
+          <p class="text-sm text-muted mt-2" id="perf-sub">Paper account · ₹50,000 starting capital</p>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="runCtl('/scan','Scanning…')" class="press px-4 py-2 rounded-pill bg-primary text-white text-sm font-semibold hover:opacity-90">▶ Run scan</button>
+          <button onclick="document.querySelector('[data-tab=\'sentiment\']').click()" class="press px-4 py-2 rounded-pill bg-surface-highest border border-outline-variant text-sm font-semibold">Cockpit →</button>
+        </div>
+      </div>
+
+      <!-- Primary metric grid -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <!-- Win rate gauge -->
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-3 lift">
+          <div class="flex justify-between items-start"><span class="text-sm font-medium text-muted">Win Rate<button class="info-btn" onclick="showInfo('win_rate')">i</button></span><span class="material-symbols-outlined text-secondary text-lg">verified</span></div>
+          <div class="flex flex-col items-center">
+            <div class="relative w-28 h-28 flex items-center justify-center">
+              <svg class="w-full h-full -rotate-90" viewBox="0 0 96 96">
+                <circle cx="48" cy="48" r="40" fill="none" stroke="#e7e8ea" stroke-width="8"/>
+                <circle id="perf-wr-ring" cx="48" cy="48" r="40" fill="none" stroke="#075cf2" stroke-width="8" stroke-linecap="round" stroke-dasharray="251.3" stroke-dashoffset="251.3" style="transition:stroke-dashoffset 1.2s cubic-bezier(.16,1,.3,1)"/>
+              </svg>
+              <span class="absolute text-2xl font-semibold" id="perf-wr">0%</span>
+            </div>
+            <p class="text-xs text-muted mt-1" id="perf-wr-sub">no closed trades yet</p>
+          </div>
+        </div>
+        <!-- Total trades -->
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-3 lift">
+          <div class="flex justify-between items-start"><span class="text-sm font-medium text-muted">Total Trades</span><span class="material-symbols-outlined text-outline text-lg">sync_alt</span></div>
+          <h3 class="text-4xl font-semibold tracking-tight" id="perf-total">0</h3>
+          <div class="flex flex-col gap-2 mt-1">
+            <div class="flex justify-between items-center bg-green-50 border border-green-200 px-3 py-1.5 rounded-pill"><span class="text-xs font-bold text-green-600">WINNING</span><span class="font-semibold text-green-600" id="perf-wins">0</span></div>
+            <div class="flex justify-between items-center bg-red-50 border border-red-200 px-3 py-1.5 rounded-pill"><span class="text-xs font-bold text-red-500">LOSING</span><span class="font-semibold text-red-500" id="perf-losses">0</span></div>
+          </div>
+        </div>
+        <!-- Capital deployment (spans 2) -->
+        <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col justify-between md:col-span-2 lift">
+          <div>
+            <div class="flex justify-between items-start mb-3"><span class="text-sm font-medium text-muted">Capital Deployment</span><span class="material-symbols-outlined text-outline text-lg">account_balance_wallet</span></div>
+            <div class="flex justify-between mb-1 text-sm"><span class="text-muted">Starting: <b class="text-on-surface" id="perf-start">₹50,000</b></span><span class="text-muted">Total: <b class="text-on-surface" id="perf-total-cap">₹50,000</b></span></div>
+            <div class="bar-row h-3 rounded-pill bg-surface-highest"><div class="glow-bar bg-secondary h-full rounded-pill" id="perf-cap-bar" style="width:0%"></div></div>
+            <p class="text-[11px] text-muted mt-1"><span id="perf-exposure-note">0%</span> of capital deployed · rest in cash</p>
+          </div>
+          <div class="grid grid-cols-3 gap-4 pt-4 mt-4 border-t border-outline-variant">
+            <div><p class="text-[11px] uppercase text-muted mb-1">Max Drawdown<button class="info-btn" onclick="showInfo('max_drawdown')">i</button></p><span class="text-lg font-semibold text-red-500 pnl" id="perf-dd">0%</span></div>
+            <div><p class="text-[11px] uppercase text-muted mb-1">Expectancy</p><span class="text-lg font-semibold" id="perf-exp">₹0<span class="text-[10px] text-muted font-normal">/trade</span></span></div>
+            <div><p class="text-[11px] uppercase text-muted mb-1">Open</p><span class="text-lg font-semibold" id="perf-open">0</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Deep-dive grid -->
+      <div>
+        <h4 class="font-semibold tracking-tight mb-3">Analytics Deep-Dive</h4>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div class="bg-surface-lowest border border-outline-variant rounded-card p-5 flex flex-col gap-2 lift"><span class="text-xs font-medium text-muted">Profit Factor<button class="info-btn" onclick="showInfo('profit_factor')">i</button></span><span class="text-3xl font-semibold" id="perf-pf">—</span><span class="text-[11px] px-2 py-0.5 rounded-pill w-fit border" id="perf-pf-tag">—</span></div>
+          <div class="bg-surface-lowest border border-outline-variant rounded-card p-5 flex flex-col gap-2 lift"><span class="text-xs font-medium text-muted">Avg Win vs Loss</span>
+            <div class="flex gap-1 items-end h-10 mt-1"><div class="bg-green-500 rounded-sm flex-1" id="perf-aw-bar" style="height:100%;transition:height .7s cubic-bezier(.16,1,.3,1)"></div><div class="bg-red-500 rounded-sm flex-1" id="perf-al-bar" style="height:40%;transition:height .7s cubic-bezier(.16,1,.3,1)"></div></div>
+            <div class="flex justify-between text-[10px]"><span class="text-green-600" id="perf-aw">₹0</span><span class="text-red-500" id="perf-al">₹0</span></div>
+            <span class="text-[11px] text-muted">W:L <b id="perf-wl">—</b></span></div>
+          <div class="bg-surface-lowest border border-outline-variant rounded-card p-5 flex flex-col items-center justify-center gap-1 lift"><span class="material-symbols-outlined text-outline">hourglass_empty</span><span class="text-xl font-semibold" id="perf-hold">0d</span><span class="text-xs text-muted">Avg Holding</span></div>
+          <div class="bg-surface-lowest border border-outline-variant rounded-card p-5 flex flex-col items-center justify-center gap-1 lift">
+            <div class="relative w-14 h-14"><svg class="w-full h-full -rotate-90" viewBox="0 0 56 56"><circle cx="28" cy="28" r="22" fill="none" stroke="#e7e8ea" stroke-width="5"/><circle id="perf-exp-ring" cx="28" cy="28" r="22" fill="none" stroke="#075cf2" stroke-width="5" stroke-linecap="round" stroke-dasharray="138.2" stroke-dashoffset="138.2" style="transition:stroke-dashoffset 1.2s cubic-bezier(.16,1,.3,1)"/></svg><span class="absolute inset-0 flex items-center justify-center text-[11px] font-bold" id="perf-exposure">0%</span></div>
+            <span class="text-xs text-muted">Exposure</span></div>
+          <div class="bg-surface-lowest border border-outline-variant rounded-card p-5 flex flex-col gap-2 lift"><span class="text-xs font-medium text-muted">Best / Worst</span><span class="text-base font-semibold text-green-600" id="perf-best">₹0</span><span class="text-base font-semibold text-red-500" id="perf-worst">₹0</span><span class="text-[11px] text-muted">streak <b id="perf-streak">0W / 0L</b></span></div>
+          <div class="bg-surface-lowest border border-outline-variant rounded-card p-5 flex flex-col gap-2 lift"><span class="text-xs font-medium text-muted">vs NIFTY<button class="info-btn" onclick="showInfo('nifty50')">i</button></span><span class="text-2xl font-semibold" id="perf-vsnifty">—</span><span class="text-[11px]" id="perf-vsnifty-tag">benchmark</span></div>
+        </div>
+      </div>
+
+      <!-- Redesigned strategy performance chart -->
+      <div class="bg-surface-lowest border border-outline-variant rounded-card overflow-hidden flex flex-col rise">
+        <div class="p-6 border-b border-outline-variant flex justify-between items-center flex-wrap gap-3">
+          <div>
+            <h3 class="font-semibold text-lg tracking-tight">Strategy Performance<button class="info-btn" onclick="showInfo('montecarlo')">i</button></h3>
+            <p class="text-sm text-muted" id="perf-chart-sub">Account equity vs a buy-&-hold benchmark</p>
+          </div>
+          <div class="flex bg-surface-high p-1 rounded-pill text-xs font-semibold">
+            <button id="perf-tab-eq" onclick="perfChartMode('equity')" class="px-3 py-1.5 rounded-pill bg-surface-lowest">Equity curve</button>
+            <button id="perf-tab-uw" onclick="perfChartMode('underwater')" class="px-3 py-1.5 rounded-pill text-muted">Underwater</button>
+          </div>
+        </div>
+        <div class="p-6">
+          <div class="w-full h-80"><canvas id="perfChart"></canvas></div>
+          <div class="chart-cap" id="perf-chart-cap"></div>
+        </div>
+      </div>
+    </section>
+
     <!-- TECHNICAL -->
     <section data-panel="technical" class="tab-panel flex-col gap-8">
       <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex flex-col gap-6">
@@ -324,6 +589,7 @@
           <div id="techHead" class="text-right"></div>
         </div>
         <div class="w-full h-48"><canvas id="techChart"></canvas></div>
+        <div class="chart-cap"><span><span class="dot" style="background:#16a34a"></span>Up over window</span><span><span class="dot" style="background:#ef4444"></span>Down over window</span><span>60 trading days of real closes · hover for ₹</span></div>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="techIndicators"></div>
       <div class="bg-surface-lowest border border-outline-variant rounded-card overflow-hidden">
@@ -564,6 +830,7 @@
       <div class="bg-surface-lowest border border-outline-variant rounded-card p-8">
         <h3 class="font-semibold text-lg tracking-tight mb-6">Outcome Distribution</h3>
         <div class="w-full h-72"><canvas id="mcChart"></canvas></div>
+        <div class="chart-cap"><span><span class="dot" style="background:#16a34a"></span>Profit (above ₹100K start)</span><span><span class="dot" style="background:#ef4444"></span>Loss (below start)</span><span>1,000 simulated 1-year paths · taller bar = more likely outcome</span></div>
       </div>
 
       <!-- Research Backtest — runs src.pipeline (ARIMA+LightGBM+stacking) on demand -->
@@ -591,6 +858,7 @@
         </div>
         <p class="text-sm text-muted mb-6">Showing: <code class="text-xs" id="eqSource">results/</code> — click any run below to view it.</p>
         <div class="w-full h-72"><canvas id="eqChart"></canvas></div>
+        <div class="chart-cap"><span>Account equity after each closed trade</span><span><span class="dot" style="background:#16a34a"></span>Net up</span><span><span class="dot" style="background:#ef4444"></span>Net down</span><span>rising staircase = compounding wins</span></div>
         <p id="eqEmpty" class="hidden text-sm text-muted">No backtest runs yet — use "Run Backtest" above, or <code class="text-xs">python -m src.pipeline --ticker RELIANCE</code> locally.</p>
       </div>
 
@@ -638,6 +906,7 @@
       <div class="bg-surface-lowest border border-outline-variant rounded-card p-8">
         <h3 class="font-semibold text-lg tracking-tight mb-6">7-Day FII vs DII Flows <span class="text-muted font-normal text-sm">(₹ Crore)</span></h3>
         <div class="w-full h-72"><canvas id="fiiChart"></canvas></div>
+        <div class="chart-cap"><span><span class="dot" style="background:#ef4444"></span>FII (foreign)</span><span><span class="dot" style="background:#16a34a"></span>DII (domestic)</span><span>Net ₹ Cr per day · bar above 0 = net buying, below = net selling</span></div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -791,6 +1060,48 @@
       </div>
     </section>
 
+    <!-- RELEASE READINESS -->
+    <section data-panel="readiness" class="tab-panel flex-col gap-6">
+      <div class="rounded-card p-8 text-white relative overflow-hidden" style="background:linear-gradient(135deg,#101827,#172554);">
+        <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image:radial-gradient(circle at 2px 2px,white 1px,transparent 0);background-size:24px 24px;"></div>
+        <div class="relative z-10 flex items-start justify-between flex-wrap gap-5">
+          <div><p class="text-xs font-bold tracking-widest uppercase mb-2 text-blue-200">Operational control</p><h2 class="text-3xl font-bold tracking-tight">Release readiness</h2><p class="text-sm text-white/65 mt-2 max-w-2xl">Recommendations, broker orders, and paid distribution stay disabled until every evidence gate is current and independently verified.</p></div>
+          <span id="releaseBadge" class="text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-pill bg-red-400/15 border border-red-300/30 text-red-100">Blocked</span>
+        </div>
+      </div>
+      <div id="releaseGateGrid" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-3">
+        <div class="flex items-center justify-between gap-3 flex-wrap"><h3 class="font-semibold tracking-tight">Channel controls</h3><span id="releaseChannelStatus" class="text-xs font-semibold px-3 py-1 rounded-pill bg-surface-highest text-muted border border-outline-variant">Awaiting local readiness check</span></div>
+        <p id="releaseChannelDetail" class="text-xs text-muted">Connect the authenticated local control server to show the current Telegram and broker capability decision.</p>
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="renderReadiness()" class="press px-3 py-1.5 rounded-pill bg-surface-highest border border-outline-variant text-xs font-semibold">Refresh readiness</button>
+          <button onclick="validateBrokerSession()" class="press px-3 py-1.5 rounded-pill bg-surface-highest border border-outline-variant text-xs font-semibold">Validate Zerodha session</button>
+          <span id="brokerSessionStatus" class="text-xs font-semibold px-3 py-1 rounded-pill bg-surface-highest text-muted border border-outline-variant">Session not checked</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 border-t border-outline-variant pt-3">
+          <button onclick="openBrokerLogin()" class="press px-3 py-1.5 rounded-pill bg-surface-highest border border-outline-variant text-xs font-semibold">Open Zerodha login ↗</button>
+          <input id="brokerRequestToken" type="password" autocomplete="off" placeholder="one-time request_token" class="border border-outline-variant rounded-pill px-3 py-1.5 text-xs w-52" />
+          <button onclick="exchangeBrokerSession()" class="press px-3 py-1.5 rounded-pill bg-primary text-white text-xs font-semibold">Exchange &amp; validate</button>
+          <span id="brokerBootstrapStatus" class="text-xs text-muted">Access tokens stay on the backend; the request token is cleared after exchange.</span>
+        </div>
+      </div>
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-4">
+        <div class="flex items-center justify-between gap-3 flex-wrap">
+          <div><h3 class="font-semibold tracking-tight">Activation checklist</h3><p class="text-xs text-muted mt-1">A release map for the operator — blocked actions stay blocked until every line is clear.</p></div>
+          <span id="activationChecklistSummary" class="text-xs font-semibold px-3 py-1 rounded-pill bg-surface-highest text-muted border border-outline-variant">Connect local control</span>
+        </div>
+        <div id="activationChecklistRows" class="flex flex-col gap-2"><p class="text-xs text-muted">Switch to Local mode and refresh readiness to load live channel state.</p></div>
+      </div>
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-3">
+        <div class="flex items-center justify-between gap-3 flex-wrap"><h3 class="font-semibold tracking-tight">What is enabled now?</h3><span class="text-xs font-semibold px-3 py-1 rounded-pill bg-surface-highest text-muted border border-outline-variant">Research + paper only</span></div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+          <div class="bg-green-50 border border-green-200 rounded-2xl p-4"><strong class="text-green-700">Available</strong><p class="text-xs text-green-700/80 mt-1">Backtests, screening, paper portfolio, audit review.</p></div>
+          <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4"><strong class="text-amber-700">Pending</strong><p class="text-xs text-amber-700/80 mt-1">Shadow delivery and retained operational evidence.</p></div>
+          <div class="bg-red-50 border border-red-200 rounded-2xl p-4"><strong class="text-red-700">Disabled</strong><p class="text-xs text-red-700/80 mt-1">User recommendations, live broker orders, paid signals.</p></div>
+        </div>
+      </div>
+    </section>
+
     <!-- TELEGRAM (bot notification mirror) -->
     <section data-panel="telegram" class="tab-panel flex-col gap-6">
       <div class="bg-surface-lowest border border-outline-variant rounded-card p-8 flex items-center justify-between flex-wrap gap-3">
@@ -798,7 +1109,18 @@
           <h2 class="text-2xl font-semibold tracking-tight">Telegram Alerts<button class="info-btn" onclick="showInfo('headlines')">i</button></h2>
           <p class="text-sm text-muted mt-1">Exactly what the bot pushes to your phone — morning briefing, GTT orders, tier changes, exits.</p>
         </div>
-        <span class="flex items-center gap-2 text-xs font-semibold px-3 py-1 rounded-pill bg-green-50 text-green-600 border border-green-200"><span class="pulse-dot"></span>Bot connected</span>
+        <span id="telegramHeaderStatus" class="flex items-center gap-2 text-xs font-semibold px-3 py-1 rounded-pill bg-amber-50 text-amber-700 border border-amber-200"><span class="w-2 h-2 rounded-full bg-amber-500"></span>Simulation mirror · delivery blocked</span>
+      </div>
+      <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-3">
+        <div class="flex items-center justify-between gap-3 flex-wrap"><h3 class="font-semibold tracking-tight">Consent controls</h3><span id="telegramAudienceStatus" class="text-xs font-semibold px-3 py-1 rounded-pill bg-surface-highest text-muted border border-outline-variant">No local status</span></div>
+        <p id="telegramConsentCopy" class="text-xs text-muted">Users opt in directly through the bot. They send <code>/start terms-v1</code> to subscribe and <code>/stop</code> to revoke consent. Recommendations remain unavailable until the release gate approves them.</p>
+        <div class="flex items-center gap-3 flex-wrap border-t border-outline-variant pt-3">
+          <button onclick="verifyTelegramProvider()" class="press px-3 py-1.5 rounded-pill bg-surface-highest border border-outline-variant text-xs font-semibold">Verify Bot &amp; webhook</button>
+          <button onclick="registerTelegramWebhook()" class="press px-3 py-1.5 rounded-pill bg-primary text-white text-xs font-semibold">Register webhook</button>
+          <button onclick="retryTelegramOutbox()" class="press px-3 py-1.5 rounded-pill bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold">Retry due delivery</button>
+          <a id="telegramBotLink" class="hidden press px-3 py-1.5 rounded-pill bg-green-50 border border-green-200 text-green-700 text-xs font-semibold" target="_blank" rel="noopener noreferrer">Open bot &amp; opt in ↗</a>
+          <span id="telegramProviderStatus" class="text-xs text-muted">Provider status not checked.</span>
+        </div>
       </div>
       <style>
         .tg-stage{display:flex;flex-direction:column;align-items:center;gap:28px;padding:32px 12px 8px;}
@@ -856,7 +1178,7 @@
               </div>
               <div class="tg-input">
                 <span class="material-symbols-outlined" style="color:#5d7384;font-size:20px;">attach_file</span>
-                <span class="ph">Broadcast disabled…</span>
+                <span class="ph">Recommendations disabled until release approval…</span>
                 <span class="material-symbols-outlined" style="color:#5d7384;font-size:20px;">mic</span>
               </div>
             </div>
@@ -864,7 +1186,7 @@
           <div class="tg-conn">
             <span class="ic"><svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg></span>
             <div><div class="text-[10px] font-bold uppercase tracking-widest text-muted">Connection status</div>
-            <div class="text-sm font-semibold flex items-center gap-2">Telegram Active <span class="pulse-dot" style="background:#22c55e;"></span></div></div>
+            <div id="telegramConnectionLabel" class="text-sm font-semibold flex items-center gap-2">Consent + release gate required <span id="telegramConnectionDot" class="pulse-dot" style="background:#f59e0b;"></span></div></div>
           </div>
         </div>
       </div>
@@ -965,17 +1287,17 @@ renderNews(); renderSentDist(); renderSentRange(); drawSent(); runCountUps();
 const SHAP = [["RSI 14",0.41,82],["MACD Histogram",0.35,70],["Sentiment",0.31,62],["VIX Regime",0.27,55],["BB %B",-0.13,25],["Volume Z-Score",-0.09,18]];
 document.getElementById('shapList').innerHTML = SHAP.map(([f,v,w])=>{
   const pos=v>=0; const col=pos?'bg-green-500':'bg-red-500'; const tc=pos?'text-green-600':'text-red-500';
-  return `<div class="flex items-center gap-3">
+  return `<div class="bar-row flex items-center gap-3">
     <span class="w-28 text-sm text-muted flex-shrink-0">${f}</span>
-    <div class="flex-1 h-2 rounded-pill bg-surface-highest overflow-hidden"><div class="h-full ${col} rounded-pill" style="width:${w}%"></div></div>
+    <div class="flex-1 h-2 rounded-pill bg-surface-highest"><div class="glow-bar h-full ${col} rounded-pill" style="width:${w}%"></div></div>
     <span class="w-12 text-right text-sm font-semibold ${tc}">${pos?'+':''}${v.toFixed(2)}</span>
   </div>`;}).join('');
 const CONF = [["ARIMA (Time-Series)",65],["LightGBM (ML Model)",81],["Meta-Ensemble (Final)",79]];
 document.getElementById('confList').innerHTML = CONF.map(([m,p],i)=>{
   const final=i===CONF.length-1;
-  return `<div class="flex flex-col gap-1">
+  return `<div class="bar-row flex flex-col gap-1">
     <div class="flex justify-between text-sm"><span class="${final?'font-semibold':'text-muted'}">${m}</span><span class="font-semibold">${p}%</span></div>
-    <div class="h-2 rounded-pill bg-surface-highest overflow-hidden"><div class="h-full ${final?'bg-primary':'bg-secondary'} rounded-pill" style="width:${p}%"></div></div>
+    <div class="h-2 rounded-pill bg-surface-highest"><div class="glow-bar h-full ${final?'bg-primary':'bg-secondary'} rounded-pill" style="width:${p}%"></div></div>
   </div>`;}).join('');
 
 // ---- Risk Guard (drawdown overlay) ----
@@ -1350,7 +1672,7 @@ function featWhy(name, tip, imp, core){
   document.getElementById('infoDesc').innerHTML =
     `<p class="text-sm text-on-surface-variant">${tip}.</p>
      <div class="mt-4"><div class="flex items-center justify-between text-xs text-muted mb-1"><span>Model importance</span><span>${imp}/100</span></div>
-       <div class="h-2 rounded-pill bg-surface-highest overflow-hidden"><div class="h-full rounded-pill" style="width:${imp}%;background:${featImpColor(imp)}"></div></div></div>`;
+       <div class="bar-row h-2 rounded-pill bg-surface-highest"><div class="glow-bar h-full rounded-pill" style="width:${imp}%;background:${featImpColor(imp)};--glow:${featImpColor(imp)}"></div></div></div>`;
   const rule = document.getElementById('infoRule'); rule.style.display='';
   rule.innerHTML = core
     ? '📌 <strong>Core driver:</strong> one of the 7 criteria the live scanner scores directly (see a signal\'s “why” drawer).'
@@ -1380,7 +1702,7 @@ function renderFeats(){
       return `<button title="${tip}" onclick="featWhy('${name.replace(/'/g,"\\'")}','${tip.replace(/'/g,"\\'")}',${imp},${!!core})"
         class="feat-chip group text-left px-3 py-2 rounded-2xl bg-surface border ${core?'border-green-200':'border-outline-variant'} hover:border-primary flex flex-col gap-1.5 min-w-[120px]" style="animation-delay:${d}ms">
         <span class="text-xs font-semibold flex items-center gap-1">${core?'<span class=\'text-green-600\'>★</span>':''}${name}</span>
-        <span class="h-1 rounded-pill bg-surface-highest overflow-hidden"><span class="block h-full rounded-pill" style="width:${imp}%;background:${featImpColor(imp)}"></span></span>
+        <span class="bar-row h-1 rounded-pill bg-surface-highest"><span class="glow-bar block h-full rounded-pill" style="width:${imp}%;background:${featImpColor(imp)};--glow:${featImpColor(imp)}"></span></span>
       </button>`;
     }).join('');
     return `<div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-4">
@@ -1436,9 +1758,11 @@ function drawMC(){
   new Chart(document.getElementById('mcChart'),{ type:'bar',
     data:{ labels:bins.map(b=>'₹'+b+'K'), datasets:[{ data:counts, backgroundColor:colors, borderRadius:5, borderSkipped:false }] },
     options:{ responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label:c=>c.parsed.y+' simulations' } } },
-      scales:{ x:{ grid:{display:false}, ticks:{ color:'#70757d', font:{size:10}, maxRotation:0 } },
-               y:{ grid:{ color:'#e7e8ea' }, ticks:{ color:'#70757d', font:{size:10} } } } }
+      plugins:{ legend:{display:false}, tooltip:{ callbacks:{
+        title:c=>'Outcome '+c[0].label, label:c=>c.parsed.y+' of 1,000 simulations',
+        afterLabel:c=>{ const b=+c.label.replace(/[₹K]/g,''); return b<100?'Below ₹100K start — a loss':'Above start — a profit'; } } } },
+      scales:{ x:{ title:{display:true, text:'Portfolio value after 1 year (₹)', color:'#70757d', font:{size:11}}, grid:{display:false}, ticks:{ color:'#70757d', font:{size:10}, maxRotation:0 } },
+               y:{ title:{display:true, text:'Number of simulations', color:'#70757d', font:{size:11}}, grid:{ color:'#e7e8ea' }, ticks:{ color:'#70757d', font:{size:10} } } } }
   });
 }
 function drawFII(){
@@ -1452,8 +1776,8 @@ function drawFII(){
     options:{ responsive:true, maintainAspectRatio:false,
       plugins:{ legend:{ labels:{ color:'#70757d', font:{size:12}, usePointStyle:true, pointStyle:'circle', padding:16 } },
                 tooltip:{ callbacks:{ label:c=>c.dataset.label+': ₹'+Math.abs(c.parsed.y)+' Cr' } } },
-      scales:{ x:{ grid:{display:false}, ticks:{ color:'#70757d', font:{size:11} } },
-               y:{ grid:{ color:'#e7e8ea' }, ticks:{ color:'#70757d', font:{size:11}, callback:v=>'₹'+v } } } }
+      scales:{ x:{ title:{display:true, text:'Trading day', color:'#70757d', font:{size:11}}, grid:{display:false}, ticks:{ color:'#70757d', font:{size:11} } },
+               y:{ title:{display:true, text:'Net flow (₹ Cr) — above 0 = buying', color:'#70757d', font:{size:11}}, grid:{ color:'#e7e8ea' }, ticks:{ color:'#70757d', font:{size:11}, callback:v=>'₹'+v } } } }
   });
 }
 // ---- Research Backtest: dispatch + history list + equity chart ----
@@ -1487,8 +1811,8 @@ function plotEquityCurve(curve, label, sourceText){
       borderWidth:2, fill:true, tension:.25, pointRadius:0 }] },
     options:{ responsive:true, maintainAspectRatio:false,
       plugins:{ legend:{display:false}, tooltip:{ callbacks:{ title:c=>'Trade '+c[0].label, label:c=>'₹'+c.parsed.y.toLocaleString('en-IN') } } },
-      scales:{ x:{ grid:{display:false}, ticks:{ color:'#70757d', font:{size:10}, maxTicksLimit:10 } },
-               y:{ grid:{ color:'#e7e8ea' }, ticks:{ color:'#70757d', font:{size:10}, callback:v=>'₹'+(v/1000)+'K' } } } }
+      scales:{ x:{ title:{display:true, text:'Trade number (chronological)', color:'#70757d', font:{size:11}}, grid:{display:false}, ticks:{ color:'#70757d', font:{size:10}, maxTicksLimit:10 } },
+               y:{ title:{display:true, text:'Account equity (₹)', color:'#70757d', font:{size:11}}, grid:{ color:'#e7e8ea' }, ticks:{ color:'#70757d', font:{size:10}, callback:v=>'₹'+(v/1000)+'K' } } } }
   });
 }
 function showBacktestRun(i){
@@ -1535,7 +1859,214 @@ function drawEquity(){
   const eq = DASH.equity || {};
   plotEquityCurve(eq.curve || [], eq.ticker || '', eq.source || 'results/');
 }
-const lazyCharts = { montecarlo: ()=>{ drawMC(); drawEquity(); }, fiidii: drawFII, halal: initHalal, riskguard: renderRiskGuard, explainer: renderFeats, telegram: renderTelegram, macro: renderMacroRegime, technical: renderTechnical };
+// ---- Performance scorecard (live from window.DASH.portfolio) ----
+let perfChartObj=null, _perfMode='equity';
+function _pinr(n){ return (n<0?'-':'')+'₹'+Math.abs(Math.round(n)).toLocaleString('en-IN'); }
+function renderPerformance(){
+  const p = DASH.portfolio || {}, st = p.stats || {}, mk = DASH.market || {};
+  const start = 50000;
+  const totalCap = (p.total_val!=null) ? p.total_val : start;
+  const netPnl  = (p.total_pnl!=null) ? p.total_pnl : (totalCap-start);
+  const netPct  = (p.total_pnl_pct!=null) ? p.total_pnl_pct : 0;
+  const up = netPnl>=0;
+  const T=(id,v)=>{const e=document.getElementById(id); if(e)e.textContent=v;};
+  const H=(id,v)=>{const e=document.getElementById(id); if(e)e.innerHTML=v;};
+  const C=(id,c)=>{const e=document.getElementById(id); if(e)e.className=c;};
+
+  T('perf-net',(up?'+':'')+_pinr(netPnl)); C('perf-net','text-5xl font-semibold tracking-tight pnl '+(up?'text-green-600':'text-red-500'));
+  T('perf-net-pct',(netPct>=0?'+':'')+netPct+'%'); C('perf-net-pct','text-xl font-semibold '+(up?'text-green-600':'text-red-500'));
+  T('perf-sub','Paper account · '+_pinr(start)+' starting · '+(st.total||0)+' closed trades');
+
+  const wr = st.win_rate||0;
+  T('perf-wr', wr+'%');
+  const ring=document.getElementById('perf-wr-ring'); if(ring) requestAnimationFrame(()=>{ ring.style.strokeDashoffset=(251.3*(1-wr/100)).toFixed(1); });
+  T('perf-wr-sub', st.total?(st.wins+'W / '+st.losses+'L'):'no closed trades yet');
+
+  T('perf-total', st.total||0); T('perf-wins', st.wins||0); T('perf-losses', st.losses||0);
+
+  T('perf-start',_pinr(start)); T('perf-total-cap',_pinr(totalCap));
+  const exposure = totalCap>0 ? Math.round((p.positions_val||0)/totalCap*100) : 0;
+  const capBar=document.getElementById('perf-cap-bar'); if(capBar){ capBar.dataset.w=exposure+'%'; requestAnimationFrame(()=>{capBar.style.width=exposure+'%';}); }
+  T('perf-exposure-note', exposure+'%');
+  T('perf-dd', (st.max_drawdown_pct!=null?st.max_drawdown_pct:0)+'%');
+  H('perf-exp', _pinr(st.expectancy||0)+'<span class="text-[10px] text-muted font-normal">/trade</span>');
+  T('perf-open', Object.keys(p.marked||{}).length);
+
+  const pf = st.profit_factor;
+  T('perf-pf', pf==null?'—':(isFinite(pf)?pf:'∞'));
+  let pft='—', pfc='bg-surface-highest text-muted border-outline-variant';
+  if(pf!=null){ if(!isFinite(pf)||pf>=1.5){pft='strong';pfc='bg-green-50 text-green-600 border-green-200';}
+    else if(pf>=1.0){pft='thin edge';pfc='bg-amber-50 text-amber-600 border-amber-200';}
+    else {pft='no edge';pfc='bg-red-50 text-red-500 border-red-200';} }
+  T('perf-pf-tag', pft); C('perf-pf-tag','text-[11px] px-2 py-0.5 rounded-pill w-fit border '+pfc);
+
+  const aw=st.avg_win||0, al=Math.abs(st.avg_loss||0), mx=Math.max(aw,al,1);
+  const awb=document.getElementById('perf-aw-bar'), alb=document.getElementById('perf-al-bar');
+  if(awb) requestAnimationFrame(()=>{awb.style.height=Math.max(6,aw/mx*100)+'%';});
+  if(alb) requestAnimationFrame(()=>{alb.style.height=Math.max(6,al/mx*100)+'%';});
+  T('perf-aw','+'+_pinr(aw)); T('perf-al','-'+_pinr(al));
+  T('perf-wl', st.win_loss_ratio==null?'—':(isFinite(st.win_loss_ratio)?st.win_loss_ratio+'×':'∞'));
+
+  T('perf-hold',(st.avg_days_held||0)+'d');
+
+  T('perf-exposure', exposure+'%');
+  const er=document.getElementById('perf-exp-ring'); if(er) requestAnimationFrame(()=>{ er.style.strokeDashoffset=(138.2*(1-exposure/100)).toFixed(1); });
+
+  T('perf-best','+'+_pinr(st.best||0)); T('perf-worst','-'+_pinr(Math.abs(st.worst||0)));
+  T('perf-streak',(st.max_win_streak||0)+'W / '+(st.max_loss_streak||0)+'L');
+
+  T('perf-vsnifty',(netPct>=0?'+':'')+netPct+'%'); C('perf-vsnifty','text-2xl font-semibold '+(up?'text-green-600':'text-red-500'));
+  T('perf-vsnifty-tag', mk.nifty_ret1w!=null ? ('NIFTY 1w '+(mk.nifty_ret1w>=0?'+':'')+mk.nifty_ret1w+'%') : 'your return since inception');
+
+  perfChartMode(_perfMode);
+}
+
+function perfChartMode(mode){
+  _perfMode=mode;
+  const eqBtn=document.getElementById('perf-tab-eq'), uwBtn=document.getElementById('perf-tab-uw');
+  if(eqBtn&&uwBtn){ const on='px-3 py-1.5 rounded-pill bg-surface-lowest', off='px-3 py-1.5 rounded-pill text-muted';
+    eqBtn.className=mode==='equity'?on:off; uwBtn.className=mode==='underwater'?on:off; }
+  drawPerfChart();
+}
+
+function drawPerfChart(){
+  const cv=document.getElementById('perfChart'); if(!cv||typeof Chart==='undefined') return;
+  const eq=(DASH.equity&&DASH.equity.curve)||[];
+  const cap=document.getElementById('perf-chart-cap'), sub=document.getElementById('perf-chart-sub');
+  if(perfChartObj) perfChartObj.destroy();
+  if(!eq.length){
+    if(cap) cap.innerHTML='<span>No backtest equity yet — run a backtest (Monte Carlo tab) or a scan to populate this.</span>';
+    return;
+  }
+  const start=eq[0];
+  if(_perfMode==='underwater'){
+    let peak=eq[0]; const dd=eq.map(v=>{peak=Math.max(peak,v); return -((peak-v)/peak)*100;});
+    const maxdd=Math.min(...dd).toFixed(1);
+    if(sub) sub.textContent='Underwater — drawdown from the running equity peak';
+    const g=cv.getContext('2d').createLinearGradient(0,0,0,320); g.addColorStop(0,'rgba(239,68,68,0)'); g.addColorStop(1,'rgba(239,68,68,.20)');
+    perfChartObj=new Chart(cv,{type:'line',
+      data:{labels:eq.map((_,i)=>i+1),datasets:[{data:dd,borderColor:'#ef4444',borderWidth:2,fill:true,backgroundColor:g,tension:.2,pointRadius:0,pointHoverRadius:4}]},
+      options:{responsive:true,maintainAspectRatio:false,animation:{duration:700},interaction:{intersect:false,mode:'index'},
+        plugins:{legend:{display:false},tooltip:{displayColors:false,backgroundColor:'#080909',cornerRadius:10,callbacks:{title:c=>'Trade '+c[0].label,label:c=>'Drawdown '+c.parsed.y.toFixed(1)+'%'}}},
+        scales:{x:{title:{display:true,text:'Trade number',color:'#70757d',font:{size:11}},grid:{display:false},ticks:{color:'#70757d',font:{size:10},maxTicksLimit:10}},
+                y:{title:{display:true,text:'Drawdown %',color:'#70757d',font:{size:11}},grid:{color:'#e7e8ea'},ticks:{color:'#70757d',font:{size:10},callback:v=>v+'%'},max:0}}}});
+    if(cap) cap.innerHTML='<span><span class="dot" style="background:#ef4444"></span>Depth below peak</span><span>Max drawdown '+maxdd+'%</span><span>flatter &amp; shallower = steadier compounding</span>';
+    return;
+  }
+  if(sub) sub.textContent='Account equity after each closed trade · dashed = starting-capital breakeven';
+  const upc=eq[eq.length-1]>=start;
+  const g=cv.getContext('2d').createLinearGradient(0,0,0,320); g.addColorStop(0,upc?'rgba(34,197,94,.16)':'rgba(239,68,68,.16)'); g.addColorStop(1,'rgba(0,0,0,0)');
+  const ret=((eq[eq.length-1]/start-1)*100).toFixed(1);
+  perfChartObj=new Chart(cv,{type:'line',
+    data:{labels:eq.map((_,i)=>i+1),datasets:[
+      {label:'Equity',data:eq,borderColor:upc?'#16a34a':'#ef4444',borderWidth:2,fill:true,backgroundColor:g,tension:.25,pointRadius:0,pointHoverRadius:4},
+      {label:'Breakeven',data:eq.map(()=>start),borderColor:'#c4c7c7',borderWidth:1,borderDash:[5,5],fill:false,pointRadius:0,tension:0}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,animation:{duration:800,easing:'easeOutCubic'},interaction:{intersect:false,mode:'index'},
+      plugins:{legend:{display:true,labels:{color:'#70757d',font:{size:11},usePointStyle:true,pointStyle:'line',boxWidth:18,padding:14}},
+        tooltip:{displayColors:false,backgroundColor:'#080909',cornerRadius:10,callbacks:{title:c=>'Trade '+c[0].label,label:c=>c.dataset.label+': '+_pinr(c.parsed.y)}}},
+      scales:{x:{title:{display:true,text:'Trade number (chronological)',color:'#70757d',font:{size:11}},grid:{display:false},ticks:{color:'#70757d',font:{size:10},maxTicksLimit:10}},
+              y:{title:{display:true,text:'Account equity (₹)',color:'#70757d',font:{size:11}},grid:{color:'#e7e8ea'},ticks:{color:'#70757d',font:{size:10},callback:v=>'₹'+(v/1000).toFixed(0)+'K'}}}}});
+  if(cap) cap.innerHTML='<span><span class="dot" style="background:'+(upc?'#16a34a':'#ef4444')+'"></span>Equity</span><span><span class="dot" style="background:#c4c7c7"></span>Breakeven (₹'+(start/1000)+'K)</span><span>Net '+(ret>=0?'+':'')+ret+'% over '+eq.length+' trades</span>';
+}
+
+const RELEASE_GATES = [
+  ['Independent approvals', 'Quantitative, qualified Shariah, legal, and governance evidence', 'blocked'],
+  ['Point-in-time data', 'Complete NSE universe, corporate actions, fundamentals, and halal history', 'blocked'],
+  ['Statistical evidence', 'Untouched holdout, benchmark, regime, costs, and drawdown gates', 'blocked'],
+  ['Shadow operation', '180+ reconciled days, ≥99.5% delivery, zero unresolved incidents', 'blocked'],
+];
+function renderReleaseGateCards(decision){
+  const grid=document.getElementById('releaseGateGrid'); if(!grid) return;
+  const blockers=Array.isArray(decision&&decision.blockers)?decision.blockers:[];
+  const approved=decision&&decision.approved===true;
+  const cards=RELEASE_GATES.map(([title,detail],index)=>{
+    const keywords=[['APPROVAL','SHARIAH','LEGAL','GOVERNANCE','CORPORATE_ACTION'],['PIT','DATASET','COVERAGE','UNIVERSE'],['STATISTICAL','BENCHMARK','DRAWDOWN'],['SHADOW','DELIVERY','INCIDENT']][index];
+    const relevant=blockers.filter(b=>keywords.some(k=>String(b).toUpperCase().includes(k)));
+    const ready=approved;
+    return {title, detail:approved?'Evidence gate accepted.':(relevant.length?relevant.slice(0,3).join(', '):detail), ready};
+  });
+  grid.innerHTML=cards.map(card=>`<div class="bg-surface-lowest border ${card.ready?'border-green-200':'border-red-200'} rounded-card p-6 flex items-start gap-4 lift">
+    <span class="w-10 h-10 rounded-pill ${card.ready?'bg-green-50 text-green-600 border-green-200':'bg-red-50 text-red-500 border-red-200'} border flex items-center justify-center text-lg">${card.ready?'✓':'⛔'}</span>
+    <div><div class="flex items-center gap-2"><h3 class="font-semibold tracking-tight">${esc(card.title)}</h3><span class="text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-pill ${card.ready?'bg-green-50 text-green-600 border-green-200':'bg-red-50 text-red-600 border-red-200'} border">${card.ready?'ready':'blocked'}</span></div><p class="text-xs text-muted mt-2 leading-relaxed">${esc(card.detail)}</p></div>
+  </div>`).join('');
+}
+function renderActivationChecklist(j){
+  const rows=document.getElementById('activationChecklistRows');
+  const summary=document.getElementById('activationChecklistSummary');
+  if(!rows || !summary) return;
+  if(!j){
+    summary.textContent='Connect local control';
+    summary.className='text-xs font-semibold px-3 py-1 rounded-pill bg-surface-highest text-muted border border-outline-variant';
+    rows.innerHTML='<p class="text-xs text-muted">Switch to Local mode and refresh readiness to load live channel state.</p>';
+    return;
+  }
+  const blockers=Array.isArray(j.blockers)?j.blockers:[];
+  const audience=j.telegram_audience||{};
+  const delivery=audience.delivery||{};
+  const provider=j.telegram_provider||{};
+  const session=j.broker_session||{};
+  const sessionAge=Number(session.age_seconds||0);
+  const sessionMaxAge=Number(session.max_age_seconds||3600);
+  const sessionNearExpiry=session.valid && sessionAge >= sessionMaxAge*0.8;
+  const sessionDetail=session.valid
+    ? 'Validated '+(session.user_id||'broker account')+' · '+sessionAge+'s old'+(sessionNearExpiry?' · refresh soon':'')
+    : 'Validate a current backend session before live orders ('+(session.reason||'session unavailable')+').';
+  const items=[
+    {label:'Release evidence', state:j.approved?'ready':'blocked', detail:j.approved?'Current approval packet accepted.':(blockers.length+' blocker'+(blockers.length===1?'':'s')+' remain · '+blockers.slice(0,3).join(', ')+(blockers.length>3?'…':''))},
+    {label:'Telegram channel', state:j.telegram_recommendations?'ready':(provider.ok===true?'action':'blocked'), detail:(audience.active_recipients||0)+' consented recipient'+(Number(audience.active_recipients||0)===1?'':'s')+' · '+(delivery.delivered||0)+' delivered · '+(delivery.queued||0)+' queued · '+(provider.ok===true?'provider verified':'provider '+((provider.blockers||['not verified']).join(', ')))},
+    {label:'Kite session', state:session.valid?(sessionNearExpiry?'action':'ready'):'action', detail:sessionDetail},
+    {label:'Execution posture', state:j.execution_mode==='paper'?'safe':(j.broker_orders?'ready':'blocked'), detail:j.execution_mode==='paper'?'Paper mode is active — no live order can be sent.':'Live mode · scope '+(j.live_symbol||'RELIANCE')+' · entries '+(j.broker_orders?'enabled':'blocked')+(j.personal_live_trading_acknowledged?' · private owner acknowledgement':(j.approved?' · approved release':''))},
+    {label:'Operational pause', state:j.operational_kill_switch?'blocked':'ready', detail:j.operational_kill_switch?'Emergency pause is active; entries and Telegram delivery are stopped.':'Kill switch clear; risk-reducing broker controls remain available.'},
+  ];
+  const styles={ready:['bg-green-50','border-green-200','text-green-700','Ready'],safe:['bg-accent-soft','border-secondary/30','text-secondary','Safe default'],action:['bg-amber-50','border-amber-200','text-amber-700','Action needed'],blocked:['bg-red-50','border-red-200','text-red-700','Blocked']};
+  const clear=items.filter(x=>x.state==='ready'||x.state==='safe').length;
+  summary.textContent=clear+'/'+items.length+' checks clear';
+  summary.className='text-xs font-semibold px-3 py-1 rounded-pill '+(clear===items.length?'bg-green-50 text-green-700 border border-green-200':'bg-amber-50 text-amber-700 border border-amber-200');
+  rows.innerHTML=items.map(item=>{
+    const s=styles[item.state]||styles.blocked;
+    return '<div class="flex items-center gap-3 rounded-2xl border '+s[1]+' '+s[0]+' px-4 py-3">'+
+      '<span class="w-7 h-7 rounded-pill flex items-center justify-center text-xs font-bold '+s[2]+'">'+(item.state==='ready'?'✓':item.state==='safe'?'○':item.state==='action'?'!':'×')+'</span>'+
+      '<div class="min-w-0 flex-1"><div class="flex items-center gap-2 flex-wrap"><strong class="text-sm '+s[2]+'">'+esc(item.label)+'</strong><span class="text-[10px] font-bold uppercase tracking-widest '+s[2]+'">'+s[3]+'</span></div><p class="text-xs '+s[2]+' opacity-80 mt-0.5 break-words">'+esc(item.detail)+'</p></div></div>';
+  }).join('');
+}
+function renderReadiness(){
+  const grid=document.getElementById('releaseGateGrid'); if(!grid) return;
+  renderReleaseGateCards(null);
+  const {mode,base,token}=ctlCfg();
+  if(mode!=='local' || !token){ renderActivationChecklist(null); return; }
+  fetch(base+'/readiness',{headers:{'X-Control-Token':token}}).then(r=>r.json()).then(j=>{
+    const badge=document.getElementById('releaseBadge');
+    const status=document.getElementById('releaseChannelStatus');
+    const detail=document.getElementById('releaseChannelDetail');
+    if(!j || j.ok===false) return;
+    updateCockpitExecutionBadge(j);
+    renderReleaseGateCards(j);
+    const approved=j.approved===true;
+    badge.textContent=approved?'Approved':'Blocked';
+    badge.className=approved
+      ? 'text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-pill bg-green-400/15 border border-green-300/30 text-green-100'
+      : 'text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-pill bg-red-400/15 border border-red-300/30 text-red-100';
+    status.textContent=approved?'Release approved':'Release blocked';
+    status.className=approved
+      ? 'text-xs font-semibold px-3 py-1 rounded-pill bg-green-50 text-green-700 border border-green-200'
+      : 'text-xs font-semibold px-3 py-1 rounded-pill bg-red-50 text-red-700 border border-red-200';
+    const risk=j.live_risk_policy||{};
+    const riskText=risk.max_risk_pct!=null ? ' · Max risk: '+(Number(risk.max_risk_pct)*100).toFixed(1)+'%' : '';
+    const scopeText=' · Live scope: '+(j.live_symbol||'RELIANCE')+riskText;
+    const session=j.broker_session||{};
+    const sessionText=session.valid
+      ? ' · Kite session verified ('+Number(session.age_seconds||0)+'s old'+(Number(session.age_seconds||0)>=Number(session.max_age_seconds||3600)*0.8?', refresh soon':'')+')'
+      : ' · Kite session not validated';
+    const brokerText=' · Entries: '+(j.broker_orders?'enabled':'paused')+' · Exits: '+(j.broker_exits?'enabled':'disabled');
+    const pauseText=j.operational_kill_switch ? ' · EMERGENCY PAUSE ACTIVE' : '';
+    detail.textContent=approved
+      ? ('Telegram: '+(j.telegram_recommendations?'enabled':'disabled')+brokerText+sessionText+scopeText+pauseText+' · Mode: '+j.mode)
+      : ('Mode: '+j.mode+sessionText+scopeText+pauseText+(j.broker_orders?' · Private Reliance trading ready':'')+' · '+((j.blockers||[]).slice(0,4).join(', ')||'release evidence incomplete'));
+    renderActivationChecklist(j);
+  }).catch(()=>{ renderActivationChecklist(null); });
+}
+const lazyCharts = { performance: renderPerformance, montecarlo: ()=>{ drawMC(); drawEquity(); }, fiidii: drawFII, halal: initHalal, riskguard: renderRiskGuard, readiness: renderReadiness, explainer: renderFeats, telegram: renderTelegram, macro: renderMacroRegime, technical: renderTechnical };
 
 // ---- Nav switching (generic: any [data-panel] shows; else placeholder) ----
 const phPanel = document.querySelector('[data-panel="placeholder"]');
@@ -1890,8 +2421,36 @@ function renderAlerts(){
 renderAlerts();
 
 // ---- Telegram chat mirror: render bot pushes as chat bubbles ----
+let TG_TERMS_VERSION='terms-v1';
 function renderTelegram(){
   const box = document.getElementById('tgChat'); if(!box) return;
+  const audienceStatus = document.getElementById('telegramAudienceStatus');
+  const ctl = ctlCfg();
+  if(ctl.mode==='local' && ctl.token) verifyTelegramProvider();
+  if(audienceStatus && ctl.mode==='local' && ctl.token){
+    fetch(ctl.base+'/telegram/audience',{headers:{'X-Control-Token':ctl.token}}).then(r=>r.json()).then(j=>{
+      if(j && j.ok){
+        const delivery=j.delivery||{};
+        const incident=(Number(delivery.dead_letter||0)+Number(delivery.unreconciled||0))>0;
+        audienceStatus.textContent=(j.active_recipients||0)+' active · '+(delivery.queued||0)+' queued · '+(delivery.delivered||0)+' delivered'+(incident?' · delivery incident':'');
+        const header=document.getElementById('telegramHeaderStatus');
+        if(header){
+          header.innerHTML='<span class="w-2 h-2 rounded-full '+(incident?'bg-red-500':'bg-amber-500')+'"></span>'+(incident?'Delivery incident · review outbox':'Simulation mirror · delivery blocked');
+          header.className='flex items-center gap-2 text-xs font-semibold px-3 py-1 rounded-pill '+(incident?'bg-red-50 text-red-700 border border-red-200':'bg-amber-50 text-amber-700 border border-amber-200');
+        }
+        const connection=document.getElementById('telegramConnectionLabel');
+        const dot=document.getElementById('telegramConnectionDot');
+        if(connection){
+          connection.firstChild.textContent=incident?'Delivery incident · review outbox':(Number(j.active_recipients||0)>0?'Consent registered · delivery gate enforced':'Waiting for user consent');
+        }
+        if(dot) dot.style.background=incident?'#ef4444':(Number(j.active_recipients||0)>0?'#22c55e':'#f59e0b');
+        const terms=String(j.terms_version||'terms-v1').replace(/[^A-Za-z0-9._:-]/g,'');
+        TG_TERMS_VERSION=terms;
+        const copy=document.getElementById('telegramConsentCopy');
+        if(copy) copy.innerHTML='Users opt in directly through the bot. They send <code>/start '+terms+'</code> to subscribe and <code>/stop</code> to revoke consent. Recommendations remain unavailable until the release gate approves them.';
+      }
+    }).catch(()=>{});
+  }
   const sig = DASH.signals || {}; const r = sig.regime || {};
   const cards = sig.cards || []; const trades = ((DASH.portfolio||{}).trades||[]).slice().reverse();
   const msgs = [];
@@ -1922,6 +2481,66 @@ function renderTelegram(){
       <span class="tg-av">${tgLogo}</span>
       <div class="tg-bub ${toneCls[m.tone||'']}">${m.html}<span class="tg-time">${m.t} ✓✓</span></div>
     </div>`).join('');
+}
+
+async function verifyTelegramProvider(){
+  const out=document.getElementById('telegramProviderStatus');
+  const botLink=document.getElementById('telegramBotLink');
+  if(!out) return;
+  const ctl=ctlCfg();
+  if(ctl.mode!=='local' || !ctl.token){ out.textContent='Switch to local control mode to verify provider status.'; return; }
+  out.textContent='Checking Bot API and webhook…';
+  try{
+    const r=await fetch(ctl.base+'/telegram/provider',{headers:{'X-Control-Token':ctl.token}});
+    const j=await r.json();
+    const webhook=j.webhook||{};
+    if(j.ok){
+      out.textContent='✓ @'+String(j.bot_username||'bot')+' · webhook verified'+(webhook.pending_update_count?' · '+webhook.pending_update_count+' pending update(s)':'');
+      out.className='text-xs text-green-700';
+      const username=String(j.bot_username||'').replace(/[^A-Za-z0-9_]/g,'');
+      if(botLink && username){
+        botLink.href='https://t.me/'+username+'?start='+encodeURIComponent(TG_TERMS_VERSION);
+        botLink.textContent='Open @'+username+' & opt in ↗';
+        botLink.classList.remove('hidden');
+      }
+    }else{
+      out.textContent='✗ '+(j.blockers||['provider unavailable']).join(', ');
+      out.className='text-xs text-red-700';
+      if(botLink) botLink.classList.add('hidden');
+    }
+  }catch(e){ out.textContent='✗ Provider check unavailable: '+e.message; out.className='text-xs text-red-700'; }
+}
+
+async function registerTelegramWebhook(){
+  const out=document.getElementById('telegramProviderStatus');
+  const ctl=ctlCfg();
+  if(ctl.mode!=='local' || !ctl.token){ if(out) out.textContent='Switch to local control mode to register the configured webhook.'; return; }
+  if(out){ out.textContent='Registering configured HTTPS webhook…'; out.className='text-xs text-amber-700'; }
+  try{
+    const r=await fetch(ctl.base+'/telegram/webhook/register',{method:'POST',headers:{'X-Control-Token':ctl.token,'Content-Type':'application/json'},body:'{}'});
+    const j=await r.json();
+    if(!j.ok){ if(out) out.textContent='✗ '+(j.blockers||[j.error||'webhook registration failed']).join(', '); if(out) out.className='text-xs text-red-700'; return; }
+    if(out){ out.textContent='✓ Webhook registered · verifying provider…'; out.className='text-xs text-green-700'; }
+    await verifyTelegramProvider();
+  }catch(e){ if(out){ out.textContent='✗ Webhook registration unavailable: '+e.message; out.className='text-xs text-red-700'; } }
+}
+
+async function retryTelegramOutbox(){
+  const out=document.getElementById('telegramProviderStatus');
+  const ctl=ctlCfg();
+  if(ctl.mode!=='local' || !ctl.token){ if(out) out.textContent='Switch to local control mode to retry the authenticated outbox.'; return; }
+  if(out){ out.textContent='Retrying due, consent-bound messages…'; out.className='text-xs text-amber-700'; }
+  try{
+    const r=await fetch(ctl.base+'/telegram/outbox/retry',{method:'POST',headers:{'X-Control-Token':ctl.token,'Content-Type':'application/json'},body:'{}'});
+    const j=await r.json();
+    if(out){
+      out.textContent=j.ok
+        ? '✓ Delivery retry complete · '+(j.delivered||0)+' delivered'
+        : '✗ Retry blocked/degraded · '+((j.blockers||[]).join(', ')||j.reason||j.error||'review outbox');
+      out.className=j.ok?'text-xs text-green-700':'text-xs text-red-700';
+    }
+    renderTelegram();
+  }catch(e){ if(out){ out.textContent='✗ Outbox retry unavailable: '+e.message; out.className='text-xs text-red-700'; } }
 }
 renderTelegram();
 
@@ -1998,7 +2617,7 @@ function renderTechnical(){
   document.getElementById('techIndicators').innerHTML = `
     <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-4">
       <div class="flex justify-between items-start"><p class="text-sm font-medium text-muted">RSI · Momentum<button class="info-btn" onclick="showInfo('rsi')">i</button></p><span class="text-2xl font-semibold">${d.rsi}</span></div>
-      <div><div class="h-2 rounded-pill bg-surface-highest relative overflow-hidden"><div class="absolute inset-y-0 left-0 rounded-pill transition-all" style="width:${d.rsi}%;background:${rsiTone}"></div></div>
+      <div class="bar-row"><div class="h-2 rounded-pill bg-surface-highest relative"><div class="glow-bar absolute inset-y-0 left-0 rounded-pill" style="width:${d.rsi}%;background:${rsiTone};--glow:${rsiTone}"></div></div>
         <div class="flex justify-between text-[11px] text-muted mt-2"><span>0 · Oversold</span><span>Overbought · 100</span></div></div>
       <p class="text-xs text-muted">14-day · ${rsiZone}</p>
     </div>
@@ -2010,7 +2629,7 @@ function renderTechnical(){
     <div class="bg-surface-lowest border border-outline-variant rounded-card p-6 flex flex-col gap-4">
       <p class="text-sm font-medium text-muted">Bollinger %B<button class="info-btn" onclick="showInfo('bollinger')">i</button></p>
       <span class="text-2xl font-semibold">${(d.bb_pctb*100).toFixed(0)}%</span>
-      <div><div class="h-2 rounded-pill bg-surface-highest relative overflow-hidden"><div class="absolute inset-y-0 left-0 bg-secondary rounded-pill transition-all" style="width:${bbPct}%"></div></div>
+      <div class="bar-row"><div class="h-2 rounded-pill bg-surface-highest relative"><div class="glow-bar absolute inset-y-0 left-0 bg-secondary rounded-pill" style="width:${bbPct}%"></div></div>
         <div class="flex justify-between text-[11px] text-muted mt-2"><span>Lower band</span><span>Upper band</span></div></div>
       <p class="text-xs text-muted">SMA20 ${inr(Math.round(d.sma20))} · SMA50 ${inr(Math.round(d.sma50))}</p>
     </div>`;
@@ -2043,5 +2662,729 @@ renderTechnical();
     <div class="rule" id="infoRule"></div>
   </div>
 </div>
+
+<!-- Cockpit confirm-modal (Boro-skinned) — every trade action routes through here -->
+<div class="ck-overlay" id="ckOverlay" onclick="if(event.target===this)ckCloseModal()">
+  <div class="ck-card">
+    <h3 id="ckTitle">Confirm</h3>
+    <p id="ckSubtitle" class="text-sm text-muted" style="margin-bottom:14px;"></p>
+    <div id="ckRows"></div>
+    <div class="flex gap-2 justify-end" style="margin-top:18px;">
+      <button onclick="ckCloseModal()" class="press px-4 py-2 rounded-pill bg-surface-highest border border-outline-variant text-sm font-semibold">Cancel</button>
+      <button id="ckConfirmBtn" class="press px-4 py-2 rounded-pill bg-primary text-white text-sm font-semibold">Confirm</button>
+    </div>
+  </div>
+</div>
+<div id="ckToasts" aria-live="polite"></div>
+
+<script>
+/* ════════════════════════════════════════════════════════════════════════════
+   Trading cockpit — discrete, confirm-gated actions on top of control_server.
+   Halal: BUY-only entries, close-only exits (no shorting). Discrete trades run
+   in LOCAL mode only; Cloud mode keeps the bulk GitHub-Actions buttons + a
+   read-only preset view. Reuses ctlCfg()/ctlStatus() from the main script.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+// Mirror of src/strategy_presets.py for Cloud (no-server) display.
+const PRESETS_FALLBACK = [
+  {id:'intra_week',  label:'Intra-week',      blurb:'Tight stop, ~5d time-exit',  validated:false, max_hold_days:5},
+  {id:'swing',       label:'Swing (default)', blurb:'Balanced multi-week baseline',validated:true,  max_hold_days:15},
+  {id:'intra_month', label:'Intra-month',     blurb:'Wider stop, ~1mo time-exit',  validated:false, max_hold_days:22},
+];
+let CK_ACTIVE_PRESET = 'swing';
+
+const inrFmt = n => '₹'+Math.round(n).toLocaleString('en-IN');
+
+// ── Toasts ──────────────────────────────────────────────────────────────────
+function ckToast(msg, kind='busy', ttl=4200){
+  const wrap = document.getElementById('ckToasts'); if(!wrap) return null;
+  const t = document.createElement('div');
+  t.className = 'ck-toast '+kind; t.innerHTML = msg;
+  wrap.appendChild(t);
+  if(ttl) setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(()=>t.remove(),300); }, ttl);
+  return t;
+}
+
+// ── Confirm-modal: returns a Promise<bool> ────────────────────────────────────
+let _ckResolve = null;
+function ckConfirm(title, subtitle, rows, confirmLabel='Confirm', danger=false){
+  document.getElementById('ckTitle').textContent = title;
+  document.getElementById('ckSubtitle').textContent = subtitle||'';
+  document.getElementById('ckRows').innerHTML =
+    (rows||[]).map(r=>`<div class="ck-row"><span class="k">${r[0]}</span><span class="v">${r[1]}</span></div>`).join('');
+  const btn = document.getElementById('ckConfirmBtn');
+  btn.textContent = confirmLabel;
+  btn.className = 'press px-4 py-2 rounded-pill text-white text-sm font-semibold '+(danger?'bg-red-500':'bg-primary');
+  document.getElementById('ckOverlay').classList.add('open');
+  btn.onclick = ()=>{ ckCloseModal(); _ckResolve && _ckResolve(true); };
+  return new Promise(res=>{ _ckResolve = res; });
+}
+function ckCloseModal(){ document.getElementById('ckOverlay').classList.remove('open'); if(_ckResolve){ _ckResolve(false); _ckResolve=null; } }
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') ckCloseModal(); });
+
+// ── Local-mode guard ──────────────────────────────────────────────────────────
+function localReady(){
+  const {mode,base,token} = ctlCfg();
+  if(mode!=='local'){ ckToast('Switch to <b>Local mode</b> (⚙) to place trades.','err'); return null; }
+  if(!token){ ckToast('Local mode needs a control token (⚙).','err'); return null; }
+  return {base, token};
+}
+
+function updateCockpitExecutionBadge(readiness){
+  const badge=document.getElementById('ckExecutionBadge'); if(!badge || !readiness) return;
+  const live=readiness.execution_mode==='live';
+  const enabled=live && readiness.broker_orders===true;
+  badge.textContent=enabled?'● LIVE BROKER':live?'● LIVE PAUSED':'● PAPER';
+  badge.title=enabled
+    ? 'Reliance-only live broker path enabled; reconcile every order and GTT.'
+    : live
+    ? 'Live mode configured, but broker entries are blocked by readiness gates.'
+    : 'No real money — virtual ₹50,000 paper account.';
+  badge.style.background=enabled?'#ecfdf5':live?'#fef2f2':'#fff7ed';
+  badge.style.color=enabled?'#047857':live?'#b91c1c':'#b45309';
+  badge.style.borderColor=enabled?'#a7f3d0':live?'#fecaca':'#fed7aa';
+}
+
+async function cockpitReadiness(lr){
+  const r = await fetch(lr.base+'/readiness',{headers:{'X-Control-Token':lr.token}});
+  const j = await r.json();
+  if(!r.ok || !j || j.error) throw new Error(j && j.error ? j.error : 'readiness check failed');
+  updateCockpitExecutionBadge(j);
+  return j;
+}
+
+function rememberLiveGtt(ticker, gttId){
+  if(!ticker || !gttId) return;
+  try{ const map=JSON.parse(sessionStorage.getItem('boro_live_gtts')||'{}'); map[ticker]=String(gttId); sessionStorage.setItem('boro_live_gtts',JSON.stringify(map)); }catch(e){}
+}
+function liveGttFor(ticker){
+  try{ return JSON.parse(sessionStorage.getItem('boro_live_gtts')||'{}')[ticker]||''; }catch(e){ return ''; }
+}
+function forgetLiveGtt(ticker){
+  try{ const map=JSON.parse(sessionStorage.getItem('boro_live_gtts')||'{}'); delete map[ticker]; sessionStorage.setItem('boro_live_gtts',JSON.stringify(map)); }catch(e){}
+}
+function liveBuyRequestId(ticker, shares, price, stop, target){
+  const key=[ticker,shares,price,stop,target].join('|');
+  try{
+    const map=JSON.parse(sessionStorage.getItem('boro_live_buy_requests')||'{}');
+    if(map[key]) return map[key];
+    const suffix=(crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(16).slice(2));
+    const id='ui-'+suffix;
+    map[key]=id; sessionStorage.setItem('boro_live_buy_requests',JSON.stringify(map));
+    return id;
+  }catch(e){ return 'ui-'+Date.now()+'-'+Math.random().toString(16).slice(2); }
+}
+function forgetLiveBuyRequest(ticker, shares, price, stop, target){
+  const key=[ticker,shares,price,stop,target].join('|');
+  try{ const map=JSON.parse(sessionStorage.getItem('boro_live_buy_requests')||'{}'); delete map[key]; sessionStorage.setItem('boro_live_buy_requests',JSON.stringify(map)); }catch(e){}
+}
+function liveCloseRequestId(ticker, gttId){
+  const key=[ticker,gttId].join('|');
+  try{
+    const map=JSON.parse(sessionStorage.getItem('boro_live_close_requests')||'{}');
+    if(map[key]) return map[key];
+    const suffix=(crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(16).slice(2));
+    const id='close-ui-'+suffix;
+    map[key]=id; sessionStorage.setItem('boro_live_close_requests',JSON.stringify(map));
+    return id;
+  }catch(e){ return 'close-ui-'+Date.now()+'-'+Math.random().toString(16).slice(2); }
+}
+function liveProtectionRequestId(orderId, ticker, shares, price, stop, target){
+  const key=[orderId,ticker,shares,price,stop,target].join('|');
+  try{
+    const map=JSON.parse(sessionStorage.getItem('boro_live_protection_requests')||'{}');
+    if(map[key]) return map[key];
+    const suffix=(crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(16).slice(2));
+    const id='protect-ui-'+suffix;
+    map[key]=id; sessionStorage.setItem('boro_live_protection_requests',JSON.stringify(map));
+    return id;
+  }catch(e){ return 'protect-ui-'+Date.now()+'-'+Math.random().toString(16).slice(2); }
+}
+function showProtectionRecovery(show){
+  const button=document.getElementById('retryProtectionBtn');
+  if(button) button.classList.toggle('hidden',!show);
+}
+let brokerWatchTimer = null;
+function startBrokerReconciliation(orderId, gttId){
+  const lr=localReady(); if(!lr || !orderId) return;
+  if(brokerWatchTimer) clearTimeout(brokerWatchTimer);
+  let attempts=0;
+  const terminal=new Set(['COMPLETE','REJECTED','CANCELLED']);
+  const poll=async()=>{
+    attempts += 1;
+    const out=document.getElementById('liveOrderStatus');
+    try{
+      const r=await fetch(lr.base+'/broker/order-status?order_id='+encodeURIComponent(orderId),{headers:{'X-Control-Token':lr.token}});
+      const j=await r.json();
+      if(!j.ok) { out.textContent='Order '+orderId+' · '+(j.error||'status unavailable'); }
+      else {
+        const status=String(j.status||'UNKNOWN').toUpperCase();
+        out.textContent='Order '+orderId+' · '+status+(j.execution_confirmed?' · execution confirmed':' · awaiting fill confirmation');
+        ckLog('Order '+orderId+' → '+status,j.execution_confirmed?'ok':'info');
+        if(gttId && (j.execution_confirmed || terminal.has(status))){
+          const gr=await fetch(lr.base+'/broker/gtt-status?gtt_id='+encodeURIComponent(gttId),{headers:{'X-Control-Token':lr.token}});
+          const gj=await gr.json();
+          if(gj.ok) out.textContent+=' · GTT '+gttId+' '+String(gj.status||'UNKNOWN').toUpperCase();
+        }
+        if(terminal.has(status) || attempts>=12) return;
+      }
+    }catch(e){ out.textContent='Order '+orderId+' · reconciliation unavailable: '+e.message; }
+    if(attempts<12) brokerWatchTimer=setTimeout(poll,5000);
+  };
+  poll();
+}
+
+async function previewBrokerRisk(lr, ticker, shares, price, stop, target){
+  const out=document.getElementById('riskPreviewStatus');
+  if(out){ out.textContent='Checking live risk and protection limits…'; out.className='text-xs text-amber-700'; }
+  const query=new URLSearchParams({ticker,shares:String(shares),price:String(price),stop:String(stop),target:String(target)});
+  const r=await fetch(lr.base+'/broker/risk-preview?'+query.toString(),{headers:{'X-Control-Token':lr.token}});
+  const j=await r.json();
+  if(out){
+    out.textContent=j.ok
+      ? '✓ Risk '+inrFmt(j.risk_amount)+' / '+inrFmt(j.max_risk)+' · notional '+inrFmt(j.notional)+' / '+inrFmt(j.max_notional)+' · OCO valid'
+      : '✗ '+(j.error||'live risk preview failed');
+    out.className=j.ok?'text-xs text-green-700':'text-xs text-red-700';
+  }
+  return j;
+}
+
+async function previewBrokerRiskFromForm(){
+  const lr=localReady(); if(!lr) return;
+  const ticker=(document.getElementById('buyTicker').value||'').trim().toUpperCase();
+  const shares=parseInt(document.getElementById('buyShares').value||'0',10);
+  const price=parseFloat(document.getElementById('buyPrice').value||'0');
+  const stop=parseFloat(document.getElementById('buyStop').value||'0');
+  const target=parseFloat(document.getElementById('buyTarget').value||'0');
+  try{ await previewBrokerRisk(lr,ticker,shares,price,stop,target); }
+  catch(e){ const out=document.getElementById('riskPreviewStatus'); if(out){ out.textContent='✗ Risk preview unavailable: '+e.message; out.className='text-xs text-red-700'; } }
+}
+
+// ── Place BUY ─────────────────────────────────────────────────────────────────
+async function cockpitBuy(){
+  const lr = localReady(); if(!lr) return;
+  const ticker = (document.getElementById('buyTicker').value||'').trim().toUpperCase();
+  const shares = parseInt(document.getElementById('buyShares').value||'0',10);
+  const price  = parseFloat(document.getElementById('buyPrice').value||'0');
+  const stop   = parseFloat(document.getElementById('buyStop').value||'0');
+  const target = parseFloat(document.getElementById('buyTarget').value||'0');
+  if(!/^[A-Z0-9]+$/.test(ticker)){ ckToast('Enter a valid NSE ticker.','err'); return; }
+  if(!(shares>0)){ ckToast('Shares must be > 0.','err'); return; }
+  const est = price>0 ? inrFmt(price*shares) : 'live price';
+  let readiness;
+  try{ readiness = await cockpitReadiness(lr); }
+  catch(e){ ckToast('✗ Readiness check failed: '+e.message,'err'); return; }
+  const liveMode = readiness.execution_mode==='live';
+  if(liveMode && !readiness.broker_orders){ ckToast('✗ Live broker entries are blocked: '+(readiness.broker_reason||'release gate not approved'),'err'); return; }
+  const liveOrder = readiness.broker_orders===true;
+  if(liveOrder && ticker !== String(readiness.live_symbol||'RELIANCE').toUpperCase()){
+    ckToast('✗ Live trading is restricted to '+(readiness.live_symbol||'RELIANCE')+'.','err'); return;
+  }
+  if(liveOrder && !(price>0 && stop>0 && target>price && stop<price)){ ckToast('✗ Live BUY requires stop < price < target.','err'); return; }
+  let riskPreview=null;
+  if(liveOrder){
+    try{ riskPreview=await previewBrokerRisk(lr,ticker,shares,price,stop,target); }
+    catch(e){ ckToast('✗ Live risk preview failed: '+e.message,'err'); return; }
+    if(!riskPreview.ok){ ckToast('✗ Live BUY blocked: '+(riskPreview.error||'risk/protection gate failed'),'err'); return; }
+  }
+  const requestId = liveOrder ? liveBuyRequestId(ticker,shares,price,stop,target) : '';
+  const ok = await ckConfirm('Confirm '+(liveOrder?'LIVE ':'')+'BUY', liveOrder
+      ? 'Zerodha CNC order + two-leg OCO GTT will be submitted. Acceptance is not execution; reconcile both IDs.'
+      : 'Paper order — slippage + ₹20 commission applied.',
+    [['Ticker',ticker],['Shares',shares],['Price', price>0?inrFmt(price):'live'],['Est. cost', est], ...(riskPreview?[['Risk',inrFmt(riskPreview.risk_amount)+' / '+inrFmt(riskPreview.max_risk)],['Notional',inrFmt(riskPreview.notional)+' / '+inrFmt(riskPreview.max_notional)]]:[])], 'Buy', false);
+  if(!ok) return;
+  const busy = ckToast('Placing BUY '+ticker+'…','busy', 0);
+  try{
+    const r = await fetch(lr.base+'/buy',{method:'POST',headers:{'X-Control-Token':lr.token,'Content-Type':'application/json'},
+      body:JSON.stringify({ticker,shares,price,stop,target,request_id:requestId})});
+    const j = await r.json(); busy && busy.remove();
+    if(j.ok && liveOrder){
+      ckToast('✓ Zerodha order + OCO GTT accepted · '+j.order_id+' · not a fill','ok');
+      ckLog('Zerodha BUY accepted · order '+j.order_id+' · status '+j.status,'info');
+      document.getElementById('liveOrderId').value=j.order_id||'';
+      document.getElementById('liveGttId').value=j.gtt_id||'';
+      rememberLiveGtt(ticker,j.gtt_id);
+      showProtectionRecovery(false);
+      document.getElementById('liveOrderStatus').textContent='Order '+(j.order_id||'—')+' accepted; check status for fill confirmation.';
+      startBrokerReconciliation(j.order_id,j.gtt_id);
+    } else if(j.ok){ ckToast('✓ Bought '+shares+'×'+ticker+' @ '+inrFmt(j.fill_price)+' · cash '+inrFmt(j.cash_left),'ok');
+      ckLog('Bought '+shares+'×'+ticker+' @ '+inrFmt(j.fill_price),'ok'); loadPerf();
+      document.getElementById('buyTicker').value=document.getElementById('buyShares').value=document.getElementById('buyPrice').value=document.getElementById('buyStop').value=document.getElementById('buyTarget').value='';
+      refreshPositions(); }
+    else if(j.accepted && j.protection_created===false){
+      ckToast('⚠ Entry accepted but OCO GTT failed · '+j.order_id+' · act immediately','err',0);
+      ckLog('URGENT: entry '+j.order_id+' is unprotected · '+(j.protection_error||j.error),'err');
+      document.getElementById('liveOrderId').value=j.order_id||'';
+      document.getElementById('liveOrderStatus').textContent='URGENT: entry accepted without protection. '+(j.protection_error||'Create GTT manually.');
+      showProtectionRecovery(true);
+    } else { forgetLiveBuyRequest(ticker,shares,price,stop,target); ckToast('✗ '+(j.error||j.reason||'buy failed'),'err'); }
+  }catch(e){ busy && busy.remove(); ckToast('✗ Cannot reach control server: '+e.message,'err'); }
+}
+
+async function retryLiveProtection(){
+  const lr=localReady(); if(!lr) return;
+  let readiness;
+  try{ readiness=await cockpitReadiness(lr); }
+  catch(e){ const out=document.getElementById('liveOrderStatus'); if(out) out.textContent='✗ Readiness check failed: '+e.message; return; }
+  if(!readiness.broker_orders){ const out=document.getElementById('liveOrderStatus'); if(out) out.textContent='✗ Protection recovery is gated: '+(readiness.broker_reason||'live broker entry gate is blocked'); return; }
+  const allowedSymbol=String(readiness.live_symbol||'RELIANCE').toUpperCase();
+  const ticker=(document.getElementById('buyTicker').value||'').trim().toUpperCase();
+  const shares=parseInt(document.getElementById('buyShares').value||'0',10);
+  const price=parseFloat(document.getElementById('buyPrice').value||'0');
+  const stop=parseFloat(document.getElementById('buyStop').value||'0');
+  const target=parseFloat(document.getElementById('buyTarget').value||'0');
+  const orderId=(document.getElementById('liveOrderId').value||'').trim();
+  const out=document.getElementById('liveOrderStatus');
+  if(!orderId || ticker!==allowedSymbol || !(shares>0&&price>0&&stop>0&&target>price&&stop<price)){
+    if(out) out.textContent='Enter the original Reliance BUY details and order ID before retrying protection.';
+    return;
+  }
+  const requestId=liveProtectionRequestId(orderId,ticker,shares,price,stop,target);
+  if(out) out.textContent='Retrying two-leg OCO protection…';
+  try{
+    const r=await fetch(lr.base+'/broker/gtt/protect',{method:'POST',headers:{'X-Control-Token':lr.token,'Content-Type':'application/json'},body:JSON.stringify({ticker,shares,price,stop,target,order_id:orderId,request_id:requestId})});
+    const j=await r.json();
+    if(j.ok){
+      document.getElementById('liveGttId').value=j.gtt_id||'';
+      rememberLiveGtt(ticker,j.gtt_id);
+      showProtectionRecovery(false);
+      if(out) out.textContent='✓ OCO protection created · GTT '+(j.gtt_id||'—');
+      ckToast('✓ OCO protection restored · GTT '+(j.gtt_id||'—'),'ok');
+      ckLog('Protection restored for order '+orderId+' · GTT '+(j.gtt_id||'—'),'ok');
+    }else if(out) out.textContent='✗ Protection retry failed: '+(j.error||'unknown error');
+  }catch(e){ if(out) out.textContent='✗ Cannot reach control server: '+e.message; }
+}
+
+// ── Close a position ──────────────────────────────────────────────────────────
+async function cockpitClose(ticker, shares, mkt){
+  const lr = localReady(); if(!lr) return;
+  let readiness;
+  try{ readiness = await cockpitReadiness(lr); }
+  catch(e){ ckToast('✗ Readiness check failed: '+e.message,'err'); return; }
+  const liveMode = readiness.execution_mode==='live';
+  if(liveMode && !readiness.broker_exits){ ckToast('✗ Live exits are blocked: '+(readiness.broker_exit_reason||readiness.broker_reason||'release gate not approved'),'err'); return; }
+  const liveOrder = readiness.broker_exits===true;
+  const gttId = liveGttFor(ticker) || (document.getElementById('liveGttId').value||'').trim();
+  if(liveOrder && !gttId){
+    ckToast('✗ Enter or reconcile the GTT ID before closing '+ticker+'. The active protection must be cancelled first.','err');
+    return;
+  }
+  const ok = await ckConfirm((liveOrder?'Close LIVE ':'Close ')+ticker, liveOrder
+      ? 'The active GTT will be cancelled first, then Zerodha CNC SELL will be submitted. Acceptance is not execution.'
+      : 'Sells the full paper position at live price — the only halal exit.',
+    [['Ticker',ticker],['Shares',shares],['Est. value', mkt!=null?inrFmt(mkt):'live']], 'Close position', true);
+  if(!ok) return;
+  const requestId = liveOrder ? liveCloseRequestId(ticker,gttId) : '';
+  const busy = ckToast('Closing '+ticker+'…','busy', 0);
+  try{
+    const r = await fetch(lr.base+'/close',{method:'POST',headers:{'X-Control-Token':lr.token,'Content-Type':'application/json'},
+      body:JSON.stringify({ticker, ...(liveOrder?{gtt_id:gttId,request_id:requestId}:{})})});
+    const j = await r.json(); busy && busy.remove();
+    if(j.ok && liveOrder){
+      ckToast('✓ Zerodha SELL accepted · '+j.order_id+' · not a fill','ok');
+      ckLog('Zerodha SELL accepted · order '+j.order_id+' · status '+j.status,'info');
+      document.getElementById('liveOrderId').value=j.order_id||'';
+      document.getElementById('liveOrderStatus').textContent='Order '+(j.order_id||'—')+' accepted; check status for fill confirmation.';
+      forgetLiveGtt(ticker);
+      startBrokerReconciliation(j.order_id,'');
+    } else if(j.ok){ ckToast('✓ Closed '+ticker+' · P&L '+(j.pnl>=0?'+':'')+inrFmt(j.pnl)+' ('+j.pnl_pct+'%)', j.pnl>=0?'ok':'err');
+      ckLog('Closed '+ticker+' · P&L '+(j.pnl>=0?'+':'')+inrFmt(j.pnl), j.pnl>=0?'ok':'err'); loadPerf();
+      refreshPositions(); }
+    else ckToast('✗ '+(j.error||j.reason||'close failed'),'err');
+  }catch(e){ busy && busy.remove(); ckToast('✗ Cannot reach control server: '+e.message,'err'); }
+}
+
+async function checkBrokerOrder(){
+  const lr = localReady(); if(!lr) return;
+  const orderId=(document.getElementById('liveOrderId').value||'').trim();
+  const out=document.getElementById('liveOrderStatus');
+  if(!orderId){ out.textContent='Enter an order ID first.'; return; }
+  out.textContent='Checking Zerodha…';
+  try{
+    const r=await fetch(lr.base+'/broker/order-status?order_id='+encodeURIComponent(orderId),{headers:{'X-Control-Token':lr.token}});
+    const j=await r.json();
+    if(j.ok){ out.textContent='Order '+orderId+' · '+j.status+(j.execution_confirmed?' · execution confirmed':' · not filled/confirmed'); ckLog('Order '+orderId+' → '+j.status,j.execution_confirmed?'ok':'info'); }
+    else out.textContent='✗ '+(j.error||'status check failed');
+  }catch(e){ out.textContent='✗ Cannot reach control server: '+e.message; }
+}
+
+async function cancelBrokerOrder(){
+  const lr = localReady(); if(!lr) return;
+  const orderId=(document.getElementById('liveOrderId').value||'').trim();
+  const out=document.getElementById('liveOrderStatus');
+  if(!orderId){ out.textContent='Enter an order ID first.'; return; }
+  const ok=await ckConfirm('Cancel order '+orderId,'Only open or pending regular orders can be cancelled. Confirm the current status before retrying.',[],'Cancel order',true);
+  if(!ok) return;
+  out.textContent='Requesting cancellation…';
+  try{
+    const r=await fetch(lr.base+'/broker/order-cancel',{method:'POST',headers:{'X-Control-Token':lr.token,'Content-Type':'application/json'},body:JSON.stringify({order_id:orderId})});
+    const j=await r.json();
+    if(j.ok){ out.textContent='Order '+orderId+' cancellation requested; reconcile final status.'; ckLog('Order '+orderId+' cancellation requested','info'); startBrokerReconciliation(orderId,''); }
+    else out.textContent='✗ '+(j.error||'order cancellation failed');
+  }catch(e){ out.textContent='✗ Cannot reach control server: '+e.message; }
+}
+
+async function refreshBrokerOrders(){
+  const lr=localReady(); if(!lr) return;
+  const box=document.getElementById('liveOrderBook'); if(!box) return;
+  box.textContent='Loading Zerodha order book…';
+  try{
+    const r=await fetch(lr.base+'/broker/orders',{headers:{'X-Control-Token':lr.token}}); const j=await r.json();
+    if(!j.ok){ box.textContent='✗ '+(j.error||'order book unavailable'); return; }
+    const safe=s=>String(s??'—').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const rows=(j.orders||[]).slice(-12).reverse();
+    box.innerHTML=rows.length
+      ? '<div class="border-t border-outline-variant pt-2 mt-2"><p class="font-semibold text-muted mb-1">Daily broker order book</p>'+rows.map(o=>`<div class="flex flex-wrap gap-x-3 gap-y-1 py-1 border-b border-outline-variant"><span class="font-semibold">${safe(o.tradingsymbol)}</span><span>${safe(o.transaction_type)} ${safe(o.quantity)}</span><span>${safe(o.status)}</span><span class="text-muted">${safe(o.order_id)}</span></div>`).join('')+'</div>'
+      : 'No broker orders returned.';
+  }catch(e){ box.textContent='✗ Cannot reach control server: '+e.message; }
+}
+
+async function reconcileBroker(){
+  const lr=localReady(); if(!lr) return;
+  const out=document.getElementById('brokerReconcileStatus'); if(!out) return;
+  out.textContent='Reconciling Reliance holdings and broker orders…';
+  try{
+    const r=await fetch(lr.base+'/broker/reconcile',{headers:{'X-Control-Token':lr.token}});
+    const j=await r.json();
+    if(!j.ok){ out.textContent='✗ '+(j.error||'broker reconciliation unavailable'); return; }
+    const holdings=(j.holdings||[]).filter(x=>Number(x.quantity||0)>0);
+    const issues=j.scope_issues||[];
+    const issueText=issues.length
+      ? ' · Scope issues: '+issues.length+' — review order book'
+      : ' · Scope clean';
+    out.textContent='Reconciled '+holdings.length+' holding(s), '+(j.orders||[]).length+' order(s) at '+String(j.reconciled_at||'now')+issueText;
+    ckLog('Broker reconciliation '+(issues.length?'found '+issues.length+' scope issue(s)':'clean'),issues.length?'err':'ok');
+    await refreshBrokerOrders();
+    refreshPositions();
+  }catch(e){ out.textContent='✗ Cannot reach control server: '+e.message; }
+}
+
+async function checkBrokerGtt(){
+  const lr = localReady(); if(!lr) return;
+  const gttId=(document.getElementById('liveGttId').value||'').trim();
+  const out=document.getElementById('liveOrderStatus');
+  if(!gttId){ out.textContent='Enter a GTT ID first.'; return; }
+  out.textContent='Checking GTT…';
+  try{
+    const r=await fetch(lr.base+'/broker/gtt-status?gtt_id='+encodeURIComponent(gttId),{headers:{'X-Control-Token':lr.token}});
+    const j=await r.json();
+    if(j.ok){ out.textContent='GTT '+gttId+' · '+j.status; ckLog('GTT '+gttId+' → '+j.status,j.status==='active'?'ok':'info'); }
+    else out.textContent='✗ '+(j.error||'GTT check failed');
+  }catch(e){ out.textContent='✗ Cannot reach control server: '+e.message; }
+}
+async function cancelBrokerGtt(){
+  const lr = localReady(); if(!lr) return;
+  const gttId=(document.getElementById('liveGttId').value||'').trim();
+  const out=document.getElementById('liveOrderStatus');
+  if(!gttId){ out.textContent='Enter a GTT ID first.'; return; }
+  const ok=await ckConfirm('Cancel GTT '+gttId,'This deletes the active protection. Only do this if you will replace it immediately or close the holding.',[],'Cancel GTT',true);
+  if(!ok) return;
+  out.textContent='Cancelling GTT…';
+  try{
+    const r=await fetch(lr.base+'/broker/gtt-cancel',{method:'POST',headers:{'X-Control-Token':lr.token,'Content-Type':'application/json'},body:JSON.stringify({gtt_id:gttId})});
+    const j=await r.json();
+    if(j.ok){ out.textContent='GTT '+gttId+' deleted; no active protection.'; ckLog('GTT '+gttId+' deleted','err'); }
+    else out.textContent='✗ '+(j.error||'GTT cancellation failed');
+  }catch(e){ out.textContent='✗ Cannot reach control server: '+e.message; }
+}
+
+async function validateBrokerSession(){
+  const lr = localReady(); if(!lr) return;
+  const status=document.getElementById('brokerSessionStatus');
+  if(status){ status.textContent='Checking session…'; status.className='text-xs font-semibold px-3 py-1 rounded-pill bg-amber-50 text-amber-700 border border-amber-200'; }
+  try{
+    const r=await fetch(lr.base+'/broker/profile',{headers:{'X-Control-Token':lr.token}});
+    const j=await r.json();
+    if(j.ok){
+      ckToast('✓ Zerodha session valid · '+(j.user_id||'account')+' · '+((j.exchanges||[]).join(', ')||'no exchanges'),'ok');
+      if(status){ status.textContent='Session valid · '+(j.user_id||'account'); status.className='text-xs font-semibold px-3 py-1 rounded-pill bg-green-50 text-green-700 border border-green-200'; }
+    } else {
+      ckToast('✗ Zerodha session invalid: '+(j.error||'profile check failed'),'err');
+      if(status){ status.textContent='Session invalid'; status.className='text-xs font-semibold px-3 py-1 rounded-pill bg-red-50 text-red-700 border border-red-200'; }
+    }
+  }catch(e){
+    if(status){ status.textContent='Session check unavailable'; status.className='text-xs font-semibold px-3 py-1 rounded-pill bg-red-50 text-red-700 border border-red-200'; }
+    ckToast('✗ Cannot reach control server: '+e.message,'err');
+  }
+}
+
+async function openBrokerLogin(){
+  const lr=localReady(); if(!lr) return;
+  const out=document.getElementById('brokerBootstrapStatus');
+  if(out) out.textContent='Preparing Zerodha login…';
+  try{
+    const r=await fetch(lr.base+'/broker/login-url',{headers:{'X-Control-Token':lr.token}});
+    const j=await r.json();
+    if(!j.ok) throw new Error(j.error||'login URL unavailable');
+    const tab=window.open(j.login_url,'_blank','noopener,noreferrer');
+    if(out) out.textContent=tab ? 'Zerodha login opened. Paste the one-time request_token here after redirect.' : 'Popup blocked — open the login URL from the local terminal, then paste the request_token here.';
+  }catch(e){ if(out) out.textContent='✗ '+e.message; }
+}
+
+async function exchangeBrokerSession(){
+  const lr=localReady(); if(!lr) return;
+  const input=document.getElementById('brokerRequestToken');
+  const out=document.getElementById('brokerBootstrapStatus');
+  const requestToken=(input&&input.value||'').trim();
+  if(!requestToken){ if(out) out.textContent='Enter the one-time request_token from Zerodha first.'; return; }
+  if(out) out.textContent='Exchanging and validating backend session…';
+  try{
+    const r=await fetch(lr.base+'/broker/session/exchange',{method:'POST',headers:{'X-Control-Token':lr.token,'Content-Type':'application/json'},body:JSON.stringify({request_token:requestToken})});
+    const j=await r.json();
+    if(input) input.value='';
+    if(!j.ok) throw new Error(j.error||'session exchange failed');
+    if(out) out.textContent='✓ Backend session stored and profile validated · '+(j.user_id||'account');
+    ckToast('✓ Zerodha session validated · '+(j.user_id||'account'),'ok');
+    await validateBrokerSession();
+    renderReadiness();
+  }catch(e){ if(input) input.value=''; if(out) out.textContent='✗ '+e.message; }
+}
+
+// ── Positions table ───────────────────────────────────────────────────────────
+async function refreshPositions(){
+  const {mode,base,token} = ctlCfg();
+  const box = document.getElementById('positionsTable');
+  if(mode!=='local'){ box.innerHTML = '<span class="text-muted">Switch to Local mode (⚙) to view & manage live positions.</span>'; return; }
+  if(!token){ box.innerHTML = '<span class="text-muted">Local mode needs a control token (⚙).</span>'; return; }
+  box.innerHTML = '<div class="skeleton h-6 w-full" style="margin-bottom:6px;"></div><div class="skeleton h-6 w-full"></div>';
+  try{
+    const r = await fetch(base+'/positions',{headers:{'X-Control-Token':token}});
+    const j = await r.json();
+    if(!j.ok){ box.innerHTML = '<span class="text-red-500">✗ '+(j.error||'failed')+'</span>'; return; }
+    renderPositions(j); ckStatus((j.live?'Live broker holdings':'Paper positions')+' loaded · total '+inrFmt(j.total_val));
+  }catch(e){ box.innerHTML = '<span class="text-red-500">✗ Cannot reach control server: '+e.message+'</span>'; }
+}
+function renderPositions(j){
+  const box = document.getElementById('positionsTable');
+  const rows = Object.entries(j.positions||{});
+  const modeBadge=j.live ? '<span class="text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-pill bg-red-50 text-red-700 border border-red-200">LIVE BROKER</span>' : '<span class="text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-pill bg-surface-highest text-muted border border-outline-variant">PAPER</span>';
+  if(!rows.length){ box.innerHTML = '<div class="flex items-center gap-2">'+modeBadge+'<span class="text-muted">No open positions.</span></div>'; return; }
+  box.innerHTML = `<div class="flex items-center gap-2 mb-2">${modeBadge}<span class="text-xs text-muted">${j.live?'Source: Zerodha holdings':'Source: paper ledger'}</span></div><div class="overflow-x-auto"><table class="w-full text-sm stagger">
+    <thead><tr class="text-muted text-xs text-left border-b border-outline-variant">
+      <th class="py-2 pr-3">Ticker</th><th class="py-2 pr-3 text-right">Qty</th><th class="py-2 pr-3 text-right">Entry</th>
+      <th class="py-2 pr-3 text-right">Now</th><th class="py-2 pr-3 text-right">P&L</th><th class="py-2 text-right">Action</th></tr></thead>
+    <tbody>${rows.map(([t,p],i)=>{
+      const up = (p.unrealised||0)>=0;
+      return `<tr class="border-b border-outline-variant lift" style="--i:${i}">
+        <td class="py-2 pr-3 font-semibold">${t}</td>
+        <td class="py-2 pr-3 text-right">${p.shares}</td>
+        <td class="py-2 pr-3 text-right">${inrFmt(p.avg_entry)}</td>
+        <td class="py-2 pr-3 text-right">${inrFmt(p.current_price)}</td>
+        <td class="py-2 pr-3 text-right pnl ${up?'up':'down'}">${up?'+':''}${inrFmt(p.unrealised)} (${p.unrealised_pct}%)</td>
+        <td class="py-2 text-right"><button onclick="cockpitClose('${t}',${p.shares},${p.market_value})"
+          class="press px-3 py-1 rounded-pill bg-surface-highest border border-outline-variant text-xs font-semibold">Close</button></td>
+      </tr>`;}).join('')}</tbody></table></div>`;
+  if(window.boroFlash) boroFlash(box);   // subtle live-update pulse
+}
+
+// ── Holding-period presets ────────────────────────────────────────────────────
+async function loadPresets(){
+  const {mode,base,token} = ctlCfg();
+  if(mode==='local' && token){
+    try{
+      const r = await fetch(base+'/config',{headers:{'X-Control-Token':token}});
+      const j = await r.json();
+      if(j.ok){ CK_ACTIVE_PRESET = j.active; renderPresets(j.presets, false); return; }
+    }catch(e){ /* fall through to static */ }
+  }
+  renderPresets(PRESETS_FALLBACK.map(p=>({...p, active:p.id===CK_ACTIVE_PRESET})), true);
+}
+function renderPresets(list, readonly){
+  const row = document.getElementById('presetRow');
+  row.innerHTML = list.map((p,i)=>{
+    const active = p.active || p.id===CK_ACTIVE_PRESET;
+    const badge = p.validated
+      ? '<span class="preset-badge bg-green-50 text-green-600 border border-green-200">validated</span>'
+      : '<span class="preset-badge bg-surface-highest text-muted border border-outline-variant">unvalidated</span>';
+    return `<button ${readonly?'disabled':''} onclick="setPreset('${p.id}')" style="--i:${i}"
+      title="${p.blurb} · time-exit ${p.max_hold_days}d${readonly?' — switch in Local mode':''}"
+      class="preset-chip flex items-center gap-2 px-3 py-1.5 rounded-pill border border-outline-variant text-sm font-semibold ${active?'active':'bg-surface-lowest'} ${readonly?'opacity-70':''}">
+      <span>${p.label}</span>${badge}</button>`;
+  }).join('');
+}
+async function setPreset(id){
+  const lr = localReady(); if(!lr) return;
+  const busy = ckToast('Switching strategy → '+id+'…','busy',0);
+  try{
+    const r = await fetch(lr.base+'/config',{method:'POST',headers:{'X-Control-Token':lr.token,'Content-Type':'application/json'},
+      body:JSON.stringify({preset:id})});
+    const j = await r.json(); busy && busy.remove();
+    if(j.ok){ CK_ACTIVE_PRESET=j.active; renderPresets(j.presets,false); ckToast('✓ Strategy: '+j.active,'ok'); ckLog('Strategy → '+j.active,'info'); }
+    else ckToast('✗ '+(j.error||'failed'),'err');
+  }catch(e){ busy && busy.remove(); ckToast('✗ Cannot reach control server: '+e.message,'err'); }
+}
+
+// ── Performance strip + activity log (FreqUI-style) ───────────────────────────
+const CK_SESSION = [];
+function ckLog(text, kind='info'){ CK_SESSION.unshift({t:new Date(), text, kind}); if(CK_SESSION.length>40) CK_SESSION.pop(); renderLog(); }
+function _dot(k){ return k==='ok'?'#16a34a':k==='err'?'#ef4444':k==='busy'?'#075cf2':'#70757d'; }
+function renderLog(seedTrades){
+  const box=document.getElementById('ckLog'); if(!box) return;
+  const fmt=d=>d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  let rows=CK_SESSION.map(e=>`<div class="flex items-center gap-2"><span class="dot" style="background:${_dot(e.kind)}"></span><span class="text-on-surface">${e.text}</span><span class="ml-auto text-muted">${fmt(e.t)}</span></div>`);
+  if(seedTrades && seedTrades.length){
+    rows=rows.concat(seedTrades.slice().reverse().slice(0,8).map(t=>{ const up=(t.pnl||0)>=0;
+      return `<div class="flex items-center gap-2"><span class="dot" style="background:${up?'#16a34a':'#ef4444'}"></span><span class="text-on-surface">${t.outcome||(up?'WIN':'LOSS')} · ${t.ticker} ${up?'+':''}₹${Math.round(t.pnl||0)}</span><span class="ml-auto text-muted">${(t.closed_at||'').slice(5,10)}</span></div>`; }));
+  }
+  box.innerHTML = rows.length?rows.join(''):'<span class="text-muted">No activity yet — run a scan or place a trade.</span>';
+}
+function renderPerf(p){
+  const box=document.getElementById('ckPerf'); if(!box||!p) return;
+  const pct=p.total_pnl_pct, up=(pct||0)>=0;
+  const wr=(p.stats&&p.stats.win_rate!=null)?p.stats.win_rate+'%':'—';
+  const open=p.marked?Object.keys(p.marked).length:(p.positions?Object.keys(p.positions).length:0);
+  const chip=(l,v,c='')=>`<div class="bg-surface-lowest border border-outline-variant rounded-pill px-3 py-2 text-center"><p class="text-[10px] text-muted uppercase tracking-wide">${l}</p><p class="text-sm font-semibold ${c}">${v}</p></div>`;
+  box.innerHTML = chip('Value', p.total_val!=null?inrFmt(p.total_val):'—')
+    + chip('P&L', pct!=null?((up?'+':'')+pct+'%'):'—', up?'text-green-600':'text-red-500')
+    + chip('Win rate', wr) + chip('Open', open);
+}
+async function loadPerf(){
+  const {mode,base,token}=ctlCfg();
+  if(mode==='local' && token){
+    try{ const r=await fetch(base+'/portfolio',{headers:{'X-Control-Token':token}}); const j=await r.json();
+      if(j.ok){ renderPerf(j); renderLog(j.trades); return; } }catch(e){ /* fall through */ }
+  }
+  const p=(window.DASH&&window.DASH.portfolio)||null;
+  renderPerf(p); renderLog(p&&p.trades);
+}
+
+// ── Mode wiring ───────────────────────────────────────────────────────────────
+function ckStatus(m){ const e=document.getElementById('ctlStatus'); if(e) e.textContent=m; }
+function applyCockpitMode(){
+  const {mode} = ctlCfg();
+  const local = mode==='local';
+  document.getElementById('cockpitLocal').classList.toggle('hidden', !local);
+  const badge = document.getElementById('ckModeBadge');
+  badge.textContent = local?'local':'cloud';
+  badge.className = 'preset-badge border '+(local?'bg-green-50 text-green-600 border-green-200':'bg-surface-highest text-muted border-outline-variant');
+  loadPresets();
+  loadPerf();
+  loadCommands();
+}
+
+// ── Command center: full command reference, cloud (dispatch) or local (control_server) ──
+const CMD_CATALOG = [
+  {id:'daily_briefing',group:'Daily',label:'Morning scan + Telegram',args:[],cloud:'nightly-scan',danger:false},
+  {id:'auto_close',group:'Daily',label:'Close stop / target / max-hold',args:[],cloud:'auto-close',danger:false},
+  {id:'paper_view',group:'Paper',label:'View portfolio',args:[],cloud:null,danger:false},
+  {id:'paper_scan',group:'Paper',label:'Scan + auto-place',args:[],cloud:'nightly-scan',danger:false},
+  {id:'paper_reset',group:'Paper',label:'Reset to ₹50,000',args:[],cloud:null,danger:true},
+  {id:'halal_screen',group:'Halal',label:'Screen a stock',args:['ticker'],cloud:null,danger:false},
+  {id:'halal_lookup',group:'Halal',label:'Halal card',args:['ticker'],cloud:null,danger:false},
+  {id:'halal_history',group:'Halal',label:'Halal history',args:['ticker'],cloud:null,danger:false},
+  {id:'tier_monitor',group:'Halal',label:'Tier-change alerts',args:[],cloud:'quarterly-rescreen',danger:false},
+  {id:'zakat',group:'Halal',label:'Zakat report',args:[],cloud:null,danger:false},
+  {id:'drawdown_guard',group:'Halal',label:'Drawdown-guard card',args:[],cloud:null,danger:false},
+  {id:'backtest',group:'Models',label:'Train + backtest',args:['ticker','years'],cloud:'research-backtest',danger:false},
+  {id:'walkforward',group:'Models',label:'Walk-forward gate',args:['ticker','years'],cloud:null,danger:false},
+  {id:'walkforward_portfolio',group:'Models',label:'Walk-forward — universe',args:[],cloud:null,danger:false},
+  {id:'compare_models',group:'Models',label:'Compare runs',args:[],cloud:null,danger:false},
+  {id:'drift',group:'Signals',label:'Drift check',args:['ticker'],cloud:null,danger:false},
+  {id:'news',group:'Signals',label:'News sentiment',args:['ticker'],cloud:null,danger:false},
+  {id:'macro',group:'Signals',label:'Macro indicators',args:[],cloud:null,danger:false},
+  {id:'export_dashboard',group:'Ops',label:'Refresh dashboard feed',args:[],cloud:null,danger:false},
+  {id:'tests',group:'Ops',label:'Run test suite',args:[],cloud:null,danger:false},
+];
+let _cmds = CMD_CATALOG;
+function toggleCmdCenter(){ const el=document.getElementById('cmdCenter'); el.classList.toggle('hidden'); if(!el.classList.contains('hidden')) loadCommands(); }
+async function loadCommands(){
+  const {mode,base,token}=ctlCfg();
+  if(mode==='local' && token){
+    try{ const r=await fetch(base+'/commands',{headers:{'X-Control-Token':token}}); const j=await r.json(); _cmds=(j.ok&&j.commands)?j.commands:CMD_CATALOG; }
+    catch(e){ _cmds=CMD_CATALOG; }
+  } else { _cmds=CMD_CATALOG; }
+  renderCommands();
+}
+function renderCommands(){
+  const cloud=ctlCfg().mode!=='local';
+  const groups={}; _cmds.forEach(c=>{ (groups[c.group]=groups[c.group]||[]).push(c); });
+  const wrap=document.getElementById('cmdGroups'); if(!wrap) return;
+  wrap.innerHTML=Object.entries(groups).map(([g,list])=>`
+    <div class="flex flex-col gap-1.5">
+      <p class="text-[11px] font-semibold uppercase tracking-wide text-muted">${g}</p>
+      <div class="flex flex-wrap gap-1.5">${list.map(c=>{
+        const runnable = cloud ? !!c.cloud : true;
+        const tip = cloud && !c.cloud ? 'Local mode only' : (c.args.length?('uses '+c.args.join(' + ')):'');
+        return `<button ${runnable?'':'disabled'} onclick="runCommand('${c.id}')" title="${tip}"
+          class="press text-xs px-3 py-1.5 rounded-pill border ${c.danger?'border-red-200 text-red-500 bg-red-50':'border-outline-variant bg-surface-lowest'} ${runnable?'':'opacity-40'}">
+          ${c.label}${c.args.length?(' <span class="text-muted">·'+c.args.join('/')+'</span>'):''}${cloud&&c.cloud?' ☁':''}</button>`;
+      }).join('')}</div>
+    </div>`).join('');
+}
+async function runCommand(id){
+  const c=_cmds.find(x=>x.id===id); if(!c) return;
+  const {mode,base,token}=ctlCfg();
+  const args={};
+  if((c.args||[]).includes('ticker')){ const t=(document.getElementById('cmdTicker').value||'').trim().toUpperCase();
+    if(!/^[A-Z0-9.&-]{1,15}$/.test(t)){ ckToast('Enter a TICKER in the Command center first.','err'); return; } args.ticker=t; }
+  if((c.args||[]).includes('years')){ args.years=parseInt(document.getElementById('cmdYears').value||'5',10); }
+  if(c.danger){ const ok=await ckConfirm(c.label,'This is destructive.',[['Command',id]],'Run',true); if(!ok) return; }
+  if(mode!=='local'){
+    if(!c.cloud){ ckToast('“'+c.label+'” is local-mode only.','err'); return; }
+    const busy=ckToast('Dispatching '+c.cloud+'…','busy',0);
+    try{ const body={job:c.cloud}; if(args.ticker)body.ticker=args.ticker; if(args.years)body.years=String(args.years);
+      const r=await fetch('/.netlify/functions/dispatch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      const j=await r.json(); busy&&busy.remove();
+      ckToast(j.ok?('✓ '+(j.note||('dispatched '+c.cloud))):('✗ '+(j.error||('failed '+r.status))), j.ok?'ok':'err',6000);
+      ckLog((j.ok?'☁ dispatched ':'☁ failed ')+c.label, j.ok?'ok':'err');
+    }catch(e){ busy&&busy.remove(); ckToast('✗ Cannot reach dispatch function: '+e.message,'err'); }
+    return;
+  }
+  if(!token){ ckToast('Local mode needs a control token (⚙).','err'); return; }
+  const out=document.getElementById('cmdOut'); out.classList.remove('hidden');
+  out.textContent='$ '+id+(Object.keys(args).length?(' '+JSON.stringify(args)):'')+'\n\nrunning… (can take a while)';
+  const busy=ckToast('Running '+c.label+'…','busy',0);
+  try{
+    const r=await fetch(base+'/command',{method:'POST',headers:{'X-Control-Token':token,'Content-Type':'application/json'},body:JSON.stringify({id,args})});
+    const j=await r.json(); busy&&busy.remove();
+    const strip=s=>(s||'').replace(/\x1b\[[0-9;]*[A-Za-z]/g,'');   // drop ANSI colour codes
+    out.textContent='$ '+(j.cmd||id)+'\n\n'+(strip(j.stdout)||'(no stdout)')+(j.stderr?('\n[stderr]\n'+strip(j.stderr)):'')+(j.error?('\n[error] '+j.error):'');
+    ckToast(j.ok?('✓ '+c.label+' done'):('✗ '+c.label+(j.returncode!=null?(' (exit '+j.returncode+')'):' failed')), j.ok?'ok':'err');
+    ckLog((j.ok?'▶ ran ':'▶ failed ')+c.label, j.ok?'ok':'err');
+    if(['daily_briefing','auto_close','paper_scan','paper_reset'].includes(id)){ refreshPositions(); loadPerf(); }
+  }catch(e){ busy&&busy.remove(); out.textContent+='\n\n✗ Cannot reach control server: '+e.message; ckToast('✗ Cannot reach control server','err'); }
+}
+(function(){
+  document.getElementById('ctlMode')?.addEventListener('change', ()=>setTimeout(applyCockpitMode,0));
+  applyCockpitMode();
+})();
+</script>
+
+<script>
+/* ════════════════════════════════════════════════════════════════════════════
+   BoroFX — subtle motion layer: bar reveal (width 0→target on first view),
+   count-up on view, re-trigger on tab switch, cursor-follow glow on chart/insight
+   cards, and a live-update flash helper. Everything no-ops under reduced-motion.
+   ════════════════════════════════════════════════════════════════════════════ */
+(function(){
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // 1) Collapse bars to 0 BEFORE first paint (no full→0 flash), remember target.
+  const bars = document.querySelectorAll('.glow-bar, .bfx-bar');
+  bars.forEach(b=>{ b.dataset.w = b.style.width || '0%'; if(!reduce) b.style.width = '0%'; });
+  function showBar(b){ if(b.dataset.w==null || b.dataset.shown) return; b.dataset.shown='1';
+    if(reduce) b.style.width=b.dataset.w; else requestAnimationFrame(()=>{ b.style.width=b.dataset.w; }); }
+
+  // 2) Reveal bars + run count-ups when they scroll into view.
+  const io = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ showBar(e.target); io.unobserve(e.target); } }), {threshold:0.12});
+  bars.forEach(b=>io.observe(b));
+  const cio = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ if(typeof runCountUps==='function') runCountUps(e.target.parentNode||document); cio.unobserve(e.target); } }), {threshold:0.4});
+  document.querySelectorAll('.count-up').forEach(el=>cio.observe(el));
+
+  // 3) When a tab becomes active, reveal its bars + count-ups (they were hidden).
+  const mo = new MutationObserver(ms=>ms.forEach(m=>{ const el=m.target;
+    if(el.classList?.contains('tab-panel') && el.classList.contains('active')){
+      el.querySelectorAll('.glow-bar,.bfx-bar').forEach(showBar);
+      if(typeof runCountUps==='function') runCountUps(el);
+    }}));
+  document.querySelectorAll('.tab-panel').forEach(p=>mo.observe(p,{attributes:true,attributeFilter:['class']}));
+
+  // 4) Global flash on live updates (used by cockpit position/portfolio refreshes).
+  window.boroFlash = function(el, dir){ if(!el || reduce) return;
+    el.classList.remove('flash','flash-up','flash-down'); void el.offsetWidth;
+    el.classList.add('flash', dir==='down'?'flash-down':'flash-up');
+    setTimeout(()=>el.classList.remove('flash','flash-up','flash-down'), 950); };
+})();
+</script>
 </body>
 </html>

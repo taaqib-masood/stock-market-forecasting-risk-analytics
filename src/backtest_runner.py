@@ -83,6 +83,9 @@ def run_backtest(
         confidences=sig["confidence"],
         atrs=feats["atr_14"],
         vix=vix,
+        entry_prices=feats["Open"],
+        highs=feats["High"],
+        lows=feats["Low"],
         capital=capital,
         **rm_kwargs,
     )
