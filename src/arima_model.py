@@ -26,6 +26,13 @@ class ArimaModel:
         self._last_close = None
 
     def fit(self, series: pd.Series):
+        # The pipeline passes NumPy arrays after feature splitting.  Always
+        # give statsmodels a supported, explicit index; otherwise forecast()
+        # raises "No supported index is available" on CI.
+        values = np.asarray(series, dtype=float).reshape(-1)
+        if values.size == 0:
+            raise ValueError("ARIMA requires at least one observation")
+        series = pd.Series(values, index=pd.RangeIndex(values.size), dtype=float)
         self._last_close = float(series.iloc[-1])
         if _PMDARIMA:
             with warnings.catch_warnings():
