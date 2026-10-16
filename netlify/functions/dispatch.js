@@ -7,6 +7,7 @@
 // push redeploys this site — so a click refreshes live data with zero servers.
 //
 // Required Netlify env vars (Site settings → Environment variables):
+// DISPATCH_TOKEN: at least 32 random bytes; enter only when prompted in the dashboard.
 //   GH_DISPATCH_TOKEN  classic PAT with the "repo" scope
 //   GH_OWNER           e.g. "taaqib-masood"
 //   GH_REPO            e.g. "stock-market-forecasting-risk-analytics"
@@ -17,20 +18,35 @@
 // these become workflow_dispatch inputs, validated here before they ever
 // reach the Actions run.
 
+const { createHash, timingSafeEqual } = require("node:crypto");
+
 const ALLOWED = new Set(["nightly-scan", "auto-close", "weekly-backtest", "research-backtest", "quarterly-rescreen"]);
 const TICKER_RE = /^[A-Za-z0-9.&-]{1,15}$/;
 
 function resp(statusCode, body) {
   return {
     statusCode,
-    headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   };
+}
+
+function authorized(event, expected) {
+  const value = event.headers?.authorization || event.headers?.Authorization || "";
+  const supplied = typeof value === "string" ? /^Bearer\s+([^\s]+)$/i.exec(value)?.[1] || "" : "";
+  const digest = (token) => createHash("sha256").update(token).digest();
+  return timingSafeEqual(digest(supplied), digest(expected));
 }
 
 exports.handler = async (event) => {
   if (event.httpMethod === "OPTIONS") return resp(204, {});
   if (event.httpMethod !== "POST") return resp(405, { error: "POST only" });
+
+  const dispatchToken = process.env.DISPATCH_TOKEN;
+  if (!dispatchToken || Buffer.byteLength(dispatchToken) < 32) {
+    return resp(500, { error: "DISPATCH_TOKEN must be configured with at least 32 bytes" });
+  }
+  if (!authorized(event, dispatchToken)) return resp(401, { error: "unauthorized" });
 
   let body;
   try { body = JSON.parse(event.body || "{}"); }
