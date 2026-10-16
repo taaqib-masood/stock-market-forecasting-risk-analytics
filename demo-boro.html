@@ -1781,6 +1781,17 @@ function drawFII(){
   });
 }
 // ---- Research Backtest: dispatch + history list + equity chart ----
+async function dispatchWorkflow(payload){
+  let token=sessionStorage.getItem('dispatchToken');
+  if(!token){
+    token=(window.prompt('Enter the secure dispatch token; it stays in this browser tab session.')||'').trim();
+    if(!token) throw new Error('A dispatch token is required.');
+    sessionStorage.setItem('dispatchToken',token);
+  }
+  const r=await fetch('/.netlify/functions/dispatch',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify(payload)});
+  if(r.status===401) sessionStorage.removeItem('dispatchToken');
+  return r;
+}
 async function runBacktest(){
   const ticker = (document.getElementById('btTicker').value||'').trim().toUpperCase();
   const years = document.getElementById('btYears').value;
@@ -1788,7 +1799,7 @@ async function runBacktest(){
   if(!/^[A-Za-z0-9.&-]{1,15}$/.test(ticker)){ statusEl.textContent='⚠ Ticker must be 1-15 chars — letters, numbers, . & - only.'; return; }
   statusEl.textContent = 'Dispatching backtest for '+ticker+' ('+years+'y)…';
   try{
-    const r = await fetch('/.netlify/functions/dispatch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({job:'research-backtest',ticker,years})});
+    const r = await dispatchWorkflow({job:'research-backtest',ticker,years});
     const j = await r.json();
     statusEl.textContent = j.ok ? ('✓ '+(j.note||'dispatched')) : ('✗ '+(j.error||('failed ('+r.status+')'))+(r.status===404?' — is the Netlify function deployed?':''));
   }catch(e){ statusEl.textContent = '✗ Cannot reach the dispatch function (deployed on Netlify, or run `netlify dev`): '+e.message; }
@@ -2179,7 +2190,7 @@ async function runCtl(path,busyMsg){
     const job = path==='/auto-close' ? 'auto-close' : 'nightly-scan';   // scan & briefing → nightly-scan
     ctlStatus(busyMsg+' — triggering GitHub Actions…');
     try{
-      const r=await fetch('/.netlify/functions/dispatch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({job})});
+      const r=await dispatchWorkflow({job});
       const j=await r.json();
       if(j.ok) ctlStatus('✓ '+(j.note||('dispatched '+job))+' This page auto-updates after the run + redeploy.');
       else ctlStatus('✗ '+(j.error||('failed ('+r.status+')'))+(r.status===404?' — is the Netlify function deployed?':''));
@@ -3323,7 +3334,7 @@ async function runCommand(id){
     if(!c.cloud){ ckToast('“'+c.label+'” is local-mode only.','err'); return; }
     const busy=ckToast('Dispatching '+c.cloud+'…','busy',0);
     try{ const body={job:c.cloud}; if(args.ticker)body.ticker=args.ticker; if(args.years)body.years=String(args.years);
-      const r=await fetch('/.netlify/functions/dispatch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      const r=await dispatchWorkflow(body);
       const j=await r.json(); busy&&busy.remove();
       ckToast(j.ok?('✓ '+(j.note||('dispatched '+c.cloud))):('✗ '+(j.error||('failed '+r.status))), j.ok?'ok':'err',6000);
       ckLog((j.ok?'☁ dispatched ':'☁ failed ')+c.label, j.ok?'ok':'err');
