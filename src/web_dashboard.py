@@ -12,9 +12,17 @@ New in v2:
   - Mobile-first responsive layout
 
 Run: python -m src.web_dashboard --capital 50000
+
+SECURITY:
+  - Binds to 127.0.0.1 by default (localhost only). Pass --host or set
+    WEB_HOST=0.0.0.0 only if you deliberately want LAN access.
+  - State-changing POSTs require the X-Dashboard-Token header. The token is
+    generated per process (or fixed via env DASHBOARD_TOKEN) and injected
+    into the served page, so only the page this server serves can call them.
+  - Tickers must match ^[A-Z0-9.&-]{1,15}$.
 """
 
-import json, os, threading, argparse, contextlib, io
+import json, os, re, secrets, hmac, threading, argparse, contextlib, io
 from datetime import datetime
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse
@@ -25,7 +33,13 @@ except ImportError:
     pass
 
 PORT    = int(os.environ.get("WEB_PORT", 5000))
+HOST    = os.environ.get("WEB_HOST", "127.0.0.1")
 CAPITAL = float(os.environ.get("WEBHOOK_CAPITAL", 50_000))
+# Per-process token injected into the served page; POSTs must echo it back
+# in X-Dashboard-Token. A fixed token can be set via env for restarts.
+DASH_TOKEN = os.environ.get("DASHBOARD_TOKEN") or secrets.token_hex(16)
+TICKER_RE  = re.compile(r"^[A-Z0-9.&-]{1,15}$")
+MAX_BODY   = 65536
 
 # ── API ───────────────────────────────────────────────────────────────────────
 
@@ -325,10 +339,12 @@ input{background:var(--bg);border:1px solid var(--border);color:var(--text);
 
 <script>
 // ── Helpers ───────────────────────────────────────────────────────────────────
+const DASH_TOKEN = "__DASH_TOKEN__";  // injected by the server
 const rs  = n => '₹' + parseFloat(n).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
 const pct = n => (n>=0?'+':'')+parseFloat(n).toFixed(2)+'%';
 const col = n => parseFloat(n)>=0?'green':'red';
 const el  = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 let equityChart = null, monthlyChart = null;
 
@@ -383,7 +399,7 @@ async function loadPortfolio() {
     let h='<table><thead><tr><th>Ticker</th><th>Shares</th><th>Avg Entry</th><th>Current</th><th>Value</th><th>Unrealised</th><th>Stop</th><th>Target</th></tr></thead><tbody>';
     for(const[t,m] of Object.entries(p.marked)){
       const uc=m.unrealised>=0?'green':'red';
-      h+=`<tr><td><b>${t}</b></td><td>${m.shares}</td><td>${rs(m.avg_entry)}</td>
+      h+=`<tr><td><b>${esc(t)}</b></td><td>${m.shares}</td><td>${rs(m.avg_entry)}</td>
           <td>${rs(m.current_price)}</td><td>${rs(m.market_value)}</td>
           <td class="${uc}">${rs(m.unrealised)} (${pct(m.unrealised_pct)})</td>
           <td class="red">${m.stop?rs(m.stop):'—'}</td>
@@ -399,12 +415,12 @@ async function loadPortfolio() {
   }else{
     tb.innerHTML=[...d.trades].reverse().map(t=>{
       const pc=t.pnl>0?'green':'red';
-      return `<tr><td><b>${t.ticker}</b></td><td>${t.shares}</td>
+      return `<tr><td><b>${esc(t.ticker)}</b></td><td>${t.shares}</td>
               <td>${rs(t.entry)}</td><td>${rs(t.exit)}</td>
               <td class="${pc}">${rs(t.pnl)}</td>
               <td class="${pc}">${pct(t.pnl_pct)}</td>
-              <td><span class="badge ${t.outcome==='WIN'?'b-green':'b-red'}">${t.outcome}</span></td>
-              <td>${(t.closed_at||'').slice(0,10)}</td></tr>`;
+              <td><span class="badge ${t.outcome==='WIN'?'b-green':'b-red'}">${esc(t.outcome)}</span></td>
+              <td>${esc((t.closed_at||'').slice(0,10))}</td></tr>`;
     }).join('');
   }
   window._portfolioData = d;
@@ -434,10 +450,10 @@ function renderAnalytics() {
   if(d.trades&&d.trades.length){
     el('an-history').innerHTML=[...d.trades].reverse().slice(0,10).map(t=>{
       const pc=t.pnl>0?'green':'red';
-      return `<tr><td><b>${t.ticker}</b></td><td>${rs(t.entry)}</td><td>${rs(t.exit)}</td>
+      return `<tr><td><b>${esc(t.ticker)}</b></td><td>${rs(t.entry)}</td><td>${rs(t.exit)}</td>
               <td class="${pc}">${rs(t.pnl)}</td>
-              <td><span class="badge ${t.outcome==='WIN'?'b-green':'b-red'}">${t.outcome}</span></td>
-              <td>${(t.closed_at||'').slice(0,10)}</td></tr>`;
+              <td><span class="badge ${t.outcome==='WIN'?'b-green':'b-red'}">${esc(t.outcome)}</span></td>
+              <td>${esc((t.closed_at||'').slice(0,10))}</td></tr>`;
     }).join('');
     renderMonthlyChart(d.trades);
   }
@@ -458,7 +474,7 @@ async function loadSignals(){
   if(!d.signals||!d.signals.length){
     sc.innerHTML=`<div class="empty">
       <b>No high-conviction signals right now.</b><br><br>
-      Regime: <b>${d.regime}</b>  |  Min score: ${d.min_score}<br><br>
+      Regime: <b>${esc(d.regime)}</b>  |  Min score: ${d.min_score}<br><br>
       ${d.regime==='TRENDING_DOWN'||d.regime==='CRASH'
         ?'⚠️ Market is in downtrend. Cash is the safest position.'
         :'Indicators are mixed. Check again tomorrow at 9 AM.'}
@@ -473,8 +489,8 @@ async function loadSignals(){
     el('blocked-container').innerHTML=`
       <div class="section-title">Blocked Signals (${d.blocked.length})</div>
       ${d.blocked.map(c=>`<div class="card" style="margin-bottom:8px;opacity:.7">
-        <span class="badge b-red">BLOCKED</span> <b>${c.ticker}</b> —
-        ${c.blocked_reason||c.gap_block_reason||'filtered'}
+        <span class="badge b-red">BLOCKED</span> <b>${esc(c.ticker)}</b> —
+        ${esc(c.blocked_reason||c.gap_block_reason||'filtered')}
       </div>`).join('')}`;
   }
 }
@@ -488,8 +504,8 @@ function signalCard(c,i){
   const sc_color=c.score>=75?'var(--green)':c.score>=60?'var(--yellow)':'var(--red)';
   return `<div class="signal-card">
     <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-      <span style="font-size:17px;font-weight:700;color:var(--blue)">#${i+1} ${c.ticker}</span>
-      <span class="badge b-green">${c.signal}</span>
+      <span style="font-size:17px;font-weight:700;color:var(--blue)">#${i+1} ${esc(c.ticker)}</span>
+      <span class="badge b-green">${esc(c.signal)}</span>
     </div>
     <div style="margin-bottom:8px">
       <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted)">
@@ -509,7 +525,7 @@ function signalCard(c,i){
     <div class="signal-row"><span style="color:var(--muted)">RSI</span>${c.rsi}
       <span style="color:var(--muted)">Vol</span>${c.vol_surge}x</div>
     <button class="btn" style="width:100%;margin-top:10px;font-size:12px"
-      onclick="prefillLog('${c.ticker}',${c.shares},${c.entry})">Log this trade</button>
+      onclick="prefillLog('${esc(c.ticker)}',${c.shares},${c.entry})">Log this trade</button>
   </div>`;
 }
 
@@ -518,7 +534,7 @@ function signalCardCompact(c,i){
   const tp=((c.target/c.entry-1)*100).toFixed(1);
   return `<div style="display:flex;justify-content:space-between;align-items:center;
     padding:10px;border:1px solid var(--border);border-radius:6px;margin-bottom:8px">
-    <div><b>${c.ticker}</b> <span class="badge b-green">BUY</span>
+    <div><b>${esc(c.ticker)}</b> <span class="badge b-green">BUY</span>
       <span style="margin-left:8px;font-size:12px;color:var(--muted)">${c.score}/100</span></div>
     <div style="text-align:right;font-size:12px">
       <span style="color:var(--green)">+${tp}%</span> target &nbsp;
@@ -538,7 +554,7 @@ async function loadSectors(){
     const col=s.score>=60?colors[0]:s.score>=40?colors[1]:s.score>=20?colors[2]:colors[5];
     return `<div style="margin-bottom:5px">
       <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:2px">
-        <span>${s.name}</span><span>${s.score}/100</span>
+        <span>${esc(s.name)}</span><span>${s.score}/100</span>
       </div>
       <div class="progress-bar">
         <div class="progress-fill" style="width:${w}%;background:${col}"></div>
@@ -560,15 +576,15 @@ async function loadRegime(){
   el('regime-detail').innerHTML=`
     <div class="regime-box" style="border-color:${c};background:${c}18">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <div><span style="font-size:24px">${d.emoji}</span>
-          <span style="font-size:20px;font-weight:700;color:${c};margin-left:10px">${d.name}</span>
+        <div><span style="font-size:24px">${esc(d.emoji)}</span>
+          <span style="font-size:20px;font-weight:700;color:${c};margin-left:10px">${esc(d.name)}</span>
         </div>
         <div style="text-align:right">
           <div style="font-size:24px;font-weight:700;color:${c}">${d.confidence}%</div>
           <div style="font-size:11px;color:var(--muted)">confidence</div>
         </div>
       </div>
-      <div style="margin-top:10px;color:var(--muted);font-size:13px">${d.description}</div>
+      <div style="margin-top:10px;color:var(--muted);font-size:13px">${esc(d.description)}</div>
     </div>
     <div class="grid-3" style="margin-top:12px">
       <div class="card"><h3>VIX (Fear Index)</h3>
@@ -596,7 +612,7 @@ async function loadRegime(){
     <div class="card" style="margin-top:12px">
       <h3>Strategy Guide for ${d.name}</h3>
       <table><tbody>
-        ${regimeGuide(d.name).map(row=>`<tr><td style="width:35%;color:var(--muted)">${row[0]}</td><td>${row[1]}</td></tr>`).join('')}
+        ${regimeGuide(d.name).map(row=>`<tr><td style="width:35%;color:var(--muted)">${esc(row[0])}</td><td>${esc(row[1])}</td></tr>`).join('')}
       </tbody></table>
     </div>`;
 }
@@ -627,7 +643,7 @@ async function loadCorrelation(){
       const c=Math.abs(p.corr);const col=c>0.75?'red':c>0.5?'yellow':'green';
       return `<div style="display:flex;justify-content:space-between;padding:8px 10px;
         border:1px solid var(--border);border-radius:6px;margin-bottom:6px">
-        <span><b>${p.a}</b> ↔ <b>${p.b}</b></span>
+        <span><b>${esc(p.a)}</b> ↔ <b>${esc(p.b)}</b></span>
         <span class="${col}">${p.corr>0?'+':''}${p.corr}</span>
       </div>`;
     }).join('');
@@ -683,7 +699,7 @@ async function submitLog(){
   const price=parseFloat(el('lt-price').value);
   if(!ticker||!shares||!price)return;
   const r=await fetch('/api/log_trade',{method:'POST',
-    headers:{'Content-Type':'application/json'},
+    headers:{'Content-Type':'application/json','X-Dashboard-Token':DASH_TOKEN},
     body:JSON.stringify({ticker,shares,price})});
   const d=await r.json(),res=el('lt-result');
   if(d.ok){res.style.color='var(--green)';res.textContent='✓ Logged: '+ticker+' '+shares+' @ ₹'+price;
@@ -695,7 +711,8 @@ async function submitClose(){
   const price=parseFloat(el('ct-price').value);
   if(!ticker||!price)return;
   const r=await fetch('/api/close_trade',{method:'POST',
-    headers:{'Content-Type':'application/json'},body:JSON.stringify({ticker,price})});
+    headers:{'Content-Type':'application/json','X-Dashboard-Token':DASH_TOKEN},
+    body:JSON.stringify({ticker,price})});
   const d=await r.json(),res=el('ct-result');
   if(d.ok){const pc=d.pnl>0?'var(--green)':'var(--red)';
     res.style.color=pc;res.textContent='✓ Closed '+ticker+'  P&L: ₹'+d.pnl.toFixed(2);
@@ -727,12 +744,16 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Length",str(len(b)));self.end_headers();self.wfile.write(b)
     def _body(self):
         n=int(self.headers.get("Content-Length",0))
+        if n>MAX_BODY: return None
         try: return json.loads(self.rfile.read(n))
         except: return {}
+    def _authed(self):
+        supplied=self.headers.get("X-Dashboard-Token","")
+        return hmac.compare_digest(supplied,DASH_TOKEN)
     def do_GET(self):
         p=urlparse(self.path).path
         try:
-            if   p=="/": self._html(HTML)
+            if   p=="/": self._html(HTML.replace("__DASH_TOKEN__",DASH_TOKEN))
             elif p=="/api/portfolio":  self._json(200,_portfolio())
             elif p=="/api/signals":    self._json(200,_signals())
             elif p=="/api/regime":     self._json(200,_regime())
@@ -741,25 +762,32 @@ class Handler(BaseHTTPRequestHandler):
             else: self._json(404,{"error":"not found"})
         except Exception as e: self._json(500,{"error":str(e)})
     def do_POST(self):
-        p=urlparse(self.path).path;b=self._body()
+        p=urlparse(self.path).path
+        if not (self.headers.get("Content-Type") or "").startswith("application/json"):
+            return self._json(415,{"ok":False,"reason":"Content-Type must be application/json"})
+        if not self._authed():
+            return self._json(401,{"ok":False,"reason":"missing/invalid token"})
+        b=self._body()
+        if b is None: return self._json(413,{"ok":False,"reason":"body too large"})
+        ticker=str(b.get("ticker","")).upper()
+        if p in ("/api/log_trade","/api/close_trade") and not TICKER_RE.match(ticker):
+            return self._json(400,{"ok":False,"reason":"invalid ticker"})
         try:
-            if   p=="/api/log_trade":   self._json(200,_log_trade(b["ticker"],b["shares"],b["price"]))
-            elif p=="/api/close_trade": self._json(200,_close_trade(b["ticker"],b["price"]))
+            if   p=="/api/log_trade":   self._json(200,_log_trade(ticker,b["shares"],b["price"]))
+            elif p=="/api/close_trade": self._json(200,_close_trade(ticker,b["price"]))
             else: self._json(404,{"error":"not found"})
         except Exception as e: self._json(500,{"ok":False,"reason":str(e)})
 
 
-def run(port=PORT,capital=CAPITAL):
+def run(port=PORT,capital=CAPITAL,host=HOST):
     global CAPITAL; CAPITAL=capital
-    import socket
-    ip=socket.gethostbyname(socket.gethostname())
-    server=HTTPServer(("0.0.0.0",port),Handler)
+    server=HTTPServer((host,port),Handler)
     print(f"""
 ╔══════════════════════════════════════════════════════╗
 ║      NSE Trade Intelligence v2 — Web Dashboard      ║
 ╠══════════════════════════════════════════════════════╣
-║  Local   : http://localhost:{port}                     ║
-║  Network : http://{ip}:{port}                ║
+║  Serving : http://{host}:{port}                        ║
+║  POSTs require the page-injected token               ║
 ╠══════════════════════════════════════════════════════╣
 ║  5 tabs: Overview · Signals · Portfolio              ║
 ║          Analytics · Market Regime                   ║
@@ -772,5 +800,6 @@ def run(port=PORT,capital=CAPITAL):
 if __name__=="__main__":
     p=argparse.ArgumentParser()
     p.add_argument("--port",default=PORT,type=int)
+    p.add_argument("--host",default=HOST)
     p.add_argument("--capital",default=CAPITAL,type=float)
-    a=p.parse_args(); run(a.port,a.capital)
+    a=p.parse_args(); run(a.port,a.capital,a.host)
