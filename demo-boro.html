@@ -252,7 +252,7 @@
             <option value="local">Local (control server)</option>
           </select>
           <input id="ctlBase" placeholder="http://localhost:8765 (local only)" class="border border-outline-variant rounded-pill px-3 py-1.5 flex-1 min-w-[200px]" />
-          <input id="ctlToken" type="password" placeholder="control token (local only)" class="border border-outline-variant rounded-pill px-3 py-1.5 flex-1 min-w-[160px]" />
+          <input id="ctlToken" type="password" placeholder="token (dispatch secret / control token)" class="border border-outline-variant rounded-pill px-3 py-1.5 flex-1 min-w-[160px]" />
           <button onclick="ctlSave()" class="px-3 py-1.5 rounded-pill bg-surface-highest border border-outline-variant">Save</button>
         </div>
         <div class="flex flex-wrap gap-2">
@@ -261,7 +261,7 @@
           <button onclick="runCtl('/daily-briefing','Running full briefing…')" class="px-4 py-2 rounded-pill bg-surface-highest border border-outline-variant text-sm font-semibold">📋 Daily briefing</button>
           <button onclick="refreshPortfolio()" class="px-4 py-2 rounded-pill bg-surface-highest border border-outline-variant text-sm font-semibold">↻ Portfolio</button>
         </div>
-        <p id="ctlStatus" class="text-xs text-muted">Idle · <b>Cloud mode</b> (default): buttons trigger GitHub Actions, no server needed (works on the deployed Netlify site). Switch to <b>Local</b> under ⚙ to drive a local <code>control_server</code>.</p>
+        <p id="ctlStatus" class="text-xs text-muted">Idle · <b>Cloud mode</b> (default): buttons trigger GitHub Actions via the Netlify function — set the dispatch token under ⚙ first. Switch to <b>Local</b> under ⚙ to drive a local <code>control_server</code>.</p>
       </div>
 
       <!-- News Sentiment -->
@@ -1462,9 +1462,11 @@ async function runBacktest(){
   const years = document.getElementById('btYears').value;
   const statusEl = document.getElementById('btStatus');
   if(!/^[A-Za-z0-9.&-]{1,15}$/.test(ticker)){ statusEl.textContent='⚠ Ticker must be 1-15 chars — letters, numbers, . & - only.'; return; }
+  const secret = localStorage.getItem('ctlToken')||'';
+  if(!secret){ statusEl.textContent='⚠ Set the dispatch token under ⚙ connection (must match the Netlify DISPATCH_SECRET env var).'; return; }
   statusEl.textContent = 'Dispatching backtest for '+ticker+' ('+years+'y)…';
   try{
-    const r = await fetch('/.netlify/functions/dispatch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({job:'research-backtest',ticker,years})});
+    const r = await fetch('/.netlify/functions/dispatch',{method:'POST',headers:{'Content-Type':'application/json','X-Dispatch-Secret':secret},body:JSON.stringify({job:'research-backtest',ticker,years})});
     const j = await r.json();
     statusEl.textContent = j.ok ? ('✓ '+(j.note||'dispatched')) : ('✗ '+(j.error||('failed ('+r.status+')'))+(r.status===404?' — is the Netlify function deployed?':''));
   }catch(e){ statusEl.textContent = '✗ Cannot reach the dispatch function (deployed on Netlify, or run `netlify dev`): '+e.message; }
@@ -1645,10 +1647,11 @@ function ctlSave(){
 async function runCtl(path,busyMsg){
   const {mode,base,token}=ctlCfg();
   if(mode==='ci'){
+    if(!token){ ctlStatus('⚠ Cloud mode needs the dispatch token (open ⚙ — must match Netlify DISPATCH_SECRET).'); return; }
     const job = path==='/auto-close' ? 'auto-close' : 'nightly-scan';   // scan & briefing → nightly-scan
     ctlStatus(busyMsg+' — triggering GitHub Actions…');
     try{
-      const r=await fetch('/.netlify/functions/dispatch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({job})});
+      const r=await fetch('/.netlify/functions/dispatch',{method:'POST',headers:{'Content-Type':'application/json','X-Dispatch-Secret':token},body:JSON.stringify({job})});
       const j=await r.json();
       if(j.ok) ctlStatus('✓ '+(j.note||('dispatched '+job))+' This page auto-updates after the run + redeploy.');
       else ctlStatus('✗ '+(j.error||('failed ('+r.status+')'))+(r.status===404?' — is the Netlify function deployed?':''));

@@ -9,12 +9,16 @@ How it works:
      executes it via Alpaca paper/live trading API.
 
 Setup:
-  1. Run this server:       python -m src.webhook_server
-  2. Expose it publicly:    ngrok http 8080   (or deploy to any VPS)
-  3. Copy the public URL.
-  4. In TradingView → Alert → Webhook URL → paste URL + "/webhook"
-  5. Alert message format (paste into TradingView message box):
+  1. Set a shared secret:   export WEBHOOK_SECRET=<long random passphrase>
+  2. Run this server:       python -m src.webhook_server
+  3. Expose it publicly:    ngrok http 8080   (or deploy to any VPS)
+  4. Copy the public URL.
+  5. In TradingView → Alert → Webhook URL → paste URL + "/webhook"
+  6. Alert message format (paste into TradingView message box — the "secret"
+     field is required; TradingView can't set headers, so the secret travels
+     in the body, or use "/webhook?secret=..." as the URL instead):
      {
+       "secret":    "<same WEBHOOK_SECRET>",
        "ticker":    "{{ticker}}",
        "action":    "{{strategy.order.action}}",
        "price":     {{close}},
@@ -23,23 +27,45 @@ Setup:
        "confidence": 0.70
      }
 
+SECURITY:
+  - Every request must authenticate with WEBHOOK_SECRET via the
+    X-Webhook-Secret header, a ?secret= query param, or a "secret" body field.
+    The server refuses to start when WEBHOOK_SECRET is unset.
+  - Binds to 127.0.0.1 by default (tunnels like ngrok still work).
+    Set WEBHOOK_HOST=0.0.0.0 only if you expose the port directly.
+  - Tickers must match ^[A-Za-z0-9.-]{1,15}$; WEBHOOK_ALLOWED_TICKERS
+    (comma list) optionally restricts to a fixed allowlist.
+
 Endpoints:
   POST /webhook     — receive TradingView alert, evaluate, optionally execute
-  GET  /signals     — view last 50 received signals as JSON
+  GET  /signals     — view last 100 received signals as JSON (auth required)
   GET  /health      — liveness check
 """
 
+import hmac
 import json
 import os
+import re
+import sys
 import threading
 from collections import deque
 from datetime import datetime
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from urllib.parse import parse_qs, urlparse
 
 from src.risk_manager import RiskManager
 
 PORT = int(os.environ.get("WEBHOOK_PORT", 8080))
+HOST = os.environ.get("WEBHOOK_HOST", "127.0.0.1")
 CAPITAL = float(os.environ.get("WEBHOOK_CAPITAL", 100_000))
+SECRET = os.environ.get("WEBHOOK_SECRET", "")
+MAX_BODY = 8192
+TICKER_RE = re.compile(r"^[A-Za-z0-9.\-]{1,15}$")
+ALLOWED_TICKERS = {
+    t.strip().upper()
+    for t in os.environ.get("WEBHOOK_ALLOWED_TICKERS", "").split(",")
+    if t.strip()
+}
 
 # In-memory log (last 100 signals)
 _signal_log: deque = deque(maxlen=100)
@@ -109,28 +135,54 @@ class WebhookHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(raw)
 
+    def _authed(self, body: dict | None = None) -> bool:
+        supplied = (
+            self.headers.get("X-Webhook-Secret")
+            or parse_qs(urlparse(self.path).query).get("secret", [""])[0]
+            or str((body or {}).get("secret", ""))
+        )
+        return bool(SECRET) and hmac.compare_digest(supplied, SECRET)
+
     def do_GET(self):
-        if self.path == "/health":
+        path = urlparse(self.path).path
+        if path == "/health":
             self._send(200, {"status": "ok", "timestamp": datetime.utcnow().isoformat()})
-        elif self.path == "/signals":
+        elif path == "/signals":
+            if not self._authed():
+                self._send(401, {"error": "missing/invalid secret"})
+                return
             with _log_lock:
                 self._send(200, {"signals": list(_signal_log)})
         else:
             self._send(404, {"error": "not found"})
 
     def do_POST(self):
-        if self.path != "/webhook":
+        if urlparse(self.path).path != "/webhook":
             self._send(404, {"error": "not found"})
             return
 
         length = int(self.headers.get("Content-Length", 0))
+        if length > MAX_BODY:
+            self._send(413, {"error": "body too large"})
+            return
         try:
             body = json.loads(self.rfile.read(length))
         except json.JSONDecodeError:
             self._send(400, {"error": "invalid JSON"})
             return
+        if not isinstance(body, dict):
+            self._send(400, {"error": "JSON body must be an object"})
+            return
 
-        ticker     = body.get("ticker", "UNKNOWN")
+        if not self._authed(body):
+            self._send(401, {"error": "missing/invalid secret"})
+            return
+
+        ticker = str(body.get("ticker", "")).upper()
+        if not TICKER_RE.match(ticker) or (ALLOWED_TICKERS and ticker not in ALLOWED_TICKERS):
+            self._send(400, {"error": "ticker not allowed"})
+            return
+
         action     = str(body.get("action", "")).upper()   # "BUY" | "SELL"
         price      = float(body.get("price", 0))
         atr        = float(body.get("atr", price * 0.02))  # default 2% ATR
@@ -170,15 +222,18 @@ class WebhookHandler(BaseHTTPRequestHandler):
 
 
 def run():
-    server = HTTPServer(("0.0.0.0", PORT), WebhookHandler)
+    if not SECRET:
+        sys.exit("WEBHOOK_SECRET is not set — refusing to start an unauthenticated "
+                 "order-placing server. Run: WEBHOOK_SECRET=yoursecret python -m src.webhook_server")
+    server = HTTPServer((HOST, PORT), WebhookHandler)
     print(f"""
 ╔══════════════════════════════════════════════════════╗
 ║        TradingView Webhook Server — Ready            ║
 ╠══════════════════════════════════════════════════════╣
-║  Listening on  : http://0.0.0.0:{PORT:<24}║
+║  Listening on  : http://{HOST}:{PORT:<24}║
 ║  Health check  : GET  /health                        ║
-║  Signal log    : GET  /signals                       ║
-║  Webhook URL   : POST /webhook                       ║
+║  Signal log    : GET  /signals  (secret required)    ║
+║  Webhook URL   : POST /webhook  (secret required)    ║
 ╠══════════════════════════════════════════════════════╣
 ║  To expose publicly:                                 ║
 ║    ngrok http {PORT}   →  copy HTTPS URL              ║
