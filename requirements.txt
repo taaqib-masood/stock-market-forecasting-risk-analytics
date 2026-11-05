@@ -5,7 +5,6 @@ statsmodels
 yfinance
 matplotlib
 lightgbm
-xgboost
 ta
 pmdarima
 
@@ -13,8 +12,6 @@ pmdarima
 transformers
 torch
 feedparser
-newspaper3k
-praw
 
 # Upgrade 2: Macro Indicators
 requests
@@ -22,7 +19,6 @@ requests
 # Upgrade 3: AI Explanations
 shap
 groq
-langchain
 
 # Upgrade 5: MLflow Experiment Tracking
 mlflow
