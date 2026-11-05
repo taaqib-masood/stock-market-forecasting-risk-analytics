@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 import pandas as pd
 
@@ -101,7 +103,7 @@ class RiskManager:
 
         # ── Rule 3: R:R check ─────────────────────────────────────────────────
         actual_rr = abs(target_price - entry_price) / abs(entry_price - stop_price)
-        if actual_rr < self.min_rr:
+        if actual_rr < self.min_rr and not math.isclose(actual_rr, self.min_rr, rel_tol=1e-12):
             result["reason"] = f"R:R={actual_rr:.2f} below minimum {self.min_rr}"
             return result
 

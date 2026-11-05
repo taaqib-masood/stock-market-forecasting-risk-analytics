@@ -64,6 +64,24 @@ def test_evaluate_approved_short_golden():
     assert out["shares"] == 50
 
 
+@pytest.mark.parametrize("direction", [1, -1])
+def test_evaluate_accepts_rr_equality_despite_floating_point_rounding(direction):
+    out = RiskManager().evaluate(
+        entry_price=913.1740990617823, atr=7.8478453196183136,
+        confidence=1.0, direction=direction,
+    )
+    assert out["approved"] is True
+    assert out["rr_ratio"] == 2.0
+
+
+def test_evaluate_still_rejects_materially_subminimum_rr():
+    out = RiskManager(capital=1e20).evaluate(
+        entry_price=1e16, atr=1.5, confidence=1.0, direction=1,
+    )
+    assert out["approved"] is False
+    assert "R:R=1.50 below minimum 2.0" == out["reason"]
+
+
 # ── evaluate(): VIX regime gate (Rule 4) ──────────────────────────────────────
 
 def test_evaluate_vix_crisis_rejected():
