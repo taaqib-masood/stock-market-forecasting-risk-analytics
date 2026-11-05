@@ -6,9 +6,7 @@ and sector rotation signals using free data sources.
 
 import logging
 import time
-from collections import defaultdict
-from datetime import datetime, timedelta
-from typing import Optional
+from datetime import datetime
 import numpy as np
 import pandas as pd
 import yfinance as yf

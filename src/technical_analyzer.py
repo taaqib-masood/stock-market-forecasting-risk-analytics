@@ -9,7 +9,6 @@ import pandas as pd
 import yfinance as yf
 import logging
 from datetime import datetime
-from functools import lru_cache
 from src.watchlist import nse
 
 logger = logging.getLogger(__name__)
