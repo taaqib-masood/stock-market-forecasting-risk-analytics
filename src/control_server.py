@@ -62,8 +62,9 @@ import re
 import sqlite3
 import subprocess
 import sys
+import threading
 from datetime import datetime, timezone
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
@@ -76,6 +77,10 @@ ALLOW_ORIGIN = os.getenv("CONTROL_ALLOW_ORIGIN", "http://localhost:8765")
 BIND_HOST = os.getenv("CONTROL_BIND_HOST", "127.0.0.1")
 TIMEOUT = int(os.getenv("CONTROL_TIMEOUT", "600"))
 MAX_BODY_BYTES = int(os.getenv("CONTROL_MAX_BODY_BYTES", "65536"))
+SOCKET_TIMEOUT = 15
+# Requests run one at a time, as under the old single-threaded server, so state
+# writes and idempotency checks never race; only socket I/O is concurrent.
+_DISPATCH_LOCK = threading.Lock()
 
 _CANCELLABLE_ORDER_STATUSES = {
     "OPEN", "OPEN PENDING", "TRIGGER PENDING", "MODIFY PENDING",
@@ -1443,6 +1448,8 @@ def _run_command(body: dict) -> dict:
 
 
 class Handler(BaseHTTPRequestHandler):
+    timeout = SOCKET_TIMEOUT
+
     def log_message(self, fmt, *args):  # quieter logs
         pass
 
@@ -1471,6 +1478,11 @@ class Handler(BaseHTTPRequestHandler):
         return urlparse(self.path).path.rstrip("/") or "/"
 
     def _body(self) -> dict:
+        if not hasattr(self, "_parsed_body"):
+            self._parsed_body = self._read_body()
+        return self._parsed_body
+
+    def _read_body(self) -> dict:
         try:
             n = int(self.headers.get("Content-Length", 0) or 0)
             if n < 0 or n > MAX_BODY_BYTES:
@@ -1491,6 +1503,15 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
+        with _DISPATCH_LOCK:
+            self._route_get()
+
+    def do_POST(self):
+        self._body()  # read the bounded body before taking the lock so a slow upload can't stall others
+        with _DISPATCH_LOCK:
+            self._route_post()
+
+    def _route_get(self):
         path = self._path()
         if path == "/health":
             return self._json(200, {"ok": True, "service": "control_server"})
@@ -1534,7 +1555,7 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(200, _commands_catalog())
         self._json(404, {"ok": False, "error": "not found"})
 
-    def do_POST(self):
+    def _route_post(self):
         path = self._path()
         if path == "/telegram/webhook":
             status, result = _telegram_webhook(
@@ -1603,7 +1624,7 @@ def run(port: int = 8765):
     if not TOKEN:
         sys.exit("CONTROL_TOKEN is not set — refusing to start an unauthenticated "
                  "trade-trigger server. Run: CONTROL_TOKEN=yoursecret python -m src.control_server")
-    server = HTTPServer((BIND_HOST, port), Handler)
+    server = ThreadingHTTPServer((BIND_HOST, port), Handler)
     print(f"control_server on http://{BIND_HOST}:{port}  (token required; origin={ALLOW_ORIGIN})")
     try:
         server.serve_forever()
