@@ -10,7 +10,7 @@ This screens EVERY cached ticker (current tier + ratios + purification) and emit
 one's 8-year point-in-time tier timeline — so the in-page lookup covers the full universe,
 not a hand-picked subset, and never drifts from the Python screen (same classify engine).
 
-    python -m scripts.build_halal_dashboard_data        # writes halal_data.js next to demo.html
+    python -m scripts.build_halal_dashboard_data        # writes site/halal_data.js next to demo-boro.html
 """
 import json
 from pathlib import Path
@@ -21,7 +21,7 @@ from src.halal_history import tier_timeline
 from src.tier_monitor import diff_tiers, SNAPSHOT_PATH
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "halal_data.js"
+OUT = ROOT / "site" / "halal_data.js"
 
 
 def build() -> dict:

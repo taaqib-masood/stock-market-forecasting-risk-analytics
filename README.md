@@ -539,8 +539,8 @@ python -m src.daily_briefing --capital 50000
 ### **Step 3: See the Dashboard (5 min)**
 
 ```bash
-# Open demo-boro.html in a browser
-open demo-boro.html
+# Open site/demo-boro.html in a browser
+open site/demo-boro.html
 # You see: Signals, portfolio P&L, backtest results, portfolio scores
 ```
 

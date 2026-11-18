@@ -1,6 +1,6 @@
 """
 Run a src.pipeline backtest for one ticker and append the result to the
-dashboard's backtest history (data/backtest_history.json -> backtest_data.js).
+dashboard's backtest history (data/backtest_history.json -> site/backtest_data.js).
 
 Triggered by the dashboard's "Run Backtest" button via the research-backtest
 GitHub Actions job — but also runnable directly:
@@ -16,7 +16,7 @@ from src.pipeline import run, monte_carlo_backtest
 from src.metrics import summarise
 
 HISTORY_PATH = Path("data/backtest_history.json")
-JS_PATH = Path("backtest_data.js")
+JS_PATH = Path("site/backtest_data.js")
 TICKER_RE = re.compile(r"^[A-Za-z0-9.&-]{1,15}$")
 MAX_HISTORY = 100
 

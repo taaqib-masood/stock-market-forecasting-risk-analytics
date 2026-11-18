@@ -1,23 +1,20 @@
 # Netlify deploy — Boro halal dashboard (pure static, no build step).
 #
-# The dashboard is a single static file (demo-boro.html) that reads pre-generated
-# window.* feeds (dashboard_data.js, halal_data.js, info_data.js). There is NO
-# server at view-time. Data freshness comes from GitHub Actions: the nightly-scan
-# job regenerates + commits dashboard_data.js, and that push triggers a Netlify
-# redeploy — so the deployed dashboard tracks live paper-trading state hands-free.
+# The dashboard is a single static file (site/demo-boro.html) that reads pre-generated
+# window.* feeds in site/ (dashboard_data.js, halal_data.js, info_data.js,
+# backtest_data.js). There is NO server at view-time. Data freshness comes from
+# GitHub Actions: the nightly-scan job regenerates + commits site/dashboard_data.js,
+# and that push triggers a Netlify redeploy.
 #
 # Deploy:
-#   1. Connect this repo (branch V-1.0) to Netlify.
-#   2. Build command: leave empty.  Publish directory: "."  (set below).
-#   3. Done — pushes to V-1.0 redeploy automatically.
+#   1. Connect this repo (branch dev) to Netlify.
+#   2. Build command: leave empty.  Publish directory: "site"  (set below).
 #
-# NOTE: publish="." serves the whole repo over the CDN. No secrets are exposed
-# (.env is git-ignored and never deployed); only committed files ship. If you'd
-# rather not expose source, move the static assets into a dedicated folder and
-# point `publish` there.
+# Only site/ is published, so source, docs and agent notes in the repo root are
+# never served. Keep anything that must not be public out of site/.
 
 [build]
-  publish = "."
+  publish = "site"
   command = ""
   functions = "netlify/functions"   # serverless trigger (dispatch.js) for the buttons
 
