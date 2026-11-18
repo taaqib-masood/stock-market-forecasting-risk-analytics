@@ -14,7 +14,7 @@ New in v2:
 Run: WEB_TRADE_TOKEN=local-secret python -m src.web_dashboard --capital 50000
 """
 
-import json, os, threading, argparse, contextlib, io
+import hmac, json, os, threading, argparse, contextlib, io
 from datetime import datetime
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse
@@ -28,6 +28,16 @@ PORT    = int(os.environ.get("WEB_PORT", 5000))
 CAPITAL = float(os.environ.get("WEBHOOK_CAPITAL", 50_000))
 BIND_HOST = os.environ.get("WEB_BIND_HOST", "127.0.0.1")
 TRADE_TOKEN = os.environ.get("WEB_TRADE_TOKEN", "")
+# Extra Host names (comma-separated, no port) accepted when WEB_BIND_HOST is not loopback.
+ALLOWED_HOSTS = [h.strip().lower() for h in os.environ.get("WEB_ALLOWED_HOSTS", "").split(",") if h.strip()]
+
+
+def _allowed_hosts(port: int) -> set:
+    """Host header values (host:port) this server answers; blocks DNS rebinding."""
+    names = {"127.0.0.1", "localhost", *ALLOWED_HOSTS}
+    if BIND_HOST not in ("", "0.0.0.0", "::"):
+        names.add(BIND_HOST.lower())
+    return {f"{n}:{port}" for n in names}
 
 # ── API ───────────────────────────────────────────────────────────────────────
 
@@ -734,9 +744,17 @@ class Handler(BaseHTTPRequestHandler):
     def _trade_authed(self):
         """Require an explicit header token for legacy paper mutations."""
         supplied = self.headers.get("X-Web-Trade-Token", "")
-        return bool(TRADE_TOKEN) and supplied == TRADE_TOKEN
+        return bool(TRADE_TOKEN) and hmac.compare_digest(supplied.encode(), TRADE_TOKEN.encode())
+    def _host_allowed(self, check_origin=False):
+        allowed = _allowed_hosts(self.server.server_address[1])
+        if (self.headers.get("Host") or "").strip().lower() not in allowed:
+            return False
+        origin = self.headers.get("Origin")
+        return not check_origin or origin is None or origin.strip().lower() in {f"http://{h}" for h in allowed}
     def do_GET(self):
         p=urlparse(self.path).path
+        if not self._host_allowed():
+            return self._json(403,{"error":"forbidden host"})
         try:
             if   p=="/": self._html(HTML)
             elif p=="/api/portfolio":  self._json(200,_portfolio())
@@ -747,7 +765,10 @@ class Handler(BaseHTTPRequestHandler):
             else: self._json(404,{"error":"not found"})
         except Exception as e: self._json(500,{"error":str(e)})
     def do_POST(self):
-        p=urlparse(self.path).path;b=self._body()
+        p=urlparse(self.path).path
+        if not self._host_allowed(check_origin=True):
+            return self._json(403,{"ok":False,"reason":"forbidden host or origin"})
+        b=self._body()
         try:
             if p in {"/api/log_trade", "/api/close_trade"} and not self._trade_authed():
                 return self._json(401, {"ok": False, "reason": "trade API token required"})
