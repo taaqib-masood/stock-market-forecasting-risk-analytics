@@ -1,15 +1,6 @@
 name: Trading Pipeline
 
 on:
-  schedule:
-    # 9:00 AM IST = 3:30 AM UTC, Mon–Fri
-    - cron: "30 3 * * 1-5"
-    # 3:45 PM IST = 10:15 AM UTC, Mon–Fri
-    - cron: "15 10 * * 1-5"
-    # Sunday 10:00 AM IST = 4:30 AM UTC
-    - cron: "30 4 * * 0"
-    # Quarterly halal re-screen — 1st of Jan/Apr/Jul/Oct, 9:30 AM IST = 4:00 AM UTC
-    - cron: "0 4 1 1,4,7,10 *"
   push:
     branches: [main]
   workflow_dispatch:
@@ -97,12 +88,8 @@ jobs:
   # ── Nightly Scan (9:00 AM IST, Mon–Fri) ───────────────────────────────────
   nightly-scan:
     name: Nightly Scan
-    if: |
-      github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'nightly-scan' ||
-      github.event_name == 'schedule' && startsWith(github.event.schedule, '30 3')
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'nightly-scan'
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -137,18 +124,6 @@ jobs:
       - name: Refresh dashboard feed
         run: python -m scripts.export_dashboard --capital 50000 || true
 
-      - name: Commit dashboard feed
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add dashboard_data.js
-          if git diff --cached --quiet; then
-            echo "No dashboard changes to commit."
-          else
-            git commit -m "chore(dashboard): nightly live feed refresh"
-            git push
-          fi
-
       - name: Save portfolio state
         uses: actions/cache/save@v4
         with:
@@ -166,9 +141,7 @@ jobs:
   # ── Auto-Close Check (3:45 PM IST, Mon–Fri) ───────────────────────────────
   auto-close:
     name: Auto-Close Positions
-    if: |
-      github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'auto-close' ||
-      github.event_name == 'schedule' && startsWith(github.event.schedule, '15 10')
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'auto-close'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -215,9 +188,7 @@ jobs:
   # ── Weekly Backtest (Sunday 10:00 AM IST) ─────────────────────────────────
   weekly-backtest:
     name: Weekly Backtest
-    if: |
-      github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'weekly-backtest' ||
-      github.event_name == 'schedule' && startsWith(github.event.schedule, '30 4')
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'weekly-backtest'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -265,8 +236,6 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'research-backtest'
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    permissions:
-      contents: write
     env:
       BT_TICKER: ${{ github.event.inputs.ticker }}
       BT_YEARS: ${{ github.event.inputs.years }}
@@ -291,18 +260,6 @@ jobs:
       - name: Run backtest and export to dashboard history
         run: python -m scripts.export_backtest --ticker "$BT_TICKER" --years "$BT_YEARS"
 
-      - name: Commit backtest history
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/backtest_history.json backtest_data.js
-          if git diff --cached --quiet; then
-            echo "No backtest changes to commit."
-          else
-            git commit -m "chore(backtest): research run — ${BT_TICKER}"
-            git push
-          fi
-
       - name: Notify on failure
         if: failure()
         run: |
@@ -312,18 +269,11 @@ jobs:
             -d text="❌ <b>RESEARCH BACKTEST FAILED</b> (${BT_TICKER})%0ACheck: <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'>GitHub Actions</a>"
 
   # ── Quarterly Halal Re-screen (1st of Jan/Apr/Jul/Oct) ─────────────────────
-  # Kills the "who screens the screener" SPOF: refresh fundamentals → rebuild the
-  # halal dashboard feed → diff tiers → push transitions to Telegram → commit the
-  # refreshed cache/snapshot back so the next quarter diffs against it.
   quarterly-rescreen:
     name: Quarterly Halal Re-screen
-    if: |
-      github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'quarterly-rescreen' ||
-      github.event_name == 'schedule' && startsWith(github.event.schedule, '0 4 1')
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'quarterly-rescreen'
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -353,18 +303,6 @@ jobs:
 
       - name: Diff tiers + push changes to Telegram
         run: python -m src.tier_monitor --notify
-
-      - name: Commit refreshed screening state
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/fundamentals_cache.json data/tier_snapshot.json halal_data.js
-          if git diff --cached --quiet; then
-            echo "No screening changes to commit."
-          else
-            git commit -m "chore(halal): quarterly re-screen — refresh fundamentals + tier snapshot"
-            git push
-          fi
 
       - name: Notify on failure
         if: failure()
