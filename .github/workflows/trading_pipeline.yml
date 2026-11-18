@@ -11,7 +11,7 @@ on:
     # Quarterly halal re-screen — 1st of Jan/Apr/Jul/Oct, 9:30 AM IST = 4:00 AM UTC
     - cron: "0 4 1 1,4,7,10 *"
   push:
-    branches: [main]
+    branches: [dev]
   workflow_dispatch:
     inputs:
       job:
@@ -44,7 +44,7 @@ env:
   BORO_RELIABILITY_DB: results/reliability.db
 
 jobs:
-  # ── CI Tests (on every push to main) ──────────────────────────────────────
+  # ── CI Tests (on every push to dev) ───────────────────────────────────────
   ci-tests:
     name: CI Tests
     if: github.event_name == 'push'
@@ -131,6 +131,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: dev
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
@@ -172,7 +174,7 @@ jobs:
             echo "No dashboard changes to commit."
           else
             git commit -m "chore(dashboard): nightly live feed refresh"
-            git push
+            git push origin HEAD:refs/heads/dev
           fi
 
       - name: Save portfolio state
@@ -199,6 +201,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: dev
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
@@ -250,6 +254,8 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: dev
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
@@ -318,6 +324,8 @@ jobs:
       BT_YEARS: ${{ github.event.inputs.years }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: dev
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
@@ -346,7 +354,7 @@ jobs:
             echo "No backtest changes to commit."
           else
             git commit -m "chore(backtest): research run — ${BT_TICKER}"
-            git push
+            git push origin HEAD:refs/heads/dev
           fi
 
       - name: Notify on failure
@@ -373,6 +381,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: dev
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
@@ -410,7 +420,7 @@ jobs:
             echo "No screening changes to commit."
           else
             git commit -m "chore(halal): quarterly re-screen — refresh fundamentals + tier snapshot"
-            git push
+            git push origin HEAD:refs/heads/dev
           fi
 
       - name: Notify on failure
