@@ -4,7 +4,7 @@
 
 Core Python code lives in `src/`. The production signal path runs through `daily_briefing.py` and `scanner.py`; the separate ML research path starts in `pipeline.py` and combines ARIMA, tree, and optional LSTM models. Shared portfolio, risk, alpha, and execution logic is under `src/engine/`. Keep these two signal paths distinct.
 
-Tests live in `tests/` and mirror module names as `test_<module>.py`. Research notebooks are in `notebooks/`, operational utilities in `scripts/`, cached inputs and exported snapshots in `data/`, and static dashboard assets are stored at the repository root. Treat `results/`, `mlruns/`, `graphify-out/`, and generated `*_data.js` files as outputs unless a task explicitly targets them.
+Tests live in `tests/` and mirror module names as `test_<module>.py`. Research notebooks are in `notebooks/`, operational utilities in `scripts/`, cached inputs and exported snapshots in `data/`, and the deployed dashboard (`demo-boro.html` + its `*_data.js` feeds) lives in `site/`, the only folder Netlify publishes. Treat `results/`, `mlruns/`, `graphify-out/`, and generated `*_data.js` files as outputs unless a task explicitly targets them.
 
 ## Build, Test, and Development Commands
 

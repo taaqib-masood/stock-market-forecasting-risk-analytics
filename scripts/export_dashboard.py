@@ -1,5 +1,5 @@
 """
-Export live dashboard data → dashboard_data.js  (the demo-boro.html data feed).
+Export live dashboard data → site/dashboard_data.js  (the site/demo-boro.html data feed).
 
 Mirrors the halal_data.js pattern: dumps a single `window.DASH = {...}` blob the
 static dashboard reads with no backend. Each section degrades independently — a
@@ -19,7 +19,7 @@ import argparse, glob, json, os
 from datetime import datetime
 from pathlib import Path
 
-OUT = Path("dashboard_data.js")
+OUT = Path("site/dashboard_data.js")
 
 
 def _signals(capital: float) -> dict:

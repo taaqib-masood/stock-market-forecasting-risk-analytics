@@ -169,7 +169,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add dashboard_data.js
+          git add site/dashboard_data.js
           if git diff --cached --quiet; then
             echo "No dashboard changes to commit."
           else
@@ -349,7 +349,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/backtest_history.json backtest_data.js
+          git add data/backtest_history.json site/backtest_data.js
           if git diff --cached --quiet; then
             echo "No backtest changes to commit."
           else
@@ -415,7 +415,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/fundamentals_cache.json data/tier_snapshot.json halal_data.js
+          git add data/fundamentals_cache.json data/tier_snapshot.json site/halal_data.js
           if git diff --cached --quiet; then
             echo "No screening changes to commit."
           else
