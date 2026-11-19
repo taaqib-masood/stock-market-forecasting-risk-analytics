@@ -35,7 +35,7 @@ import os
 import threading
 from collections import deque
 from datetime import datetime
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 from src.risk_manager import RiskManager
 
@@ -43,6 +43,7 @@ PORT = int(os.environ.get("WEBHOOK_PORT", 8080))
 CAPITAL = float(os.environ.get("WEBHOOK_CAPITAL", 100_000))
 BIND_HOST = os.environ.get("WEBHOOK_BIND_HOST", "127.0.0.1")
 WEBHOOK_SECRET = os.environ.get("WEBHOOK_SECRET", "")
+MAX_BODY_BYTES = 8192
 
 # In-memory log (last 100 signals)
 _signal_log: deque = deque(maxlen=100)
@@ -104,6 +105,7 @@ def _execute_alpaca(ticker: str, shares: int, direction: int):
 
 
 class WebhookHandler(BaseHTTPRequestHandler):
+    timeout = 10
 
     def log_message(self, fmt, *args):
         pass  # silence default access log
@@ -140,7 +142,11 @@ class WebhookHandler(BaseHTTPRequestHandler):
             self._send(401, {"error": "webhook secret required"})
             return
 
-        length = int(self.headers.get("Content-Length", 0))
+        raw_length = self.headers.get("Content-Length", "")
+        if not raw_length.isdigit() or not 0 < int(raw_length) <= MAX_BODY_BYTES:
+            self._send(400, {"error": "invalid Content-Length"})
+            return
+        length = int(raw_length)
         try:
             body = json.loads(self.rfile.read(length))
         except json.JSONDecodeError:
@@ -187,7 +193,7 @@ class WebhookHandler(BaseHTTPRequestHandler):
 
 
 def run():
-    server = HTTPServer((BIND_HOST, PORT), WebhookHandler)
+    server = ThreadingHTTPServer((BIND_HOST, PORT), WebhookHandler)
     print(f"""
 ╔══════════════════════════════════════════════════════╗
 ║        TradingView Webhook Server — Ready            ║
