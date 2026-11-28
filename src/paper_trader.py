@@ -15,6 +15,8 @@ Commands:
 import os
 import sys
 import json
+import math
+import numbers
 import argparse
 from datetime import datetime
 from pathlib import Path
@@ -82,6 +84,27 @@ def live_price(ticker: str) -> float:
         return 0.0
 
 
+def _valid_shares(shares) -> bool:
+    return (isinstance(shares, numbers.Integral) and not isinstance(shares, bool)
+            and shares >= 1)
+
+
+def _valid_price(price) -> bool:
+    return (isinstance(price, numbers.Real) and not isinstance(price, bool)
+            and math.isfinite(price) and price > 0)
+
+
+def _resolve_price(ticker: str, price):
+    """Return (price, error). None means fetch live; any given price must be finite and > 0."""
+    if price is None:
+        price = live_price(ticker)
+        if not _valid_price(price):
+            return None, f"Could not fetch price for {ticker}"
+    elif not _valid_price(price):
+        return None, f"Invalid price: {price!r}"
+    return float(price), None
+
+
 def live_prices(tickers: list) -> dict:
     """Batch fetch prices for multiple tickers."""
     symbols = " ".join(nse(t) for t in tickers)
@@ -115,13 +138,14 @@ def buy(ticker: str, shares: int, price: float = None,
     If price is None, fetches live price.
     Applies 0.1% slippage + ₹20 commission.
     """
+    if not _valid_shares(shares):
+        return {"ok": False, "reason": f"Invalid share count: {shares!r}"}
+    price, error = _resolve_price(ticker, price)
+    if error:
+        return {"ok": False, "reason": error}
+
     if state is None:
         state = _load()
-
-    if price is None or price <= 0:
-        price = live_price(ticker)
-        if price <= 0:
-            return {"ok": False, "reason": f"Could not fetch price for {ticker}"}
 
     fill_price = round(price * (1 + SLIPPAGE_PCT), 2)   # slip: pay slightly more
     total_cost = round(fill_price * shares + COMMISSION, 2)
@@ -171,6 +195,9 @@ def sell(ticker: str, shares: int = None, price: float = None,
     Execute a paper SELL order.
     Sells all shares if shares=None.
     """
+    if shares is not None and not _valid_shares(shares):
+        return {"ok": False, "reason": f"Invalid share count: {shares!r}"}
+
     if state is None:
         state = _load()
 
@@ -181,10 +208,9 @@ def sell(ticker: str, shares: int = None, price: float = None,
     if shares is None or shares >= pos["shares"]:
         shares = pos["shares"]
 
-    if price is None or price <= 0:
-        price = live_price(ticker)
-        if price <= 0:
-            return {"ok": False, "reason": f"Could not fetch price for {ticker}"}
+    price, error = _resolve_price(ticker, price)
+    if error:
+        return {"ok": False, "reason": error}
 
     fill_price  = round(price * (1 - SLIPPAGE_PCT), 2)   # slip: receive slightly less
     proceeds    = round(fill_price * shares - COMMISSION, 2)
